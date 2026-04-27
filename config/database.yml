@@ -92,8 +92,10 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: trustship_production
-    username: trustship
+    host: <%= ENV["TRUSTSHIP_DATABASE_HOST"] %>
+    port: <%= ENV["TRUSTSHIP_DATABASE_PORT"] %>
+    database: <%= ENV["TRUSTSHIP_DATABASE_DB"] %>
+    username: <%= ENV["TRUSTSHIP_DATABASE_USERNAME"] %>
     password: <%= ENV["TRUSTSHIP_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
