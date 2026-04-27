@@ -24,7 +24,7 @@ gem "aasm", "~> 5.5"
 gem "pagy", "~> 9.3"
 
 # Authentication [https://github.com/heartcombo/devise]
-gem "devise", "~> 4.9"
+gem "devise", "~> 5.0"
 
 # Tailwind CSS for Rails [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails", "~> 3.0"
