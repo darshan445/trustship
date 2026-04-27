@@ -51,7 +51,10 @@ COPY . .
 # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
 RUN bundle exec bootsnap precompile -j 1 app/ lib/
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
+# Build Tailwind first so Propshaft can resolve `tailwind.css`.
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails tailwindcss:build
+
+# Precompile assets for production without requiring secret RAILS_MASTER_KEY.
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
