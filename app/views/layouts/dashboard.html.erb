@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "TrustShip" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+    <header class="fixed left-0 right-0 top-0 z-30 h-14 border-b border-gray-200 bg-white">
+      <div class="mx-auto flex h-full max-w-5xl items-center justify-between gap-3 px-4">
+        <%= link_to dashboard_path, class: "shrink-0 text-lg font-bold text-indigo-600" do %>
+          TrustShip
+        <% end %>
+        <p class="hidden min-w-0 flex-1 truncate text-center text-sm font-medium text-gray-500 md:block">
+          <%= current_seller.business_name %>
+        </p>
+        <div class="relative shrink-0">
+          <details class="group relative">
+            <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
+              <span class="max-w-[10rem] truncate"><%= current_seller.name %></span>
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+              </svg>
+            </summary>
+            <div class="absolute right-0 z-40 mt-1 w-44 rounded-lg border border-gray-100 bg-white py-1 shadow-lg">
+              <%= button_to "Sign out", destroy_seller_session_path, method: :delete, class: "block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50" %>
+            </div>
+          </details>
+        </div>
+      </div>
+    </header>
+
+    <div class="min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-14">
+      <% unless current_seller.pickup_address_complete? %>
+        <div
+          class="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm text-amber-900"
+          data-controller="dismissible"
+          data-dismissible-storage-key-value="pickupAddressBanner"
+          role="status">
+          <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-2">
+            <span class="font-medium">Complete your profile — add a pickup address to start shipping</span>
+            <%= link_to "Add Now →", edit_account_path, class: "shrink-0 font-semibold text-amber-950 underline decoration-amber-700 underline-offset-2 hover:text-amber-950" %>
+            <button
+              type="button"
+              class="ml-1 shrink-0 rounded px-2 py-0.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
+              data-action="click->dismissible#dismiss"
+              aria-label="Dismiss reminder">
+              Dismiss
+            </button>
+          </div>
+        </div>
+      <% end %>
+      <% if notice.present? %>
+        <div
+          class="border-b border-green-100 bg-green-50 px-4 py-3 text-center text-sm text-green-800 opacity-100 transition-opacity duration-300 ease-out"
+          data-controller="flash"
+          role="status">
+          <%= notice %>
+        </div>
+      <% end %>
+      <% if alert.present? %>
+        <div
+          class="border-b border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-800 opacity-100 transition-opacity duration-300 ease-out"
+          data-controller="flash"
+          role="alert">
+          <%= alert %>
+        </div>
+      <% end %>
+
+      <main class="mx-auto max-w-5xl px-4 py-6">
+        <%= yield %>
+      </main>
+    </div>
+
+    <nav
+      class="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
+      aria-label="Primary">
+      <div class="mx-auto grid max-w-5xl grid-cols-3 gap-1 px-2">
+        <%= link_to dashboard_path, class: dashboard_tab_classes(orders_tab_active?) do %>
+          <svg class="mx-auto h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h-.007v.008h.007v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+          </svg>
+          <span class="mt-0.5 block text-xs font-medium">Orders</span>
+        <% end %>
+        <%= link_to new_order_path, class: dashboard_tab_classes(new_order_tab_active?) do %>
+          <svg class="mx-auto h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          <span class="mt-0.5 block text-xs font-medium">New Order</span>
+        <% end %>
+        <%= link_to account_path, class: dashboard_tab_classes(account_tab_active?) do %>
+          <svg class="mx-auto h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
+          <span class="mt-0.5 block text-xs font-medium">Account</span>
+        <% end %>
+      </div>
+    </nav>
+  </body>
+</html>

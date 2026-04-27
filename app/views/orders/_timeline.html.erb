@@ -1,0 +1,27 @@
+<%# locals: (order_events:) %>
+<div class="ml-2 border-l-2 border-indigo-100 pl-6">
+  <% order_events.each do |event| %>
+    <div class="relative pb-8 last:pb-0">
+      <span class="absolute -left-[calc(0.5rem+5px)] top-1.5 h-3 w-3 rounded-full bg-indigo-600 ring-4 ring-white" aria-hidden="true"></span>
+      <p class="font-semibold text-gray-900"><%= order_event_title(event.event_name) %></p>
+      <p class="mt-0.5 text-sm text-gray-600">
+        <%= event.from_state.presence&.humanize || "—" %>
+        <span class="text-gray-400">→</span>
+        <%= event.to_state.humanize %>
+      </p>
+      <% detail_lines = order_event_detail_lines(event) %>
+      <% if detail_lines.any? %>
+        <ul class="mt-2 list-inside list-disc text-sm text-gray-700">
+          <% detail_lines.each do |line| %>
+            <li><%= line %></li>
+          <% end %>
+        </ul>
+      <% end %>
+      <p class="mt-1 text-xs text-gray-500">
+        <%= event.triggered_by.humanize %>
+        ·
+        <%= event.created_at.strftime("%b %d, %Y at %I:%M %p") %>
+      </p>
+    </div>
+  <% end %>
+</div>

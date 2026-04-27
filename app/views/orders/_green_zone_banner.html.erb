@@ -1,0 +1,98 @@
+<%# locals: (order:) %>
+<% if order.green_zone? %>
+  <% cod_collect = order_shipment_cod_to_collect(order) %>
+  <div data-controller="ship-modal">
+    <section class="rounded-xl border-2 p-6 shadow-sm <%= order.full_prepaid? ? 'border-emerald-300 bg-emerald-50' : (order.partial_cod? ? 'border-emerald-200 bg-emerald-50/90' : 'border-amber-300 bg-amber-50') %>" aria-label="Green zone status">
+      <% if order.full_prepaid? %>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-emerald-900">🟢 Green Zone — Fully Prepaid</h2>
+            <p class="mt-1 text-sm text-emerald-800">Lowest RTO risk. Safe to ship immediately.</p>
+          </div>
+          <button
+            type="button"
+            data-action="click->ship-modal#open"
+            class="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600">
+            Ship Now →
+          </button>
+        </div>
+      <% elsif order.partial_cod? %>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-emerald-900">🟢 Green Zone — Partial COD</h2>
+            <p class="mt-1 text-sm text-emerald-800">Advance paid. Moderate RTO risk.</p>
+            <% remaining = order.amount - (order.advance_amount || 0) %>
+            <p class="mt-2 text-sm font-medium text-emerald-900">
+              Advance: ₹<%= number_with_precision(order.advance_amount, precision: 2) %>
+              <span class="text-emerald-700">|</span>
+              Remaining COD: ₹<%= number_with_precision(remaining, precision: 2) %>
+            </p>
+          </div>
+          <button
+            type="button"
+            data-action="click->ship-modal#open"
+            class="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600">
+            Ship Now →
+          </button>
+        </div>
+      <% else %>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-amber-900">🟠 Green Zone — Full COD</h2>
+            <p class="mt-1 text-sm text-amber-900/90">No advance. Higher RTO risk. Ship at your discretion.</p>
+          </div>
+          <button
+            type="button"
+            data-action="click->ship-modal#open"
+            class="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg bg-amber-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-600">
+            Ship Now →
+          </button>
+        </div>
+      <% end %>
+    </section>
+
+    <div
+      data-ship-modal-target="modal"
+      class="fixed inset-0 z-50 hidden bg-black/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ship-modal-title"
+      data-action="click->ship-modal#backdropClick">
+      <div
+        class="mx-auto mt-auto max-h-[min(90dvh,calc(100dvh-2rem))] w-full max-w-md overflow-y-auto rounded-t-2xl border border-gray-200 bg-white p-6 shadow-xl sm:mt-0 sm:rounded-2xl"
+        data-action="click->ship-modal#stopPropagation">
+        <h2 id="ship-modal-title" class="text-lg font-bold text-gray-900">Confirm Shipment</h2>
+        <div class="mt-4 space-y-3 text-sm text-gray-700">
+          <p><span class="font-medium text-gray-900">Buyer:</span> <%= order.buyer.name %> · <%= order.buyer.phone %></p>
+          <p><span class="font-medium text-gray-900">Product:</span> <%= order.product_name %></p>
+          <p><span class="font-medium text-gray-900">Deliver to:</span> <%= order.address_line %>, <%= order.city %>, <%= order.state %> <%= order.pincode %></p>
+          <p class="flex flex-wrap items-center gap-2">
+            <span class="font-medium text-gray-900">Payment:</span>
+            <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold <%= order_payment_type_badge_classes(order) %>">
+              <%= order.payment_type.humanize %>
+            </span>
+          </p>
+          <% unless order.full_prepaid? %>
+            <p>
+              <span class="font-medium text-gray-900">COD to collect:</span>
+              ₹<%= number_with_precision(cod_collect, precision: 2) %>
+            </p>
+          <% end %>
+        </div>
+        <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            data-action="click->ship-modal#close"
+            class="w-full cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 sm:w-auto">
+            Cancel
+          </button>
+          <%= button_to "Confirm & Ship",
+                ship_order_path(order),
+                method: :post,
+                form: { class: "w-full sm:w-auto", data: { turbo: false } },
+                class: "w-full cursor-pointer rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

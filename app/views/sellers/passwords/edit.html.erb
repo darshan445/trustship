@@ -1,0 +1,27 @@
+<% content_for :title, "Change password — TrustShip" %>
+
+<h2 class="text-2xl font-semibold text-gray-900">Set a new password</h2>
+<p class="mt-1 text-sm text-gray-600">Choose a new password for your seller account.</p>
+
+<%= render "sellers/shared/error_messages", resource: resource %>
+
+<%= form_with model: resource, scope: resource_name, url: password_path(resource_name), html: { method: :put }, local: true, class: "mt-6 space-y-4" do |f| %>
+  <%= f.hidden_field :reset_password_token %>
+
+  <div>
+    <%= f.label :password, "New password", class: "mb-1 block text-sm font-medium text-gray-700" %>
+    <% if @minimum_password_length %>
+      <span class="text-xs text-gray-500">(<%= @minimum_password_length %> characters minimum)</span>
+    <% end %>
+    <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+  </div>
+
+  <div>
+    <%= f.label :password_confirmation, "Confirm new password", class: "mb-1 block text-sm font-medium text-gray-700" %>
+    <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+  </div>
+
+  <div>
+    <%= f.submit "Change password", class: "w-full cursor-pointer rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+  </div>
+<% end %>

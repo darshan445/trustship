@@ -1,0 +1,36 @@
+<% content_for :title, "Orders — TrustShip" %>
+
+<h1 class="text-2xl font-bold text-gray-900">Orders</h1>
+
+<div class="-mx-4 mt-4 flex gap-4 overflow-x-auto border-b border-gray-200 px-4 pb-0">
+  <% order_status_tabs.each do |tab| %>
+    <% active = orders_status_filter_active?(tab[:param]) %>
+    <% path = tab[:param].present? ? orders_path(status: tab[:param]) : orders_path %>
+    <%= link_to path,
+          class: [
+            "shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm transition-colors",
+            active ? "border-indigo-600 font-bold text-indigo-600" : "border-transparent font-medium text-gray-500 hover:text-gray-800"
+          ].join(" ") do %>
+      <%= tab[:label] %>
+    <% end %>
+  <% end %>
+</div>
+
+<div class="mt-6 space-y-4">
+  <% if @orders.any? %>
+    <% @orders.each do |order| %>
+      <%= render "orders/order_card", order: order %>
+    <% end %>
+  <% else %>
+    <div class="rounded-xl border border-dashed border-gray-200 bg-white py-16 text-center">
+      <p class="text-lg font-medium text-gray-600">No orders yet</p>
+      <%= link_to "Create your first order →", new_order_path, class: "mt-4 inline-block font-semibold text-indigo-600 hover:text-indigo-500" %>
+    </div>
+  <% end %>
+</div>
+
+<% if @pagy.pages > 1 %>
+  <div class="mt-8 flex justify-center">
+    <%== pagy_nav(@pagy) %>
+  </div>
+<% end %>

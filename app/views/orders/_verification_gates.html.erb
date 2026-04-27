@@ -1,0 +1,224 @@
+<%# locals: (order:) %>
+<% buyer = order.buyer %>
+<% gate1_done = order.pincode_verified_at.present? %>
+<% gate2_done = order.buyer_risk_assessed_at.present? %>
+<% first_time = buyer.rto_count.zero? && buyer.successful_delivery_count.zero? %>
+
+<section class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm" aria-labelledby="verification-gates-heading">
+  <h2 id="verification-gates-heading" class="text-lg font-bold text-gray-900">Verification Gates</h2>
+
+  <div class="mt-4 rounded-lg border border-gray-100 bg-gray-50/80 p-4">
+    <h3 class="text-sm font-semibold text-gray-800">Gate 1 — Address Validation</h3>
+    <% if order.pincode_verified_at.present? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-green-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <span>Pincode verified — serviceable</span>
+      </div>
+    <% elsif order.undeliverable? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-red-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+        </svg>
+        <span>Pincode invalid or unserviceable</span>
+      </div>
+    <% else %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-amber-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+        </svg>
+        <span>Checking address...</span>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-4 rounded-lg border border-gray-100 bg-gray-50/80 p-4">
+    <h3 class="text-sm font-semibold text-gray-800">Gate 2 — Risk Scoring</h3>
+
+    <% if order.undeliverable? %>
+      <p class="mt-2 text-sm text-gray-600">Skipped — address did not pass Gate 1.</p>
+    <% elsif order.high_risk? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-orange-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-orange-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        </svg>
+        <span class="font-medium">High risk buyer — <%= buyer.rto_count %> previous RTOs</span>
+      </div>
+      <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-3">
+        <%= button_to "Ship Anyway",
+              override_risk_order_path(order),
+              method: :post,
+              data: { turbo_confirm: "This buyer is flagged as high risk. Ship anyway?" },
+              form: { class: "inline-block w-full sm:w-auto" },
+              class: "w-full cursor-pointer rounded-lg border-2 border-orange-500 bg-white px-4 py-2.5 text-sm font-semibold text-orange-700 shadow-sm hover:bg-orange-50 sm:w-auto" %>
+        <%= button_to "Cancel Order",
+              cancel_order_order_path(order),
+              method: :post,
+              data: { turbo_confirm: "Cancel this order? This cannot be undone from here." },
+              form: { class: "inline-block w-full sm:w-auto" },
+              class: "w-full cursor-pointer rounded-lg border-2 border-red-600 bg-white px-4 py-2.5 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-50 sm:w-auto" %>
+      </div>
+    <% elsif !gate1_done %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-gray-600">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+        </svg>
+        <span>Waiting for Gate 1 to complete…</span>
+      </div>
+    <% elsif order.pending_verification? && gate1_done && !gate2_done %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-amber-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+        </svg>
+        <span>Checking buyer history...</span>
+      </div>
+    <% elsif gate2_done && buyer.low? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-green-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <span>Low risk buyer — no previous RTOs</span>
+      </div>
+    <% elsif gate2_done && buyer.medium? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-amber-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <span>Medium risk — proceed with caution</span>
+      </div>
+    <% elsif gate2_done && buyer.high? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-orange-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-orange-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        </svg>
+        <span>High risk buyer — <%= buyer.rto_count %> previous RTOs<% if !order.high_risk? %> (seller approved or continued)<% end %></span>
+      </div>
+    <% else %>
+      <p class="mt-2 text-sm text-gray-600">Risk assessment pending.</p>
+    <% end %>
+
+    <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-600">
+      <span><%= buyer.rto_count %> previous RTOs · <%= buyer.successful_delivery_count %> successful deliveries</span>
+      <% if first_time %>
+        <span class="rounded-full bg-blue-100 px-2 py-0.5 font-semibold text-blue-800">First time buyer</span>
+      <% end %>
+    </div>
+  </div>
+
+  <% last_confirm = order.order_events.where(event_name: "confirm").order(created_at: :desc).first %>
+  <div class="mt-4 rounded-lg border border-gray-100 bg-gray-50/80 p-4">
+    <h3 class="text-sm font-semibold text-gray-800">Gate 3 — WhatsApp Confirmation</h3>
+
+    <% if order.address_mismatch? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-red-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+        </svg>
+        <div>
+          <span class="font-medium">Buyer reported wrong address</span>
+          <p class="mt-1 text-xs text-red-900/90">Contact buyer directly to get correct address</p>
+        </div>
+      </div>
+    <% elsif order.confirmed? && last_confirm&.triggered_by == "buyer" %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-green-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <span>Buyer confirmed via WhatsApp</span>
+      </div>
+    <% elsif order.confirmed? && last_confirm&.triggered_by == "seller" %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-green-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <span>Confirmed by seller override</span>
+      </div>
+    <% elsif order.confirmed? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-green-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <span>Order confirmed</span>
+      </div>
+    <% elsif order.pending_verification? && order.confirmation_sent_at.present? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-amber-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+        </svg>
+        <span>
+          Confirmation sent at <%= order.confirmation_sent_at.strftime("%d %b %Y, %H:%M") %> — waiting for buyer reply
+          <% if order.confirmation_reminder_sent_at.present? %>
+            <span class="block text-xs text-amber-800/90">(Reminder sent at <%= order.confirmation_reminder_sent_at.strftime("%d %b %Y, %H:%M") %>)</span>
+          <% end %>
+        </span>
+      </div>
+    <% else %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-gray-600">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+        </svg>
+        <span>Waiting to start</span>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-4 rounded-lg border border-gray-100 bg-gray-50/80 p-4">
+    <h3 class="text-sm font-semibold text-gray-800">Gate 4 — Payment</h3>
+
+    <% if order.green_zone? && order.full_prepaid? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-green-800">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <div>
+          <span class="font-medium">Fully paid online — lowest RTO risk</span>
+          <% if order.razorpay_payment_id.present? %>
+            <p class="mt-1 text-xs text-green-900/80">Payment ref: <%= order.razorpay_payment_id %></p>
+          <% end %>
+        </div>
+      </div>
+    <% elsif order.green_zone? && order.partial_cod? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-amber-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+        <div>
+          <span class="font-medium">Advance paid ₹<%= number_with_precision(order.advance_amount, precision: 2) %> — remaining COD</span>
+          <% if order.razorpay_payment_id.present? %>
+            <p class="mt-1 text-xs text-amber-900/80">Payment ref: <%= order.razorpay_payment_id %></p>
+          <% end %>
+        </div>
+      </div>
+    <% elsif order.green_zone? && order.full_cod? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-orange-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-orange-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+        </svg>
+        <div>
+          <span class="font-medium">No advance — full COD</span>
+          <p class="mt-1 text-xs text-orange-900/85">Higher RTO risk. Confirm buyer intent before shipping.</p>
+        </div>
+      </div>
+    <% elsif order.confirmed? && order.prepaid_incentive_sent_at.present? %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-amber-900">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+        </svg>
+        <div>
+          <span>Payment options sent — waiting for buyer</span>
+          <% if order.payment_link_expires_at.present? %>
+            <p class="mt-1 text-xs text-amber-800/90">Link expires at <%= order.payment_link_expires_at.strftime("%d %b %Y, %H:%M") %></p>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="mt-2 flex items-start gap-2 text-sm text-gray-600">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+        </svg>
+        <span>Waiting for buyer confirmation</span>
+      </div>
+    <% end %>
+  </div>
+</section>

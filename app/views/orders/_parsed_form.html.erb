@@ -1,0 +1,18 @@
+<%# locals: (order:, autofilled:) %>
+<div class="mb-4 flex items-start gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2.5 text-sm text-green-900">
+  <svg class="mt-0.5 h-5 w-5 shrink-0 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+  </svg>
+  <p class="font-medium">Order details extracted. Review and confirm below.</p>
+</div>
+
+<%= form_with model: order, url: orders_path, class: "space-y-5" do |f| %>
+  <%= f.hidden_field :raw_message %>
+  <%= f.hidden_field :payment_type %>
+  <%= render "order_form_fields", f: f, parsed: true, autofilled: autofilled %>
+  <%= f.submit "Create Order →", class: "w-full cursor-pointer rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+<% end %>
+
+<p class="mt-4 text-center">
+  <%= link_to "← Discard and start over", new_order_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900", data: { turbo: false } %>
+</p>

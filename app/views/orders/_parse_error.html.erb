@@ -1,0 +1,8 @@
+<div class="rounded-lg border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-900">
+  <p class="font-semibold">Could not parse message.</p>
+  <p class="mt-1"><%= @parse_error %></p>
+</div>
+<p class="mt-4 flex flex-col gap-2 text-center text-sm sm:flex-row sm:justify-center sm:gap-4">
+  <%= link_to "Try again", manual_orders_path, class: "font-medium text-indigo-600 hover:text-indigo-500", data: { turbo_frame: "order_form" } %>
+  <%= link_to "Fill manually instead →", manual_orders_path, class: "font-medium text-indigo-600 hover:text-indigo-500", data: { turbo_frame: "order_form" } %>
+</p>

@@ -1,0 +1,119 @@
+<%# locals: (f:, parsed: false, autofilled: {}) %>
+<% manual_input = "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+<% missing_ph = "Not found — please fill in" %>
+
+<div>
+  <%= f.label :buyer_name, "Buyer Name", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.text_field :buyer_name,
+        class: parsed ? order_parse_input_classes(autofilled, :buyer_name) : manual_input,
+        placeholder: (parsed && !autofilled["buyer_name"]) ? missing_ph : nil %>
+  <% f.object.errors[:buyer_name].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :buyer_phone, "Buyer Phone", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.telephone_field :buyer_phone,
+        placeholder: (parsed && !autofilled["buyer_phone"]) ? missing_ph : "10-digit mobile number",
+        class: parsed ? order_parse_input_classes(autofilled, :buyer_phone) : manual_input %>
+  <% f.object.errors[:buyer_phone].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :product_name, "Product Name", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.text_field :product_name,
+        class: parsed ? order_parse_input_classes(autofilled, :product_name) : manual_input,
+        placeholder: (parsed && !autofilled["product_name"]) ? missing_ph : nil %>
+  <% f.object.errors[:product_name].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :amount, "Amount (₹)", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.number_field :amount,
+        step: "0.01",
+        min: 0,
+        placeholder: (parsed && !autofilled["amount"]) ? missing_ph : "Enter amount in ₹",
+        class: parsed ? order_parse_input_classes(autofilled, :amount) : manual_input %>
+  <% f.object.errors[:amount].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :address_line, "Address Line", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.text_field :address_line,
+        class: parsed ? order_parse_input_classes(autofilled, :address_line) : manual_input,
+        placeholder: (parsed && !autofilled["address_line"]) ? missing_ph : nil %>
+  <% f.object.errors[:address_line].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :city, "City", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.text_field :city,
+        class: parsed ? order_parse_input_classes(autofilled, :city) : manual_input,
+        placeholder: (parsed && !autofilled["city"]) ? missing_ph : nil %>
+  <% f.object.errors[:city].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :state, "State", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.text_field :state,
+        class: parsed ? order_parse_input_classes(autofilled, :state) : manual_input,
+        placeholder: (parsed && !autofilled["state"]) ? missing_ph : nil %>
+  <% f.object.errors[:state].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :pincode, "Pincode", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.text_field :pincode,
+        maxlength: 6,
+        placeholder: (parsed && !autofilled["pincode"]) ? missing_ph : "6 digits",
+        class: parsed ? order_parse_input_classes(autofilled, :pincode) : manual_input %>
+  <% f.object.errors[:pincode].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
+  <%= f.label :payment_type, "Expected payment at delivery", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <% if parsed %>
+    <p class="<%= order_parse_input_classes(autofilled, :payment_type) %> text-sm text-gray-800">
+      <%= f.object.payment_type == "full_prepaid" ? "Prepaid / online (from parsed message)" : "Cash on delivery (from parsed message)" %>
+    </p>
+    <%= f.hidden_field :payment_type %>
+  <% else %>
+    <%= f.select :payment_type,
+          [ [ "Cash on delivery", "full_cod" ], [ "Prepaid / already paid online", "full_prepaid" ] ],
+          {},
+          class: manual_input %>
+  <% end %>
+  <% f.object.errors[:payment_type].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<% unless parsed %>
+  <div>
+    <%= f.label :raw_message, "Raw WhatsApp Message", class: "mb-1 block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :raw_message, rows: 4, placeholder: "Paste original WhatsApp message here if available", class: manual_input %>
+  </div>
+<% end %>
+
+<div>
+  <%= f.label :seller_note, "Seller Note", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <%= f.text_area :seller_note, rows: 3, class: manual_input %>
+  <% f.object.errors[:seller_note].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
