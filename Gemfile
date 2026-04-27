@@ -27,7 +27,7 @@ gem "pagy", "~> 9.3"
 gem "devise", "~> 4.9"
 
 # Tailwind CSS for Rails [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails", "~> 3.0"
+gem "tailwindcss-rails", "~> 4.4"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
