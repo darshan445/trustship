@@ -10,7 +10,6 @@ module Delhivery
     include ExecuteMethodHelper
     include LogHelper
 
-    API_HOST = "track.delhivery.com"
     API_PATH = "/api/cmu/create.json"
     READ_TIMEOUT = 15
     OPEN_TIMEOUT = 5
@@ -77,37 +76,34 @@ module Delhivery
       raise_string_error("Delhivery pickup location name missing for seller") if pickup_name.blank?
 
       {
-        format: "json",
-        data: {
-          shipments: [
-            {
-              name: buyer.name.to_s,
-              add: "#{order.address_line}, #{order.city}, #{order.state} #{order.pincode}",
-              city: order.city.to_s,
-              state: order.state.to_s,
-              country: "India",
-              pin: order.pincode.to_s,
-              phone: buyer.phone.to_s,
-              order: order.id.to_s,
-              payment: payment,
-              cod_amount: cod_amt,
-              products_desc: order.product_name.to_s,
-              hsn_code: "",
-              cod_info: "",
-              seller_name: seller.business_name.to_s,
-              seller_add: seller.pickup_address_line.to_s,
-              seller_city: seller.pickup_city.to_s,
-              seller_state: seller.pickup_state.to_s,
-              seller_pin: seller.pickup_pincode.to_s,
-              seller_cust_id: seller.id.to_s,
-              seller_gst_tin: "",
-              shipping_mode: "Surface",
-              address_type: "home"
-            }
-          ],
-          pickup_location: {
-            name: pickup_name
+        shipments: [
+          {
+            name: buyer.name.to_s,
+            add: "#{order.address_line}, #{order.city}, #{order.state} #{order.pincode}",
+            city: order.city.to_s,
+            state: order.state.to_s,
+            country: "India",
+            pin: order.pincode.to_s,
+            phone: buyer.phone.to_s,
+            order: order.id.to_s,
+            payment_mode: payment,
+            cod_amount: cod_amt,
+            products_desc: order.product_name.to_s,
+            hsn_code: "",
+            cod_info: "",
+            seller_name: seller.business_name.to_s,
+            seller_add: seller.pickup_address_line.to_s,
+            seller_city: seller.pickup_city.to_s,
+            seller_state: seller.pickup_state.to_s,
+            seller_pin: seller.pickup_pincode.to_s,
+            seller_cust_id: seller.id.to_s,
+            seller_gst_tin: "",
+            shipping_mode: "Surface",
+            address_type: "home"
           }
+        ],
+        pickup_location: {
+          name: pickup_name
         }
       }
     end
@@ -127,22 +123,35 @@ module Delhivery
     end
 
     def call_delhivery_api(payload_hash)
-      api_key = Rails.application.credentials.delhivery[:api_key].to_s
+      delhivery_config = Rails.application.credentials.delhivery
+      api_key = delhivery_config[:api_key].to_s
+      base_url = delhivery_config[:base_url].to_s
       raise_string_error("Delhivery API key not configured") if api_key.blank?
+      raise_string_error("Delhivery base_url not configured") if base_url.blank?
 
-      uri = URI::HTTPS.build(host: API_HOST, path: API_PATH)
+      uri = URI.join(base_url.end_with?("/") ? base_url : "#{base_url}/", API_PATH.delete_prefix("/"))
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       http.read_timeout = READ_TIMEOUT
       http.open_timeout = OPEN_TIMEOUT
 
+      p 222222222222222
+      p JSON.generate(payload_hash)
+      p 222222222222222
+
       request = Net::HTTP::Post.new(uri.request_uri)
       request["Authorization"] = "Token #{api_key}"
-      request["Content-Type"] = "application/json"
-      request.body = JSON.generate(payload_hash)
+      request["Content-Type"] = "application/x-www-form-urlencoded"
+      request.body = URI.encode_www_form(
+        format: "json",
+        data: JSON.generate(payload_hash)
+      )
 
       response = http.request(request)
+      p 33333333333
+      p response.body
+      p 33333333333
       code = response.code.to_i
       raise_string_error("Delhivery API error: [#{code}]") unless code == 200
 

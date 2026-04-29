@@ -36,6 +36,13 @@ class Seller < ApplicationRecord
       delhivery_pickup_location_name.present?
   end
 
+  def pickup_address_saved?
+    pickup_address_line.present? &&
+      pickup_city.present? &&
+      pickup_state.present? &&
+      pickup_pincode.present?
+  end
+
   protected
 
   def send_devise_notification(notification, *args)

@@ -40,13 +40,12 @@ module Delhivery
     def call_delhivery_api(pincode)
       creds = Rails.application.credentials.delhivery
       raise_string_error("Delhivery API key not configured") if creds.blank? || creds[:api_key].blank?
+      raise_string_error("Delhivery base_url not configured") if creds[:base_url].blank?
 
       api_key = creds[:api_key].to_s.strip
-      uri = URI::HTTPS.build(
-        host: "track.delhivery.com",
-        path: "/c/api/pin-codes/json/",
-        query: URI.encode_www_form("filter_codes" => pincode)
-      )
+      base_uri = URI.parse(creds[:base_url].to_s)
+      uri = URI.join(base_uri.to_s.end_with?("/") ? base_uri.to_s : "#{base_uri}/", "c/api/pin-codes/json/")
+      uri.query = URI.encode_www_form("filter_codes" => pincode)
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true

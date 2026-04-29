@@ -9,7 +9,6 @@ module Delhivery
     include ExecuteMethodHelper
     include LogHelper
 
-    API_HOST = "track.delhivery.com"
     READ_TIMEOUT = 20
     OPEN_TIMEOUT = 5
 
@@ -52,14 +51,14 @@ module Delhivery
     end
 
     def fetch_label_pdf(awb)
-      api_key = Rails.application.credentials.delhivery[:api_key].to_s
+      delhivery_config = Rails.application.credentials.delhivery
+      api_key = delhivery_config[:api_key].to_s
+      base_url = delhivery_config[:base_url].to_s
       raise_string_error("Delhivery API key not configured") if api_key.blank?
+      raise_string_error("Delhivery base_url not configured") if base_url.blank?
 
-      uri = URI::HTTPS.build(
-        host: API_HOST,
-        path: "/api/p/packing_slip",
-        query: URI.encode_www_form(wbns: awb, pdf: "true")
-      )
+      uri = URI.join(base_url.end_with?("/") ? base_url : "#{base_url}/", "api/p/packing_slip")
+      uri.query = URI.encode_www_form(wbns: awb, pdf: "true")
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true

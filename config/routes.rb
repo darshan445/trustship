@@ -38,6 +38,8 @@ Rails.application.routes.draw do
         post :fetch_label
       end
     end
-    resource :account, only: [ :show, :edit, :update ], controller: "account"
+    resource :account, only: [ :show, :edit, :update ], controller: "account" do
+      post :retry_delhivery_registration, on: :member
+    end
   end
 end

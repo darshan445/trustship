@@ -28,6 +28,15 @@ class AccountController < ApplicationController
     end
   end
 
+  def retry_delhivery_registration
+    result = Delhivery::RegisterPickupLocation.execute(seller_id: current_seller.id)
+    if result.success?
+      redirect_to account_path, notice: "Pickup location registered successfully! You can now ship orders."
+    else
+      redirect_to account_path, alert: "Registration failed: #{result.errors}. Please try again."
+    end
+  end
+
   private
 
   def seller_params
