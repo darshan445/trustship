@@ -121,10 +121,13 @@ module OrdersHelper
       r ? [ "Remarks: #{r}" ] : []
     else
       if event.event_name.to_s.start_with?("delhivery_") && meta.except("agent_name", "agent_phone").any?
+        instructions = meta["instructions"].presence || meta["remarks"].presence
         [
-          meta["status"].present? ? "Scan: #{meta['status']}" : nil,
+          meta["status_type"].present? ? "Type: #{meta['status_type']}" : nil,
+          meta["status_name"].present? ? "Status: #{meta['status_name']}" : nil,
           meta["location"].present? ? "Location: #{meta['location']}" : nil,
-          meta["remarks"].present? ? "Remarks: #{meta['remarks']}" : nil
+          meta["datetime"].present? ? "Time: #{meta['datetime']}" : nil,
+          instructions ? "Instructions: #{instructions}" : nil
         ].compact
       else
         []
