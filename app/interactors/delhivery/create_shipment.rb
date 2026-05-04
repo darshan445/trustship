@@ -91,7 +91,7 @@ module Delhivery
             products_desc: order.product_name.to_s,
             hsn_code: "",
             cod_info: "",
-            weight: (order.weight_grams.to_f / 1000).round(2),
+            weight: order.weight_grams.to_f,
             seller_name: seller.business_name.to_s,
             seller_add: seller.pickup_address_line.to_s,
             seller_city: seller.pickup_city.to_s,
