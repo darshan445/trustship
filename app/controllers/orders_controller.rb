@@ -62,7 +62,8 @@ class OrdersController < ApplicationController
       pincode: @order.pincode,
       raw_message: @order.raw_message.presence,
       seller_note: @order.seller_note.presence,
-      payment_type: @order.payment_type
+      payment_type: @order.payment_type,
+      weight_grams: @order.weight_grams
     )
 
     if result.success?
@@ -137,7 +138,8 @@ class OrdersController < ApplicationController
   def order_params
     params.require(:order).permit(
       :buyer_name, :buyer_phone, :product_name, :amount,
-      :address_line, :city, :state, :pincode, :raw_message, :seller_note, :payment_type
+      :address_line, :city, :state, :pincode, :raw_message, :seller_note, :payment_type,
+      :weight_grams
     )
   end
 
@@ -153,7 +155,8 @@ class OrdersController < ApplicationController
       pincode: parsed.pincode,
       raw_message: raw_message,
       seller_note: nil,
-      payment_type: parsed.is_cod ? "full_cod" : "full_prepaid"
+      payment_type: parsed.is_cod ? "full_cod" : "full_prepaid",
+      weight_grams: 500
     )
   end
 
@@ -167,7 +170,8 @@ class OrdersController < ApplicationController
       "city" => parsed.city.present?,
       "state" => parsed.state.present?,
       "pincode" => parsed.pincode.present?,
-      "payment_type" => true
+      "payment_type" => true,
+      "weight_grams" => false
     }
   end
 end

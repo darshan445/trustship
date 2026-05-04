@@ -91,6 +91,7 @@ module Delhivery
             products_desc: order.product_name.to_s,
             hsn_code: "",
             cod_info: "",
+            weight: (order.weight_grams.to_f / 1000).round(2),
             seller_name: seller.business_name.to_s,
             seller_add: seller.pickup_address_line.to_s,
             seller_city: seller.pickup_city.to_s,
@@ -136,10 +137,6 @@ module Delhivery
       http.read_timeout = READ_TIMEOUT
       http.open_timeout = OPEN_TIMEOUT
 
-      p 222222222222222
-      p JSON.generate(payload_hash)
-      p 222222222222222
-
       request = Net::HTTP::Post.new(uri.request_uri)
       request["Authorization"] = "Token #{api_key}"
       request["Content-Type"] = "application/x-www-form-urlencoded"
@@ -149,9 +146,6 @@ module Delhivery
       )
 
       response = http.request(request)
-      p 33333333333
-      p response.body
-      p 33333333333
       code = response.code.to_i
       raise_string_error("Delhivery API error: [#{code}]") unless code == 200
 

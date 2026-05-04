@@ -41,7 +41,7 @@
           data-dismissible-storage-key-value="pickupAddressBanner"
           role="status">
           <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-2">
-            <span class="font-medium">Complete your profile — add a pickup address to start shipping</span>
+            <span class="font-medium">Complete your profile to start shipping from ₹<%= Order::WEIGHT_TIERS[500] %> per order</span>
             <%= link_to "Add Now →", edit_account_path, class: "shrink-0 font-semibold text-amber-950 underline decoration-amber-700 underline-offset-2 hover:text-amber-950" %>
             <button
               type="button"

@@ -13,6 +13,14 @@ class Order < ApplicationRecord
     "rto" => "rto"
   }.freeze
 
+  # Tier ceiling (grams) => shipping rate (₹). Update landing page if these change.
+  WEIGHT_TIERS = {
+    500 => 85,
+    1000 => 110,
+    2000 => 140,
+    5000 => 200
+  }.freeze
+
   attr_accessor :pending_event_triggered_by, :pending_event_metadata
 
   belongs_to :seller
@@ -29,6 +37,23 @@ class Order < ApplicationRecord
   validates :product_name, presence: true
   validates :amount, presence: true
   validates :address_line, :city, :state, :pincode, presence: true
+  validates :weight_grams, inclusion: { in: WEIGHT_TIERS.keys }
+
+  def shipping_rate
+    WEIGHT_TIERS.each do |max_weight, rate|
+      return rate if weight_grams <= max_weight
+    end
+    WEIGHT_TIERS[5000]
+  end
+
+  def weight_tier_label
+    case weight_grams
+    when 0..500 then "Upto 500g"
+    when 501..1000 then "500g - 1kg"
+    when 1001..2000 then "1kg - 2kg"
+    else "2kg - 5kg"
+    end
+  end
 
   aasm column: :aasm_state, create_scopes: false do
     state :pending_verification, initial: true

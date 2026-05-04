@@ -33,6 +33,24 @@
 </div>
 
 <div>
+  <%= f.label :weight_grams, "Package Weight", class: "mb-1 block text-sm font-medium text-gray-700" %>
+  <% w = Order::WEIGHT_TIERS %>
+  <%= f.select :weight_grams,
+        [
+          [ "Upto 500g (₹#{w[500]})", 500 ],
+          [ "500g - 1kg (₹#{w[1000]})", 1000 ],
+          [ "1kg - 2kg (₹#{w[2000]})", 2000 ],
+          [ "2kg - 5kg (₹#{w[5000]})", 5000 ]
+        ],
+        {},
+        class: parsed ? order_parse_input_classes(autofilled, :weight_grams) : manual_input %>
+  <p class="mt-1 text-xs text-gray-500">Approximate weight of the package</p>
+  <% f.object.errors[:weight_grams].each do |msg| %>
+    <p class="mt-1 text-sm text-red-600"><%= msg %></p>
+  <% end %>
+</div>
+
+<div>
   <%= f.label :amount, "Amount (₹)", class: "mb-1 block text-sm font-medium text-gray-700" %>
   <%= f.number_field :amount,
         step: "0.01",

@@ -5,7 +5,7 @@ module Orders
     include ExecuteMethodHelper
     include LogHelper
 
-    def self.execute(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, address_line:, city:, state:, pincode:, raw_message: nil, seller_note: nil, payment_type: "full_cod")
+    def self.execute(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, address_line:, city:, state:, pincode:, raw_message: nil, seller_note: nil, payment_type: "full_cod", weight_grams: 500)
       new(
         seller_id: seller_id,
         buyer_name: buyer_name,
@@ -18,11 +18,12 @@ module Orders
         pincode: pincode,
         raw_message: raw_message,
         seller_note: seller_note,
-        payment_type: payment_type
+        payment_type: payment_type,
+        weight_grams: weight_grams
       ).execute
     end
 
-    def initialize(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, address_line:, city:, state:, pincode:, raw_message: nil, seller_note: nil, payment_type: "full_cod")
+    def initialize(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, address_line:, city:, state:, pincode:, raw_message: nil, seller_note: nil, payment_type: "full_cod", weight_grams: 500)
       @seller_id = seller_id
       @buyer_name = buyer_name
       @buyer_phone = buyer_phone
@@ -35,6 +36,7 @@ module Orders
       @raw_message = raw_message
       @seller_note = seller_note
       @payment_type = payment_type
+      @weight_grams = weight_grams
     end
 
     def execute
@@ -48,7 +50,8 @@ module Orders
     private
 
     attr_reader :seller_id, :buyer_name, :buyer_phone, :product_name, :amount,
-                :address_line, :city, :state, :pincode, :raw_message, :seller_note, :payment_type
+                :address_line, :city, :state, :pincode, :raw_message, :seller_note, :payment_type,
+                :weight_grams
 
     def find_seller!
       seller = Seller.find_by(id: seller_id)
@@ -84,7 +87,8 @@ module Orders
         state: state,
         pincode: pincode,
         seller_note: seller_note.presence,
-        payment_type: normalize_payment_type!
+        payment_type: normalize_payment_type!,
+        weight_grams: normalize_weight_grams!
       )
       Orders::RunGateOneJob.perform_later(order.id)
       order
@@ -110,6 +114,17 @@ module Orders
       end
 
       pt
+    end
+
+    def normalize_weight_grams!
+      wg = weight_grams.to_i
+      wg = 500 if wg <= 0
+
+      unless Order::WEIGHT_TIERS.key?(wg)
+        raise_string_error("weight_grams must be one of: #{Order::WEIGHT_TIERS.keys.join(', ')}")
+      end
+
+      wg
     end
   end
 end

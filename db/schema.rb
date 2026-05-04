@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_04_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_04_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -98,6 +98,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_120000) do
     t.string "state", null: false
     t.datetime "undeliverable_at"
     t.datetime "updated_at", null: false
+    t.integer "weight_grams", default: 500, null: false
     t.index ["aasm_state"], name: "index_orders_on_aasm_state"
     t.index ["awb_number"], name: "index_orders_on_awb_number", unique: true
     t.index ["buyer_id"], name: "index_orders_on_buyer_id"

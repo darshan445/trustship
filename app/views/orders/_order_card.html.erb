@@ -21,6 +21,7 @@
           <span class="ml-2 text-gray-600">COD</span>
         <% end %>
       </p>
+      <p class="text-xs text-gray-500"><%= order.weight_tier_label %> · ₹<%= order.shipping_rate %> shipping</p>
       <p class="text-sm text-gray-600"><%= order.city %>, <%= order.state %> <%= order.pincode %></p>
       <p class="text-xs text-gray-500"><%= time_ago_in_words(order.created_at) %> ago</p>
     </div>

@@ -78,6 +78,9 @@
               ₹<%= number_with_precision(cod_collect, precision: 2) %>
             </p>
           <% end %>
+          <p><span class="font-medium text-gray-900">📦 Package Weight:</span> <%= order.weight_tier_label %></p>
+          <p><span class="font-medium text-gray-900">💰 Shipping Rate:</span> ₹<%= order.shipping_rate %></p>
+          <p class="text-xs text-gray-500">This amount will be deducted from your TrustShip wallet at time of shipment.</p>
         </div>
         <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button

@@ -44,6 +44,14 @@
     <h2 class="text-lg font-bold text-gray-900">Details</h2>
     <dl class="mt-4 space-y-2 text-sm">
       <div>
+        <dt class="font-medium text-gray-500">Package Weight</dt>
+        <dd class="mt-0.5 text-gray-900"><%= @order.weight_tier_label %></dd>
+      </div>
+      <div>
+        <dt class="font-medium text-gray-500">Shipping Rate</dt>
+        <dd class="mt-0.5 text-gray-900">₹<%= @order.shipping_rate %></dd>
+      </div>
+      <div>
         <dt class="font-medium text-gray-500">Address</dt>
         <dd class="mt-0.5 text-gray-900"><%= @order.address_line %>, <%= @order.city %>, <%= @order.state %> <%= @order.pincode %></dd>
       </div>
