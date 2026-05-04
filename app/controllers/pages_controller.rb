@@ -4,4 +4,12 @@ class PagesController < ApplicationController
   def home
     redirect_to dashboard_path if seller_signed_in?
   end
+
+  def terms; end
+
+  def privacy; end
+
+  def refund; end
+
+  def shipping_policy; end
 end

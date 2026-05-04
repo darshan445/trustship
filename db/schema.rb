@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_25_130004) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_04_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -123,6 +123,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_25_130004) do
     t.string "reset_password_token"
     t.string "shop_code", null: false
     t.string "status", default: "active", null: false
+    t.boolean "terms_accepted", default: false, null: false
+    t.datetime "terms_accepted_at"
     t.datetime "updated_at", null: false
     t.index ["phone"], name: "index_sellers_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_sellers_on_reset_password_token", unique: true

@@ -1,0 +1,71 @@
+<% content_for :title, "Refund & Cancellation Policy — TrustShip" %>
+
+<div class="print:bg-white">
+  <p class="mb-6">
+    <%= link_to "← Back to home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  </p>
+
+  <header class="border-b border-gray-200 pb-6">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Refund & Cancellation Policy</h1>
+    <p class="mt-2 text-sm font-medium text-gray-500">Last updated: May 2026</p>
+  </header>
+
+  <nav class="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm print:hidden" aria-label="Table of contents">
+    <p class="font-semibold text-gray-900">On this page</p>
+    <ol class="mt-3 list-decimal space-y-1 pl-5 text-gray-700">
+      <li><a href="#refund-1" class="text-indigo-600 hover:text-indigo-500">TrustShip platform fees</a></li>
+      <li><a href="#refund-2" class="text-indigo-600 hover:text-indigo-500">Order cancellation</a></li>
+      <li><a href="#refund-3" class="text-indigo-600 hover:text-indigo-500">RTO orders</a></li>
+      <li><a href="#refund-4" class="text-indigo-600 hover:text-indigo-500">Prepaid orders (buyer payments)</a></li>
+      <li><a href="#refund-5" class="text-indigo-600 hover:text-indigo-500">How to request a refund</a></li>
+    </ol>
+  </nav>
+
+  <div class="mt-10 space-y-10">
+    <section id="refund-1">
+      <h2 class="text-lg font-semibold text-gray-900">1. TrustShip platform fees</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>The ₹25 per shipment fee is charged when you ship</li>
+        <li>Fees are non-refundable once the shipment is created</li>
+        <li>If shipment creation fails due to our error, the fee is refunded within 7 business days</li>
+      </ul>
+    </section>
+
+    <section id="refund-2">
+      <h2 class="text-lg font-semibold text-gray-900">2. Order cancellation</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Orders can be cancelled before <strong class="text-gray-800">Ship Now</strong> is used</li>
+        <li>Once an AWB is generated, cancellation goes through Delhivery</li>
+        <li>Delhivery cancellation charges may apply</li>
+      </ul>
+    </section>
+
+    <section id="refund-3">
+      <h2 class="text-lg font-semibold text-gray-900">3. RTO orders</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>RTO return shipping costs are not refunded by TrustShip</li>
+        <li>Delhivery handles RTO billing separately</li>
+        <li>The TrustShip fee is not refunded for RTO orders</li>
+      </ul>
+    </section>
+
+    <section id="refund-4">
+      <h2 class="text-lg font-semibold text-gray-900">4. Prepaid orders (buyer payments)</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Buyer advance payments are processed via Razorpay</li>
+        <li>Refunds to buyers for cancelled orders must be initiated by the seller</li>
+        <li>TrustShip does not hold buyer payments</li>
+        <li>Razorpay’s refund policy applies</li>
+      </ul>
+    </section>
+
+    <section id="refund-5">
+      <h2 class="text-lg font-semibold text-gray-900">5. How to request a refund</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">
+        Email <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %>
+        with order ID, AWB number, and reason for refund.
+        Typical processing time: 5–7 business days.
+      </p>
+    </section>
+  </div>
+</div>

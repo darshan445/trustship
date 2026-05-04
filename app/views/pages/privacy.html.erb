@@ -1,0 +1,130 @@
+<% content_for :title, "Privacy Policy — TrustShip" %>
+
+<div class="print:bg-white">
+  <p class="mb-6">
+    <%= link_to "← Back to home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  </p>
+
+  <header class="border-b border-gray-200 pb-6">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Privacy Policy</h1>
+    <p class="mt-2 text-sm font-medium text-gray-500">Last updated: May 2026</p>
+  </header>
+
+  <nav class="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm print:hidden" aria-label="Table of contents">
+    <p class="font-semibold text-gray-900">On this page</p>
+    <ol class="mt-3 list-decimal space-y-1 pl-5 text-gray-700">
+      <li><a href="#privacy-1" class="text-indigo-600 hover:text-indigo-500">Information we collect</a></li>
+      <li><a href="#privacy-2" class="text-indigo-600 hover:text-indigo-500">How we use information</a></li>
+      <li><a href="#privacy-3" class="text-indigo-600 hover:text-indigo-500">Data sharing</a></li>
+      <li><a href="#privacy-4" class="text-indigo-600 hover:text-indigo-500">Data security</a></li>
+      <li><a href="#privacy-5" class="text-indigo-600 hover:text-indigo-500">Data retention</a></li>
+      <li><a href="#privacy-6" class="text-indigo-600 hover:text-indigo-500">Your rights</a></li>
+      <li><a href="#privacy-7" class="text-indigo-600 hover:text-indigo-500">Cookies</a></li>
+      <li><a href="#privacy-8" class="text-indigo-600 hover:text-indigo-500">WhatsApp & third parties</a></li>
+      <li><a href="#privacy-9" class="text-indigo-600 hover:text-indigo-500">Children’s privacy</a></li>
+      <li><a href="#privacy-10" class="text-indigo-600 hover:text-indigo-500">Contact</a></li>
+    </ol>
+  </nav>
+
+  <div class="mt-10 space-y-10">
+    <section id="privacy-1">
+      <h2 class="text-lg font-semibold text-gray-900">1. Information we collect</h2>
+      <p class="mt-3 font-medium text-gray-800">From sellers</p>
+      <ul class="mt-2 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Name, phone number, business name</li>
+        <li>Pickup address</li>
+        <li>GST number (optional)</li>
+      </ul>
+      <p class="mt-4 font-medium text-gray-800">From buyers (via seller’s orders)</p>
+      <ul class="mt-2 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Name, phone number</li>
+        <li>Delivery address</li>
+        <li>Order details</li>
+        <li>Payment status</li>
+      </ul>
+    </section>
+
+    <section id="privacy-2">
+      <h2 class="text-lg font-semibold text-gray-900">2. How we use information</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Process and verify orders</li>
+        <li>Send WhatsApp notifications to buyers</li>
+        <li>Create shipments via Delhivery</li>
+        <li>Improve RTO risk scoring</li>
+        <li>Communicate with sellers about their account</li>
+      </ul>
+    </section>
+
+    <section id="privacy-3">
+      <h2 class="text-lg font-semibold text-gray-900">3. Data sharing</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">We share data with:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li><strong class="text-gray-800">Delhivery:</strong> buyer name, address, and phone for shipping</li>
+        <li><strong class="text-gray-800">Meta/WhatsApp:</strong> buyer phone for notifications</li>
+        <li><strong class="text-gray-800">Razorpay:</strong> buyer phone and order amount for payments</li>
+      </ul>
+      <p class="mt-4 text-gray-600 leading-relaxed">We do not sell data to third parties.</p>
+    </section>
+
+    <section id="privacy-4">
+      <h2 class="text-lg font-semibold text-gray-900">4. Data security</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>All data is encrypted in transit (HTTPS)</li>
+        <li>Passwords are encrypted and never stored in plain text</li>
+        <li>We follow industry-standard security practices</li>
+      </ul>
+    </section>
+
+    <section id="privacy-5">
+      <h2 class="text-lg font-semibold text-gray-900">5. Data retention</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Seller account data: retained while the account is active</li>
+        <li>Order data: retained for 3 years for compliance</li>
+        <li>Deleted account data: removed within 30 days</li>
+      </ul>
+    </section>
+
+    <section id="privacy-6">
+      <h2 class="text-lg font-semibold text-gray-900">6. Your rights</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li><strong class="text-gray-800">Access your data:</strong> email <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %></li>
+        <li><strong class="text-gray-800">Correct inaccurate data:</strong> update in account settings</li>
+        <li><strong class="text-gray-800">Delete your data:</strong> email <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %></li>
+        <li><strong class="text-gray-800">Export your data:</strong> email <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %></li>
+      </ul>
+    </section>
+
+    <section id="privacy-7">
+      <h2 class="text-lg font-semibold text-gray-900">7. Cookies</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">We use minimal cookies for:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Keeping you logged in (session cookie)</li>
+        <li>No tracking or advertising cookies</li>
+      </ul>
+    </section>
+
+    <section id="privacy-8">
+      <h2 class="text-lg font-semibold text-gray-900">8. WhatsApp & third-party services</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>WhatsApp messages are sent via Meta Cloud API</li>
+        <li>Meta’s privacy policy applies to WhatsApp messages</li>
+        <li>Buyers can opt out by replying STOP</li>
+      </ul>
+    </section>
+
+    <section id="privacy-9">
+      <h2 class="text-lg font-semibold text-gray-900">9. Children’s privacy</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">
+        TrustShip is not intended for users under 18 years of age.
+      </p>
+    </section>
+
+    <section id="privacy-10">
+      <h2 class="text-lg font-semibold text-gray-900">10. Contact</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">
+        Privacy questions:
+        <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %>
+      </p>
+    </section>
+  </div>
+</div>

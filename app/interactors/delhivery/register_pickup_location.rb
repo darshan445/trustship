@@ -73,10 +73,21 @@ module Delhivery
       end
     end
 
+    def pickup_placeholder_email_domain
+      url = Rails.application.credentials.dig(:app, :domain).to_s
+      host = URI.parse(url).host
+      return host if host.present?
+
+      Rails.application.credentials.dig(:app, :support_email).to_s.split("@", 2).last.presence || "trustship.site"
+    rescue URI::InvalidURIError
+      Rails.application.credentials.dig(:app, :support_email).to_s.split("@", 2).last.presence || "trustship.site"
+    end
+
     def build_request_body(seller, location_name)
+      domain = pickup_placeholder_email_domain
       {
         name: location_name,
-        email: "#{seller.phone}@trustship.site",
+        email: "#{seller.phone}@#{domain}",
         phone: seller.phone.to_s,
         address: seller.pickup_address_line.to_s,
         city: seller.pickup_city.to_s,

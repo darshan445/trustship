@@ -1,0 +1,88 @@
+<% content_for :title, "Shipping Policy — TrustShip" %>
+
+<div class="print:bg-white">
+  <p class="mb-6">
+    <%= link_to "← Back to home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  </p>
+
+  <header class="border-b border-gray-200 pb-6">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Shipping Policy</h1>
+    <p class="mt-2 text-sm font-medium text-gray-500">Last updated: May 2026</p>
+  </header>
+
+  <nav class="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm print:hidden" aria-label="Table of contents">
+    <p class="font-semibold text-gray-900">On this page</p>
+    <ol class="mt-3 list-decimal space-y-1 pl-5 text-gray-700">
+      <li><a href="#ship-1" class="text-indigo-600 hover:text-indigo-500">Shipping partner</a></li>
+      <li><a href="#ship-2" class="text-indigo-600 hover:text-indigo-500">Serviceable areas</a></li>
+      <li><a href="#ship-3" class="text-indigo-600 hover:text-indigo-500">Shipping modes</a></li>
+      <li><a href="#ship-4" class="text-indigo-600 hover:text-indigo-500">Tracking</a></li>
+      <li><a href="#ship-5" class="text-indigo-600 hover:text-indigo-500">COD orders</a></li>
+      <li><a href="#ship-6" class="text-indigo-600 hover:text-indigo-500">Failed deliveries & RTO</a></li>
+      <li><a href="#ship-7" class="text-indigo-600 hover:text-indigo-500">Shipping charges</a></li>
+    </ol>
+  </nav>
+
+  <div class="mt-10 space-y-10">
+    <section id="ship-1">
+      <h2 class="text-lg font-semibold text-gray-900">1. Shipping partner</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">
+        TrustShip uses Delhivery for all shipments. Delhivery is one of India’s leading logistics providers.
+      </p>
+    </section>
+
+    <section id="ship-2">
+      <h2 class="text-lg font-semibold text-gray-900">2. Serviceable areas</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>All pincodes serviceable by Delhivery</li>
+        <li>Pincode serviceability is checked automatically before an order proceeds</li>
+        <li>Non-serviceable pincodes are flagged immediately</li>
+      </ul>
+    </section>
+
+    <section id="ship-3">
+      <h2 class="text-lg font-semibold text-gray-900">3. Shipping modes</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Surface shipping (default)</li>
+        <li>Delivery typically within 3–7 business days</li>
+        <li>Express options may be available depending on pincode</li>
+      </ul>
+    </section>
+
+    <section id="ship-4">
+      <h2 class="text-lg font-semibold text-gray-900">4. Tracking</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>An AWB number is generated when you ship</li>
+        <li>Real-time tracking via <span class="font-mono text-gray-800"><%= app_domain.sub(/\Ahttps?:\/\//i, "") %>/track/</span> plus your AWB</li>
+        <li>WhatsApp notifications are sent at key milestones: order shipped, out for delivery, delivered</li>
+      </ul>
+    </section>
+
+    <section id="ship-5">
+      <h2 class="text-lg font-semibold text-gray-900">5. COD orders</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>COD amount is collected by the Delhivery agent at delivery</li>
+        <li>COD remittance follows Delhivery’s schedule</li>
+        <li>COD is subject to Delhivery’s COD policies</li>
+      </ul>
+    </section>
+
+    <section id="ship-6">
+      <h2 class="text-lg font-semibold text-gray-900">6. Failed deliveries & RTO</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Up to three delivery attempts before RTO</li>
+        <li>Seller is notified when an order returns (RTO)</li>
+        <li>Return shipping charges follow Delhivery rates</li>
+      </ul>
+    </section>
+
+    <section id="ship-7">
+      <h2 class="text-lg font-semibold text-gray-900">7. Shipping charges</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Shipping charges are separate from TrustShip fees</li>
+        <li>They are charged directly by Delhivery</li>
+        <li>Rates depend on weight, dimensions, and destination</li>
+      </ul>
+    </section>
+  </div>
+</div>

@@ -24,6 +24,11 @@ Rails.application.routes.draw do
 
   root "pages#home"
 
+  get "/terms", to: "pages#terms", as: :terms
+  get "/privacy", to: "pages#privacy", as: :privacy
+  get "/refund", to: "pages#refund", as: :refund
+  get "/shipping-policy", to: "pages#shipping_policy", as: :shipping_policy
+
   authenticate :seller do
     get "dashboard", to: "orders#index", as: :dashboard
     resources :orders, only: [ :index, :new, :create, :show ] do

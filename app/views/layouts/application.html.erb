@@ -22,7 +22,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-white text-gray-900 antialiased">
+  <body class="flex min-h-screen flex-col bg-white text-gray-900 antialiased">
     <header class="sticky top-0 z-20 border-b border-gray-100 bg-white">
       <nav class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4" aria-label="Main">
         <%= link_to root_path, class: "flex min-w-0 shrink items-baseline gap-3" do %>
@@ -50,8 +50,57 @@
     <% end %>
 
     <% landing = controller_name == "pages" && action_name == "home" %>
-    <main class="<%= landing ? "w-full" : "mx-auto max-w-3xl px-4 py-10" %>">
+    <main class="<%= landing ? "w-full flex-1" : "mx-auto w-full max-w-3xl flex-1 px-4 py-10" %>">
       <%= yield %>
     </main>
+
+    <footer class="border-t border-gray-800 bg-gray-900 text-gray-400">
+      <div class="mx-auto max-w-6xl px-4 py-16">
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <p class="text-xl font-bold text-indigo-400">TrustShip</p>
+            <p class="mt-2 text-sm leading-relaxed">RTO Protection for WhatsApp Sellers</p>
+            <p class="mt-2 text-sm text-gray-500">Built for Indian sellers</p>
+            <div class="mt-4 flex gap-3 text-sm">
+              <a href="#" class="rounded hover:text-white" aria-hidden="true">Twitter</a>
+              <a href="#" class="rounded hover:text-white" aria-hidden="true">Instagram</a>
+            </div>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-white">Product</h2>
+            <ul class="mt-4 space-y-2 text-sm">
+              <li><%= link_to "How it works", root_path(anchor: "how-it-works"), class: "hover:text-white" %></li>
+              <li><%= link_to "Pricing", root_path(anchor: "pricing"), class: "hover:text-white" %></li>
+              <li><%= link_to "Sign in", new_seller_session_path, class: "hover:text-white" %></li>
+              <li><%= link_to "Register", new_seller_registration_path, class: "hover:text-white" %></li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-white">Legal</h2>
+            <ul class="mt-4 space-y-2 text-sm">
+              <li><%= link_to "Terms & Conditions", terms_path, class: "hover:text-white" %></li>
+              <li><%= link_to "Privacy Policy", privacy_path, class: "hover:text-white" %></li>
+              <li><%= link_to "Refund Policy", refund_path, class: "hover:text-white" %></li>
+              <li><%= link_to "Shipping Policy", shipping_policy_path, class: "hover:text-white" %></li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-white">Contact</h2>
+            <ul class="mt-4 space-y-2 text-sm leading-relaxed">
+              <li><%= link_to support_email, "mailto:#{support_email}", class: "hover:text-white" %></li>
+              <li><%= link_to app_domain.sub(/\Ahttps?:\/\//i, ""), app_domain, class: "hover:text-white" %></li>
+              <li>Chekhalarani, Sadra<br>Gandhinagar, Gujarat - 382320</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 py-6">
+        <div class="mx-auto max-w-6xl px-4 text-center text-xs text-gray-500 sm:text-left">
+          <p>© 2026 TrustShip. All rights reserved.</p>
+          <p class="mt-1">Operated by Darshan Thakor (Sole Proprietorship)</p>
+          <p class="mt-1">GST: 24CBWPT8994H1ZF</p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

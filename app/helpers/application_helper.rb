@@ -1,6 +1,18 @@
 module ApplicationHelper
   include Pagy::Frontend
 
+  def support_email
+    Rails.application.credentials.app[:support_email]
+  end
+
+  def founder_email
+    Rails.application.credentials.app[:founder_email]
+  end
+
+  def app_domain
+    Rails.application.credentials.app[:domain]
+  end
+
   def dashboard_tab_classes(active)
     base = "flex flex-col items-center rounded-lg py-2 text-center transition-colors"
     active ? "#{base} font-semibold text-indigo-600" : "#{base} font-medium text-gray-500 hover:text-gray-800"

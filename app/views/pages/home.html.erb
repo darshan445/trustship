@@ -117,7 +117,7 @@
   </section>
 </div>
 
-<div class="bg-white">
+<div class="bg-white" id="pricing">
   <section class="mx-auto max-w-6xl px-4 py-16 md:py-20" aria-labelledby="pricing-heading">
     <h2 id="pricing-heading" class="text-3xl font-bold text-gray-900 sm:text-4xl">
       Pay Only When You Ship
@@ -126,28 +126,11 @@
       No subscription. No setup fee. No monthly invoice.
     </p>
     <div class="mx-auto mt-10 max-w-lg rounded-2xl border border-gray-100 bg-gray-50 p-8 text-center shadow-sm">
-      <p class="text-4xl font-bold text-indigo-600 sm:text-5xl">₹10 per shipment</p>
+      <p class="text-4xl font-bold text-indigo-600 sm:text-5xl">₹25 per shipment</p>
       <p class="mt-4 text-sm text-gray-600">
-        You save ₹150+ per avoided RTO. Avoiding 5 RTOs a month saves you ₹750. You pay us ₹50.
+        You save ₹150+ per avoided RTO. Avoiding 5 RTOs a month saves you ₹750. You pay us ₹125.
       </p>
       <%= link_to "Get Started Free →", new_seller_registration_path, class: "mt-8 inline-flex justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
     </div>
   </section>
 </div>
-
-<footer class="border-t border-gray-100 bg-gray-50">
-  <div class="mx-auto max-w-6xl px-4 py-12">
-    <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
-      <div>
-        <p class="text-xl font-bold text-indigo-600">TrustShip</p>
-        <p class="mt-1 text-sm font-medium text-gray-600">RTO Protection for WhatsApp Sellers</p>
-        <p class="mt-3 text-sm text-gray-600">Built for WhatsApp sellers in India</p>
-      </div>
-      <div class="flex flex-col gap-2 text-sm font-medium sm:items-end">
-        <%= link_to "Sign in", new_seller_session_path, class: "text-indigo-600 hover:text-indigo-500" %>
-        <%= link_to "Register", new_seller_registration_path, class: "text-indigo-600 hover:text-indigo-500" %>
-      </div>
-    </div>
-    <p class="mt-10 text-center text-xs text-gray-500 sm:text-left">© <%= Time.current.year %> TrustShip. All rights reserved.</p>
-  </div>
-</footer>

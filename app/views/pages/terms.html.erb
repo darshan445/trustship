@@ -1,0 +1,139 @@
+<% content_for :title, "Terms & Conditions — TrustShip" %>
+
+<div class="print:bg-white">
+  <p class="mb-6">
+    <%= link_to "← Back to home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  </p>
+
+  <header class="border-b border-gray-200 pb-6">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Terms & Conditions</h1>
+    <p class="mt-2 text-sm font-medium text-gray-500">Last updated: May 2026</p>
+    <p class="mt-4 text-sm text-gray-600 leading-relaxed">
+      Business: TrustShip · Owner: Darshan Thakor (sole proprietorship) ·
+      Website: <%= link_to app_domain.sub(/\Ahttps?:\/\//i, ""), app_domain, class: "text-indigo-600 hover:text-indigo-500" %> ·
+      Email: <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %><br>
+      Address: Chekhalarani, Sadra, Gandhinagar, Gujarat - 382320, India · Effective date: May 2026
+    </p>
+  </header>
+
+  <nav class="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm print:hidden" aria-label="Table of contents">
+    <p class="font-semibold text-gray-900">On this page</p>
+    <ol class="mt-3 list-decimal space-y-1 pl-5 text-gray-700">
+      <li><a href="#section-1" class="text-indigo-600 hover:text-indigo-500">Introduction</a></li>
+      <li><a href="#section-2" class="text-indigo-600 hover:text-indigo-500">Services</a></li>
+      <li><a href="#section-3" class="text-indigo-600 hover:text-indigo-500">Seller responsibilities</a></li>
+      <li><a href="#section-4" class="text-indigo-600 hover:text-indigo-500">Pricing & payments</a></li>
+      <li><a href="#section-5" class="text-indigo-600 hover:text-indigo-500">Shipping & Delhivery</a></li>
+      <li><a href="#section-6" class="text-indigo-600 hover:text-indigo-500">Limitation of liability</a></li>
+      <li><a href="#section-7" class="text-indigo-600 hover:text-indigo-500">Account termination</a></li>
+      <li><a href="#section-8" class="text-indigo-600 hover:text-indigo-500">Intellectual property</a></li>
+      <li><a href="#section-9" class="text-indigo-600 hover:text-indigo-500">Governing law</a></li>
+      <li><a href="#section-10" class="text-indigo-600 hover:text-indigo-500">Contact</a></li>
+    </ol>
+  </nav>
+
+  <div class="mt-10 space-y-10">
+    <section id="section-1">
+      <h2 class="text-lg font-semibold text-gray-900">1. Introduction</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">
+        TrustShip is a logistics technology platform operated by Darshan Thakor as a sole proprietorship.
+        By using TrustShip, you agree to these terms. If you do not agree, please do not use the platform.
+      </p>
+    </section>
+
+    <section id="section-2">
+      <h2 class="text-lg font-semibold text-gray-900">2. Services</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">TrustShip provides:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Order verification before shipping (4-gate system)</li>
+        <li>WhatsApp-based buyer confirmation</li>
+        <li>Delhivery shipping integration</li>
+        <li>Real-time order tracking</li>
+        <li>RTO risk reduction for COD orders</li>
+      </ul>
+      <p class="mt-4 text-gray-600 leading-relaxed">
+        TrustShip is not a courier company. Actual shipping is handled by Delhivery.
+      </p>
+    </section>
+
+    <section id="section-3">
+      <h2 class="text-lg font-semibold text-gray-900">3. Seller responsibilities</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>Provide an accurate pickup address</li>
+        <li>Ensure products are legal and not prohibited</li>
+        <li>Maintain sufficient Delhivery wallet balance</li>
+        <li>Do not use the platform for fraudulent transactions</li>
+        <li>Keep account credentials confidential</li>
+      </ul>
+    </section>
+
+    <section id="section-4">
+      <h2 class="text-lg font-semibold text-gray-900">4. Pricing & payments</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>TrustShip charges ₹25 per shipped order</li>
+        <li>Charges are deducted per shipment</li>
+        <li>No subscription fee or setup fee</li>
+        <li>Razorpay handles payment processing</li>
+        <li>Pricing may change with 30 days’ notice</li>
+      </ul>
+    </section>
+
+    <section id="section-5">
+      <h2 class="text-lg font-semibold text-gray-900">5. Shipping & Delhivery</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>TrustShip uses Delhivery for all shipments</li>
+        <li>Shipping charges are separate from TrustShip fees</li>
+        <li>TrustShip is not responsible for shipping delays, lost packages, or damaged goods</li>
+        <li>Delhivery’s terms apply to all shipments</li>
+        <li>RTO (return to origin) costs are borne by the seller</li>
+      </ul>
+    </section>
+
+    <section id="section-6">
+      <h2 class="text-lg font-semibold text-gray-900">6. Limitation of liability</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>TrustShip is not liable for failed deliveries</li>
+        <li>TrustShip is not liable for buyer fraud</li>
+        <li>TrustShip is not liable for Delhivery errors</li>
+        <li>Maximum liability is limited to fees paid in the last 30 days</li>
+        <li>TrustShip makes no guarantee of RTO reduction</li>
+      </ul>
+    </section>
+
+    <section id="section-7">
+      <h2 class="text-lg font-semibold text-gray-900">7. Account termination</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>TrustShip may terminate accounts for policy violations</li>
+        <li>Sellers may close an account anytime by contacting support</li>
+        <li>Outstanding dues must be settled before closure</li>
+      </ul>
+    </section>
+
+    <section id="section-8">
+      <h2 class="text-lg font-semibold text-gray-900">8. Intellectual property</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>The TrustShip name, logo, and platform are proprietary</li>
+        <li>Sellers may not copy or replicate the platform</li>
+        <li>Seller data belongs to the seller</li>
+      </ul>
+    </section>
+
+    <section id="section-9">
+      <h2 class="text-lg font-semibold text-gray-900">9. Governing law</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
+        <li>These terms are governed by Indian law</li>
+        <li>Disputes are subject to the jurisdiction of courts in Gandhinagar, Gujarat, India</li>
+        <li>Parties should attempt mediation before litigation</li>
+      </ul>
+    </section>
+
+    <section id="section-10">
+      <h2 class="text-lg font-semibold text-gray-900">10. Contact</h2>
+      <p class="mt-3 text-gray-600 leading-relaxed">
+        For questions about these terms:<br>
+        Email: <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %><br>
+        Address: Chekhalarani, Sadra, Gandhinagar, Gujarat - 382320, India
+      </p>
+    </section>
+  </div>
+</div>
