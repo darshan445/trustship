@@ -12,7 +12,9 @@ module Orders
     include LogHelper
 
     GEMINI_HOST = "generativelanguage.googleapis.com"
-    GEMINI_PATH = "/v1beta/models/gemini-1.5-flash:generateContent"
+    # See https://ai.google.dev/gemini-api/docs/models — unversioned 1.5 Flash IDs were retired from v1beta.
+    GEMINI_MODEL = "gemini-2.5-flash"
+    GEMINI_PATH = "/v1beta/models/#{GEMINI_MODEL}:generateContent"
 
     def self.execute(raw_message:)
       new(raw_message: raw_message).execute
@@ -92,7 +94,9 @@ module Orders
         ],
         "generationConfig" => {
           "temperature" => 0.1,
-          "maxOutputTokens" => 512
+          # 512 is too small for gemini-2.5-flash: internal "thinking" + JSON often hits MAX_TOKENS and returns truncated invalid JSON.
+          "maxOutputTokens" => 2048,
+          "responseMimeType" => "application/json"
         }
       }
 
@@ -129,6 +133,10 @@ module Orders
       first = candidates[0]
       raise_string_error("Gemini returned empty response") if first.blank?
 
+      if first["finishReason"].to_s == "MAX_TOKENS"
+        raise_string_error("Gemini output was truncated (token limit). Increase maxOutputTokens or retry.")
+      end
+
       text = first.dig("content", "parts", 0, "text")
       raise_string_error("Could not read Gemini response") if text.nil?
 
@@ -140,6 +148,7 @@ module Orders
 
     def parse_order_json(text)
       stripped = text.to_s.strip
+      stripped = stripped.sub(/\A```(?:json)?\s*\R?/m, "").sub(/\R?```\s*\z/m, "").strip
       parsed = JSON.parse(stripped)
       raise_string_error("Gemini returned invalid JSON") unless parsed.is_a?(Hash)
 

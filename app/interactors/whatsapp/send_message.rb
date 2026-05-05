@@ -97,7 +97,8 @@ module Whatsapp
       request.body = JSON.generate(body_hash)
 
       response = http.request(request)
-      unless [ Net::HTTP::OK, Net::HTTP::Created ].include?(response.code.to_i)
+      # Ruby net/http has no Net::HTTP::OK/::Created integer constants; use 2xx class check.
+      unless response.is_a?(Net::HTTPSuccess)
         raise_string_error("WhatsApp API error: [#{response.code}] #{response.body}")
       end
 
