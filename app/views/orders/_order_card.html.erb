@@ -14,7 +14,7 @@
       <p class="text-sm text-gray-600">
         <span class="font-medium text-gray-800">₹<%= number_with_precision(order.amount, precision: 2) %></span>
         <% if order.full_prepaid? %>
-          <span class="ml-2 font-medium text-green-700">Prepaid</span>
+          <span class="ml-2 font-medium text-green-700">UPI payment</span>
         <% elsif order.partial_cod? %>
           <span class="ml-2 font-medium text-amber-800">Partial COD</span>
         <% else %>

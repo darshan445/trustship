@@ -13,12 +13,12 @@ class Order < ApplicationRecord
     "rto" => "rto"
   }.freeze
 
-  # Tier ceiling (grams) => shipping rate (₹). Update landing page if these change.
+  # Tier ceiling (grams) => rates (₹). COD and UPI payment — single source of truth for seller-facing pricing.
   WEIGHT_TIERS = {
-    500 => 85,
-    1000 => 110,
-    2000 => 140,
-    5000 => 200
+    500 => { cod: 149, prepaid: 119 },
+    1000 => { cod: 199, prepaid: 169 },
+    2000 => { cod: 249, prepaid: 219 },
+    5000 => { cod: 329, prepaid: 299 }
   }.freeze
 
   attr_accessor :pending_event_triggered_by, :pending_event_metadata
@@ -40,10 +40,17 @@ class Order < ApplicationRecord
   validates :weight_grams, inclusion: { in: WEIGHT_TIERS.keys }
 
   def shipping_rate
-    WEIGHT_TIERS.each do |max_weight, rate|
-      return rate if weight_grams <= max_weight
-    end
-    WEIGHT_TIERS[5000]
+    tier = current_tier_rates
+    full_prepaid? ? tier[:prepaid] : tier[:cod]
+  end
+
+  def base_shipping_rate
+    current_tier_rates[:cod]
+  end
+
+  def prepaid_discount
+    tier = current_tier_rates
+    tier[:cod] - tier[:prepaid]
   end
 
   def weight_tier_label
@@ -113,6 +120,13 @@ class Order < ApplicationRecord
   end
 
   private
+
+  def current_tier_rates
+    WEIGHT_TIERS.each do |max_weight, rates|
+      return rates if weight_grams <= max_weight
+    end
+    WEIGHT_TIERS[5000]
+  end
 
   def log_order_event
     triggered = pending_event_triggered_by.presence || "system"

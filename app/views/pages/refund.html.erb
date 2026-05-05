@@ -25,7 +25,7 @@
     <section id="refund-1">
       <h2 class="text-lg font-semibold text-gray-900">1. TrustShip platform fees</h2>
       <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>The ₹25 per shipment fee is charged when you ship</li>
+        <li>TrustShip per-shipment fees are charged when you ship; rates depend on weight tier and COD vs UPI payment (from ₹<%= Order::WEIGHT_TIERS[500][:prepaid] %> / ₹<%= Order::WEIGHT_TIERS[500][:cod] %> on the smallest tier—see your Orders dashboard for the full table)</li>
         <li>Fees are non-refundable once the shipment is created</li>
         <li>If shipment creation fails due to our error, the fee is refunded within 7 business days</li>
       </ul>

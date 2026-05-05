@@ -2,7 +2,43 @@
 
 <h1 class="text-2xl font-bold text-gray-900">Orders</h1>
 
-<div class="-mx-4 mt-4 flex gap-4 overflow-x-auto border-b border-gray-200 px-4 pb-0">
+<% w = Order::WEIGHT_TIERS %>
+<% tier_rows = [
+  [ "Upto 500g", w[500] ],
+  [ "500g-1kg", w[1000] ],
+  [ "1kg-2kg", w[2000] ],
+  [ "2kg-5kg", w[5000] ]
+] %>
+<section class="mt-6 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+  <h2 class="text-lg font-bold text-gray-900">Your Shipping Rates</h2>
+  <p class="mt-1 text-sm text-gray-600">All inclusive — no hidden charges</p>
+  <div class="mt-4 overflow-x-auto">
+    <table class="w-full min-w-[280px] text-left text-sm">
+      <thead>
+        <tr class="border-b border-gray-200 text-gray-500">
+          <th class="pb-2 pr-3 font-medium">Weight</th>
+          <th class="pb-2 pr-3 font-medium">COD</th>
+          <th class="pb-2 font-medium">UPI Payment</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-900">
+        <% tier_rows.each do |label, rates| %>
+          <tr class="border-b border-gray-100 last:border-0">
+            <td class="py-2 pr-3"><%= label %></td>
+            <td class="py-2 pr-3">₹<%= rates[:cod] %></td>
+            <td class="py-2">₹<%= rates[:prepaid] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-4 text-xs text-gray-500">
+    Rates include Delhivery shipping, COD charge, GST, and TrustShip platform fee.
+    UPI payment saves ₹<%= w[500][:cod] - w[500][:prepaid] %> per shipment.
+  </p>
+</section>
+
+<div class="-mx-4 mt-6 flex gap-4 overflow-x-auto border-b border-gray-200 px-4 pb-0">
   <% order_status_tabs.each do |tab| %>
     <% active = orders_status_filter_active?(tab[:param]) %>
     <% path = tab[:param].present? ? orders_path(status: tab[:param]) : orders_path %>

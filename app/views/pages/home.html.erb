@@ -1,187 +1,762 @@
 <% content_for :title, "TrustShip — RTO Protection for WhatsApp Sellers" %>
 
+<header class="fixed left-0 right-0 top-0 z-50 h-16 bg-white shadow-sm" data-controller="navbar">
+  <div class="relative mx-auto flex h-full max-w-6xl items-center justify-between px-4">
+    <%= link_to root_path, class: "text-xl font-bold text-indigo-600" do %>
+      TrustShip
+    <% end %>
+
+    <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+      <a href="#how-it-works" class="text-sm font-medium text-gray-700 hover:text-indigo-600">How it works</a>
+      <a href="#features" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Features</a>
+      <a href="#pricing" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Pricing</a>
+      <% if seller_signed_in? %>
+        <%= link_to "Dashboard", dashboard_path, class: "rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-indigo-600" %>
+        <%= button_to "Sign out", destroy_seller_session_path, method: :delete, form: { class: "inline" }, class: "rounded-lg border border-indigo-600 bg-white px-4 py-2 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50" %>
+      <% else %>
+        <%= link_to "Sign in", new_seller_session_path, class: "rounded-lg border border-indigo-600 bg-white px-4 py-2 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50" %>
+        <%= link_to "Start Free Trial", new_seller_registration_path, class: "rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+      <% end %>
+    </nav>
+
+    <button
+      type="button"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 md:hidden"
+      data-action="click->navbar#toggle"
+      aria-controls="navbar-mobile-menu"
+      aria-expanded="false"
+      aria-label="Open menu">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </button>
+
+    <div
+      id="navbar-mobile-menu"
+      class="absolute left-0 right-0 top-full hidden max-h-[min(70vh,calc(100dvh-4rem))] overflow-y-auto border-t border-gray-100 bg-white shadow-lg md:hidden"
+      data-navbar-target="menu">
+      <nav class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4" aria-label="Mobile">
+        <a href="#how-it-works" class="text-sm font-medium text-gray-700 hover:text-indigo-600" data-action="click->navbar#close">How it works</a>
+        <a href="#features" class="text-sm font-medium text-gray-700 hover:text-indigo-600" data-action="click->navbar#close">Features</a>
+        <a href="#pricing" class="text-sm font-medium text-gray-700 hover:text-indigo-600" data-action="click->navbar#close">Pricing</a>
+        <div class="flex flex-col gap-2 border-t border-gray-100 pt-4">
+          <% if seller_signed_in? %>
+            <%= link_to "Dashboard", dashboard_path, class: "w-full rounded-lg py-2.5 text-center text-sm font-medium text-gray-700 hover:bg-gray-50", data: { action: "click->navbar#close" } %>
+            <%= button_to "Sign out", destroy_seller_session_path, method: :delete, form: { class: "w-full" }, class: "w-full rounded-lg border border-indigo-600 bg-white py-2.5 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50" %>
+          <% else %>
+            <%= link_to "Sign in", new_seller_session_path, class: "block w-full rounded-lg border border-indigo-600 bg-white py-2.5 text-center text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50", data: { action: "click->navbar#close" } %>
+            <%= link_to "Start Free Trial", new_seller_registration_path, class: "block w-full rounded-lg bg-indigo-600 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500", data: { action: "click->navbar#close" } %>
+          <% end %>
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+<div class="h-16 shrink-0" aria-hidden="true"></div>
+
 <div class="bg-white">
-  <section class="mx-auto max-w-6xl px-4 pb-16 pt-10 md:pb-24 md:pt-14" aria-labelledby="hero-heading">
-    <h1 id="hero-heading" class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-      Stop Losing Money to Fake Orders
-    </h1>
-    <p class="mt-5 max-w-3xl text-lg font-medium text-gray-600 sm:text-xl">
-      Every WhatsApp order goes through 4 verification gates before Delhivery gets involved. Ship anywhere in India from ₹<%= Order::WEIGHT_TIERS[500] %> — fully protected. No more ghost buyers. No more bad addresses. No more RTO losses.
-    </p>
-    <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-      <%= link_to "Start Protecting Orders →", new_seller_registration_path, class: "inline-flex justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
-      <a href="#how-it-works" class="inline-flex justify-center rounded-lg border border-indigo-600 bg-white px-5 py-2.5 text-center text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50">See How It Works</a>
-    </div>
-    <div class="mt-10 flex flex-col gap-3 border-t border-gray-100 pt-8 text-center text-sm font-medium text-gray-600 sm:flex-row sm:justify-center sm:gap-8 sm:text-left">
-      <span>From ₹<%= Order::WEIGHT_TIERS[500] %> per shipment</span>
-      <span class="hidden text-gray-300 sm:inline" aria-hidden="true">|</span>
-      <span>4 gates, zero guesswork</span>
-      <span class="hidden text-gray-300 sm:inline" aria-hidden="true">|</span>
-      <span>₹150+ saved per RTO</span>
-    </div>
-  </section>
-</div>
-
-<div class="bg-gray-50">
-  <section class="mx-auto max-w-6xl px-4 py-16 md:py-20" aria-labelledby="problem-heading">
-    <h2 id="problem-heading" class="text-3xl font-bold text-gray-900 sm:text-4xl">
-      Every COD Order is a Risk
-    </h2>
-    <p class="mt-3 max-w-3xl text-base font-medium text-gray-600 sm:text-lg">
-      Small WhatsApp sellers lose ₹80 forward + ₹70 return shipping on every RTO. That's ₹150 gone with zero revenue.
-    </p>
-    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <article class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        <div class="text-2xl" aria-hidden="true">📍</div>
-        <h3 class="mt-3 text-lg font-bold text-gray-900">Fake Addresses</h3>
-        <p class="mt-2 text-sm text-gray-600">buyer gives wrong pincode, Delhivery can't deliver</p>
-      </article>
-      <article class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        <div class="text-2xl" aria-hidden="true">👻</div>
-        <h3 class="mt-3 text-lg font-bold text-gray-900">Ghost Buyers</h3>
-        <p class="mt-2 text-sm text-gray-600">buyer places order, never answers the door</p>
-      </article>
-      <article class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm sm:col-span-2 lg:col-span-1">
-        <div class="text-2xl" aria-hidden="true">⚡</div>
-        <h3 class="mt-3 text-lg font-bold text-gray-900">Impulse COD</h3>
-        <p class="mt-2 text-sm text-gray-600">buyer confirms on WhatsApp, changes mind at delivery</p>
-      </article>
-    </div>
-  </section>
-</div>
-
-<div class="bg-white" id="how-it-works">
-  <section class="mx-auto max-w-6xl px-4 py-16 md:py-20" aria-labelledby="how-heading">
-    <h2 id="how-heading" class="text-3xl font-bold text-gray-900 sm:text-4xl">
-      4 Gates Before Every Shipment
-    </h2>
-    <p class="mt-3 max-w-3xl text-base font-medium text-gray-600 sm:text-lg">
-      TrustShip runs every order through 4 automated checks before you ship anything
-    </p>
-    <ol class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      <li class="rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm">
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">1</span>
-        <h3 class="mt-4 text-lg font-bold text-gray-900">Gate 1 — Address Validation</h3>
-        <p class="mt-2 text-sm text-gray-600">Delhivery pincode API checks if the address is real and serviceable before anything else.</p>
-      </li>
-      <li class="rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm">
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">2</span>
-        <h3 class="mt-4 text-lg font-bold text-gray-900">Gate 2 — Risk Scoring</h3>
-        <p class="mt-2 text-sm text-gray-600">Buyer's phone checked against RTO history. Repeat offenders get flagged automatically.</p>
-      </li>
-      <li class="rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm">
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">3</span>
-        <h3 class="mt-4 text-lg font-bold text-gray-900">Gate 3 — WhatsApp Confirmation</h3>
-        <p class="mt-2 text-sm text-gray-600">Buyer gets a pre-approved WhatsApp message to confirm their order and address.</p>
-      </li>
-      <li class="rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm sm:col-span-2 lg:col-span-1">
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">4</span>
-        <h3 class="mt-4 text-lg font-bold text-gray-900">Gate 4 — Prepaid Incentive</h3>
-        <p class="mt-2 text-sm text-gray-600">Buyer offered 5% off to pay via UPI. Prepaid orders almost never return.</p>
-      </li>
-    </ol>
-  </section>
-</div>
-
-<div class="bg-gray-50">
-  <section class="mx-auto max-w-6xl px-4 py-16 md:py-20" aria-labelledby="status-heading">
-    <h2 id="status-heading" class="text-3xl font-bold text-gray-900 sm:text-4xl">
-      Always Know Where Every Order Stands
-    </h2>
-    <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
-        <div class="inline-block rounded-full bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800">🟡 Pending Verification</div>
-        <p class="mt-3 text-sm text-gray-600">Order received; checks not finished yet.</p>
+  <section class="mx-auto max-w-6xl px-4 py-12 md:py-20" aria-labelledby="hero-heading">
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-12">
+      <div class="text-center md:text-left">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-indigo-600">Built for WhatsApp Sellers in India</p>
+        <h1 id="hero-heading" class="mb-6 text-4xl font-bold leading-tight text-gray-900 md:text-5xl">
+          <span class="block">Your buyers WhatsApp you.</span>
+          <span class="block">We handle everything else.</span>
+        </h1>
+        <p class="mx-auto mb-8 max-w-xl text-lg leading-relaxed text-gray-600 md:mx-0">
+          TrustShip turns messy WhatsApp order messages into verified, shipped, and tracked deliveries — automatically. No website needed. No Shopify. No manual copy-pasting. Just your WhatsApp number and a dashboard that runs your orders.
+        </p>
+        <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <%= link_to "Start 14-Day Free Trial →", new_seller_registration_path, class: "inline-flex justify-center rounded-lg bg-indigo-600 px-6 py-3 font-medium text-white transition-colors hover:bg-indigo-700" %>
+          <a href="#how-it-works" class="inline-flex justify-center rounded-lg border border-indigo-600 px-6 py-3 font-medium text-indigo-600 transition-colors hover:bg-indigo-50">See How It Works ↓</a>
+        </div>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-x-1 gap-y-2 text-sm text-gray-500 md:justify-start">
+          <span>✓ 14-day free trial</span>
+          <span class="px-1.5" aria-hidden="true">·</span>
+          <span>✓ No credit card needed</span>
+          <span class="px-1.5" aria-hidden="true">·</span>
+          <span>✓ Setup in 5 minutes</span>
+        </div>
       </div>
-      <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
-        <div class="inline-block rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-800">🔴 Undeliverable</div>
-        <p class="mt-3 text-sm text-gray-600">Address or pincode failed validation.</p>
-      </div>
-      <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
-        <div class="inline-block rounded-full bg-orange-50 px-4 py-2 text-sm font-bold text-orange-900">🟠 High Risk</div>
-        <p class="mt-3 text-sm text-gray-600">Signals suggest elevated RTO risk.</p>
-      </div>
-      <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
-        <div class="inline-block rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-900">🔵 Confirmed</div>
-        <p class="mt-3 text-sm text-gray-600">Buyer confirmed via WhatsApp.</p>
-      </div>
-      <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
-        <div class="inline-block rounded-full bg-green-50 px-4 py-2 text-sm font-bold text-green-900">🟢 Green Zone — Safe to Ship</div>
-        <p class="mt-3 text-sm text-gray-600">All gates passed; ship with confidence.</p>
-      </div>
-      <div class="rounded-2xl border border-gray-100 bg-white p-5 text-center shadow-sm">
-        <div class="inline-block rounded-full bg-gray-100 px-4 py-2 text-sm font-bold text-gray-800">⚪ Shipped</div>
-        <p class="mt-3 text-sm text-gray-600">Handed to Delhivery; tracking active.</p>
+      <div class="mx-auto w-full max-w-sm lg:mx-0 lg:max-w-none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="100%" class="mx-auto max-w-lg" role="img" aria-label="WhatsApp message flowing into a TrustShip order card">
+          <defs>
+            <filter id="hero-order-card-shadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.12" />
+            </filter>
+          </defs>
+          <text x="22" y="22" fill="#6B7280" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600">WhatsApp</text>
+          <rect x="18" y="30" width="208" height="92" rx="12" fill="#DCF8C6" stroke="#25D366" stroke-width="1" />
+          <text x="30" y="54" fill="#374151" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">bhai ek blue earring chahiye,</text>
+          <text x="30" y="70" fill="#374151" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">surat 395009, COD hai kya?</text>
+          <text x="30" y="86" fill="#374151" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">raj 9876543210 🙏</text>
+          <g stroke="#A5B4FC" stroke-width="2.5" stroke-linecap="round" fill="none" aria-hidden="true">
+            <path d="M 228 108 L 258 108" />
+            <path d="M 252 102 L 258 108 L 252 114" />
+          </g>
+          <g filter="url(#hero-order-card-shadow)">
+            <rect x="268" y="38" width="194" height="188" rx="10" fill="#FFFFFF" stroke="#E0E7FF" stroke-width="1" />
+          </g>
+          <text x="280" y="62" fill="#4F46E5" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700">TrustShip</text>
+          <text x="280" y="86" fill="#6B7280" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">Buyer:</text>
+          <text x="330" y="86" fill="#111827" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">Raj · 9876543210</text>
+          <text x="280" y="106" fill="#6B7280" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">Product:</text>
+          <text x="330" y="106" fill="#111827" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">Blue Earring</text>
+          <text x="280" y="126" fill="#6B7280" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">Address:</text>
+          <text x="330" y="126" fill="#111827" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10">Surat, Gujarat 395009</text>
+          <line x1="280" y1="142" x2="448" y2="142" stroke="#E5E7EB" stroke-width="1" />
+          <rect x="280" y="154" width="168" height="24" rx="12" fill="#DCFCE7" />
+          <text x="288" y="170" fill="#16A34A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="600">🟢 Green Zone — Safe to Ship</text>
+        </svg>
       </div>
     </div>
   </section>
 </div>
 
-<div class="bg-white" id="pricing">
-  <section class="mx-auto max-w-6xl px-4 py-16 md:py-20" aria-labelledby="pricing-heading">
-    <% w = Order::WEIGHT_TIERS %>
-    <h2 id="pricing-heading" class="text-3xl font-bold text-gray-900 sm:text-4xl">
-      One price. Everything included.
-    </h2>
-    <p class="mt-3 max-w-2xl text-base font-medium text-gray-600 sm:text-lg">
-      No monthly fee. No setup cost. Pay only when you ship.
-    </p>
-
-    <div class="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-      <article class="relative rounded-2xl border-2 border-indigo-200 bg-indigo-50/80 px-4 pb-6 pt-8 text-center shadow-sm sm:px-6">
-        <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-indigo-600 px-2.5 py-0.5 text-xs font-semibold text-white">Most popular</span>
-        <p class="text-xs font-medium uppercase tracking-wide text-indigo-800/80">Upto 500g</p>
-        <p class="mt-3 text-4xl font-bold text-indigo-600">₹<%= w[500] %></p>
-        <p class="mt-1 text-sm text-gray-600">per shipment</p>
-      </article>
-      <article class="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm">
-        <p class="text-xs font-medium uppercase tracking-wide text-gray-500">500g — 1kg</p>
-        <p class="mt-3 text-4xl font-bold text-indigo-600">₹<%= w[1000] %></p>
-        <p class="mt-1 text-sm text-gray-600">per shipment</p>
-      </article>
-      <article class="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm">
-        <p class="text-xs font-medium uppercase tracking-wide text-gray-500">1kg — 2kg</p>
-        <p class="mt-3 text-4xl font-bold text-indigo-600">₹<%= w[2000] %></p>
-        <p class="mt-1 text-sm text-gray-600">per shipment</p>
-      </article>
-      <article class="rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm">
-        <p class="text-xs font-medium uppercase tracking-wide text-gray-500">2kg — 5kg</p>
-        <p class="mt-3 text-4xl font-bold text-indigo-600">₹<%= w[5000] %></p>
-        <p class="mt-1 text-sm text-gray-600">per shipment</p>
-      </article>
-    </div>
-
-    <div class="mt-12">
-      <h3 class="text-lg font-bold text-gray-900">Every shipment includes:</h3>
-      <ul class="mt-4 grid gap-2 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-2 text-sm text-gray-700">
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> Delhivery pickup from your doorstep</li>
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> Delivery anywhere in India</li>
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> 4-gate RTO verification</li>
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> Buyer confirmation via WhatsApp</li>
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> Real-time tracking for buyer</li>
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> AWB number + shipping label</li>
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> Instant RTO alerts to seller</li>
-        <li class="flex gap-2"><span aria-hidden="true">✅</span> No Delhivery account needed</li>
-      </ul>
-    </div>
-
-    <div class="mt-10 rounded-xl bg-gray-100 p-5 sm:p-6">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <span class="text-sm font-medium text-gray-800">Regular Delhivery (no protection)</span>
-        <span class="text-sm font-medium text-gray-400 line-through sm:text-right">₹55</span>
+<div class="bg-gray-50 py-20 px-4">
+  <div class="mx-auto max-w-6xl">
+    <section aria-labelledby="problem-heading">
+      <div class="text-center">
+        <h2 id="problem-heading" class="mb-4 text-3xl font-bold text-gray-900">
+          Sound familiar?
+        </h2>
+        <p class="mx-auto mb-12 max-w-2xl text-lg text-gray-600">
+          Every WhatsApp seller deals with this every single day.
+        </p>
       </div>
-      <div class="mt-3 flex flex-col gap-3 border-t border-gray-200 pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <span class="text-sm font-medium text-gray-800">TrustShip (fully protected)</span>
-        <span class="text-lg font-bold text-indigo-600 sm:text-right">₹<%= w[500] %></span>
+
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+          <div class="mb-4 text-4xl" aria-hidden="true">😤</div>
+          <h3 class="mb-3 text-xl font-semibold text-gray-900">Orders buried in WhatsApp chats</h3>
+          <p class="leading-relaxed text-gray-600">
+            You're copy-pasting buyer details, checking addresses manually, and creating Delhivery shipments one by one. Hours of work every day that should be automatic.
+          </p>
+        </article>
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+          <div class="mb-4 text-4xl" aria-hidden="true">💸</div>
+          <h3 class="mb-3 text-xl font-semibold text-gray-900">₹150+ lost on every RTO</h3>
+          <p class="leading-relaxed text-gray-600">
+            Forward shipping ₹80. Return ₹70. Zero revenue. 20-40% of COD orders come back. That's thousands of rupees gone every month — for orders that were never real.
+          </p>
+        </article>
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
+          <div class="mb-4 text-4xl" aria-hidden="true">😰</div>
+          <h3 class="mb-3 text-xl font-semibold text-gray-900">Buyers keep asking where is my order</h3>
+          <p class="leading-relaxed text-gray-600">
+            You check Delhivery manually, find the tracking link, and paste it to every buyer individually. Every. Single. Time. While new orders keep coming in.
+          </p>
+        </article>
       </div>
-      <p class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
-        Pay just ₹<%= w[500] - 55 %> extra. Save ₹150+ per avoided RTO. Avoid even 1 RTO → you're already ahead.
+
+      <p class="mx-auto mt-16 max-w-3xl text-center text-2xl font-semibold leading-snug text-gray-700">
+        <span class="block">You started selling on WhatsApp to make money.</span>
+        <span class="block">Not to do logistics manually all day.</span>
       </p>
+    </section>
+  </div>
+</div>
+
+<div class="bg-white py-20 px-4" id="how-it-works">
+  <div class="mx-auto max-w-6xl">
+    <section aria-labelledby="how-heading">
+      <div class="text-center">
+        <p class="mb-3 text-sm font-semibold uppercase tracking-widest text-indigo-600">How TrustShip Works</p>
+        <h2 id="how-heading" class="mb-4 text-3xl font-bold text-gray-900">
+          <span class="block">From WhatsApp message to</span>
+          <span class="block">delivered order — automated.</span>
+        </h2>
+        <p class="mb-16 text-lg text-gray-600">
+          Here is what happens after a buyer messages you:
+        </p>
+      </div>
+
+      <div class="relative">
+        <div class="pointer-events-none absolute left-8 right-8 top-5 z-0 hidden border-t-2 border-dashed border-indigo-200 md:block" aria-hidden="true"></div>
+
+        <div class="relative z-10 space-y-10 border-l-2 border-indigo-200 pl-8 md:grid md:grid-cols-5 md:gap-4 md:space-y-0 md:border-0 md:pl-0">
+          <div class="relative flex flex-col items-center text-center md:h-full">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white">1</span>
+            <span class="mt-3 mb-3 text-3xl" aria-hidden="true">💬</span>
+            <h3 class="mb-2 text-base font-semibold text-gray-900">Buyer messages your shop code</h3>
+            <p class="text-sm leading-relaxed text-gray-600">
+              Buyer sends their order to your WhatsApp number starting with your unique shop code. Hindi, English, Hinglish — any format works.
+            </p>
+            <span class="mt-4 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Instant</span>
+          </div>
+
+          <div class="relative flex flex-col items-center text-center md:h-full">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white">2</span>
+            <span class="mt-3 mb-3 text-3xl" aria-hidden="true">🤖</span>
+            <h3 class="mb-2 text-base font-semibold text-gray-900">AI reads the order</h3>
+            <p class="text-sm leading-relaxed text-gray-600">
+              Gemini AI extracts buyer name, phone, address, product, and amount from the raw message. No manual entry needed from you.
+            </p>
+            <span class="mt-4 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">2 seconds</span>
+          </div>
+
+          <div class="relative flex flex-col items-center text-center md:h-full">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white">3</span>
+            <span class="mt-3 mb-3 text-3xl" aria-hidden="true">🛡️</span>
+            <h3 class="mb-2 text-base font-semibold text-gray-900">4 gates verify the order</h3>
+            <p class="text-sm leading-relaxed text-gray-600">
+              Address checked. Buyer risk scored. WhatsApp confirmation sent to buyer. Only clean confirmed orders proceed to shipping.
+            </p>
+            <span class="mt-4 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Automated</span>
+          </div>
+
+          <div class="relative flex flex-col items-center text-center md:h-full">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white">4</span>
+            <span class="mt-3 mb-3 text-3xl" aria-hidden="true">📦</span>
+            <h3 class="mb-2 text-base font-semibold text-gray-900">You click Ship Now</h3>
+            <p class="text-sm leading-relaxed text-gray-600">
+              One click creates the Delhivery shipment, generates AWB, downloads label, and notifies the buyer. No Delhivery account needed.
+            </p>
+            <span class="mt-4 inline-flex rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700">One click</span>
+          </div>
+
+          <div class="relative flex flex-col items-center text-center md:h-full">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white">5</span>
+            <span class="mt-3 mb-3 text-3xl" aria-hidden="true">🚚</span>
+            <h3 class="mb-2 text-base font-semibold text-gray-900">Buyer tracked automatically</h3>
+            <p class="text-sm leading-relaxed text-gray-600">
+              Out for delivery alert with agent number. Delivery confirmation. RTO alert if returns. All via WhatsApp. Zero effort from you.
+            </p>
+            <span class="mt-4 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Automatic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 flex justify-center">
+        <%= link_to "Start automating your orders →", new_seller_registration_path, class: "inline-flex rounded-lg bg-indigo-600 px-8 py-3 font-medium text-white transition-colors hover:bg-indigo-700" %>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="bg-gray-50 py-20 px-4" id="features">
+  <div class="mx-auto max-w-6xl">
+    <section aria-labelledby="features-heading">
+      <div class="text-center">
+        <p class="mb-3 text-sm font-semibold uppercase tracking-widest text-indigo-600">Everything included</p>
+        <h2 id="features-heading" class="mb-4 text-center text-3xl font-bold text-gray-900">
+          <span class="block">One platform. Everything your</span>
+          <span class="block">WhatsApp business needs.</span>
+        </h2>
+        <p class="mx-auto mb-16 max-w-2xl text-center text-lg text-gray-600">
+          No extra tools. No juggling apps. Everything from order intake to delivery tracking in one place.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100">
+            <span class="text-2xl" aria-hidden="true">💬</span>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-gray-900">WhatsApp Order Intake</h3>
+          <p class="text-sm leading-relaxed text-gray-600">
+            Buyers message your shop code on WhatsApp. Orders appear in your dashboard automatically. No manual entry. Ever.
+          </p>
+        </article>
+
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100">
+            <span class="text-2xl" aria-hidden="true">🤖</span>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-gray-900">AI Order Parsing</h3>
+          <p class="text-sm leading-relaxed text-gray-600">
+            Gemini AI reads messy WhatsApp messages in Hindi, English, or Hinglish and extracts clean structured order data in 2 seconds.
+          </p>
+        </article>
+
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-100">
+            <span class="text-2xl" aria-hidden="true">🛡️</span>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-gray-900">4-Gate RTO Protection</h3>
+          <p class="text-sm leading-relaxed text-gray-600">
+            Address validation, buyer risk scoring, WhatsApp confirmation, and prepaid incentive — 4 automated checks before every shipment.
+          </p>
+          <span class="mt-3 inline-block self-start rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">Reduces RTOs by up to 80%</span>
+        </article>
+
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100">
+            <span class="text-2xl" aria-hidden="true">📦</span>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-gray-900">One-Click Delhivery Shipping</h3>
+          <p class="text-sm leading-relaxed text-gray-600">
+            Click Ship Now. AWB generated, label created, pickup scheduled, buyer notified — all in one click. No Delhivery account needed.
+          </p>
+        </article>
+
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
+            <span class="text-2xl" aria-hidden="true">🔍</span>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-gray-900">Automated Tracking Updates</h3>
+          <p class="text-sm leading-relaxed text-gray-600">
+            Buyers get WhatsApp updates when order ships, goes out for delivery, and is delivered. You do absolutely nothing.
+          </p>
+        </article>
+
+        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100">
+            <span class="text-2xl" aria-hidden="true">📊</span>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-gray-900">Order Management Dashboard</h3>
+          <p class="text-sm leading-relaxed text-gray-600">
+            All your orders, statuses, buyer details, and shipping history in one clean mobile-optimized dashboard. Color-coded by order status.
+          </p>
+        </article>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="bg-white py-20 px-4">
+  <div class="mx-auto max-w-6xl">
+    <section aria-labelledby="rto-heading">
+      <div class="text-center">
+        <p class="mb-3 text-sm font-semibold uppercase tracking-widest text-red-600">Stop losing money</p>
+        <h2 id="rto-heading" class="mb-4 text-center text-3xl font-bold text-gray-900">
+          <span class="block">Every RTO costs you ₹150+.</span>
+          <span class="block">TrustShip stops most of them.</span>
+        </h2>
+        <p class="mx-auto mb-16 max-w-2xl text-center text-lg text-gray-600">
+          Return to Origin is the biggest hidden cost for WhatsApp sellers in India. Here is what it is costing you.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+        <div>
+          <h3 class="mb-6 text-xl font-semibold text-gray-900">What RTOs cost you every month</h3>
+          <div class="rounded-2xl border border-red-100 bg-red-50 p-6">
+            <div class="flex justify-between border-b border-red-100 py-3">
+              <span>50 orders/month</span>
+              <span></span>
+            </div>
+            <div class="flex justify-between border-b border-red-100 py-3">
+              <span>× 25% average RTO rate</span>
+              <span></span>
+            </div>
+            <div class="flex justify-between border-b border-red-100 py-3">
+              <span>= 12 returned orders</span>
+              <span></span>
+            </div>
+            <div class="flex justify-between border-b border-red-100 py-3">
+              <span>× ₹150 cost per RTO</span>
+              <span></span>
+            </div>
+            <div class="mt-2 flex justify-between pt-4">
+              <span class="text-base font-semibold text-red-700">Lost every month</span>
+              <span class="text-2xl font-bold text-red-600">₹1,800</span>
+            </div>
+          </div>
+          <p class="mt-4 text-sm italic text-gray-500">
+            That's ₹21,600+ lost every year. Gone. For orders that were never real.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="mb-6 text-xl font-semibold text-gray-900">How TrustShip stops them</h3>
+
+          <div class="mb-6 flex gap-4">
+            <span class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">1</span>
+            <div>
+              <p class="mb-1 text-base font-semibold text-gray-900">Address Validation</p>
+              <p class="text-sm leading-relaxed text-gray-600">
+                Bad pincode flagged before shipment is created. Undeliverable orders never reach Delhivery.
+              </p>
+            </div>
+          </div>
+
+          <div class="mb-6 flex gap-4">
+            <span class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">2</span>
+            <div>
+              <p class="mb-1 text-base font-semibold text-gray-900">Buyer Risk Scoring</p>
+              <p class="text-sm leading-relaxed text-gray-600">
+                Buyers with previous RTOs are flagged automatically. You decide whether to ship or cancel.
+              </p>
+            </div>
+          </div>
+
+          <div class="mb-6 flex gap-4">
+            <span class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">3</span>
+            <div>
+              <p class="mb-1 text-base font-semibold text-gray-900">WhatsApp Confirmation</p>
+              <p class="text-sm leading-relaxed text-gray-600">
+                Buyer confirms their order and address via WhatsApp before anything ships. Fake and impulse orders filtered out.
+              </p>
+            </div>
+          </div>
+
+          <div class="mb-6 flex gap-4">
+            <span class="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">4</span>
+            <div>
+              <p class="mb-1 text-base font-semibold text-gray-900">Prepaid Incentive</p>
+              <p class="text-sm leading-relaxed text-gray-600">
+                Buyer offered UPI payment option. Prepaid orders almost never return. COD converted to prepaid automatically.
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-2 rounded-xl border border-indigo-100 bg-indigo-50 p-4">
+            <p class="text-sm leading-relaxed text-indigo-700">
+              Prepaid orders have less than 5% RTO rate vs 25-40% for COD. Converting even 30% of your orders to prepaid saves thousands every month.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="bg-gray-50 py-20 px-4">
+  <div class="mx-auto max-w-5xl">
+    <section aria-labelledby="comparison-heading">
+      <div class="text-center">
+        <p class="mb-3 text-sm font-semibold uppercase tracking-widest text-indigo-600">TrustShip vs the rest</p>
+        <h2 id="comparison-heading" class="mb-4 text-center text-3xl font-bold text-gray-900">
+          <span class="block">Other platforms are built for</span>
+          <span class="block">Shopify sellers. We're built for you.</span>
+        </h2>
+        <p class="mx-auto mb-12 max-w-2xl text-center text-lg text-gray-600">
+          Every major shipping platform assumes you have a website. TrustShip is the only platform built exclusively for WhatsApp sellers.
+        </p>
+      </div>
+
+      <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
+        <table class="w-full border-collapse bg-white">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-50">
+              <th scope="col" class="w-1/2 px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-gray-500">Feature</th>
+              <th scope="col" class="w-1/4 px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">Shiprocket</th>
+              <th scope="col" class="w-1/4 bg-indigo-50 px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider text-indigo-600">TrustShip</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100 bg-white">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">Works without a website</td>
+              <td class="px-6 py-4 text-center text-lg text-red-500" aria-label="No">❌</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-gray-50">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">WhatsApp order intake</td>
+              <td class="px-6 py-4 text-center text-lg text-red-500" aria-label="No">❌</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-white">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">AI message parsing (Hindi/Hinglish)</td>
+              <td class="px-6 py-4 text-center text-lg text-red-500" aria-label="No">❌</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-gray-50">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">Built for WhatsApp sellers</td>
+              <td class="px-6 py-4 text-center text-lg text-red-500" aria-label="No">❌</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-white">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">Automated buyer confirmation</td>
+              <td class="px-6 py-4 text-center text-lg text-red-500" aria-label="No">❌</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-gray-50">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">4-gate RTO protection</td>
+              <td class="px-6 py-4 text-center text-sm font-medium text-amber-500">Partial</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-white">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">Delhivery shipping</td>
+              <td class="px-6 py-4 text-center text-lg text-green-500" aria-label="Yes">✅</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-gray-50">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">Live tracking updates</td>
+              <td class="px-6 py-4 text-center text-lg text-green-500" aria-label="Yes">✅</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="border-b border-gray-100 bg-white">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">Mobile dashboard</td>
+              <td class="px-6 py-4 text-center text-lg text-green-500" aria-label="Yes">✅</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-lg font-bold text-green-500" aria-label="Yes">✅</td>
+            </tr>
+            <tr class="bg-gray-50">
+              <td class="px-6 py-4 text-sm font-medium text-gray-900">Setup time</td>
+              <td class="px-6 py-4 text-center text-sm text-gray-500">Hours</td>
+              <td class="bg-indigo-50/30 px-6 py-4 text-center text-sm font-medium text-green-600">5 minutes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mx-auto mt-6 max-w-2xl text-center text-sm italic text-gray-500">
+        Shiprocket is a great platform for Shopify and website sellers. TrustShip is built for something different — sellers who run their entire business on WhatsApp and don't need a website.
+      </p>
+    </section>
+  </div>
+</div>
+
+<div class="bg-white py-20 px-4" id="pricing">
+  <div class="mx-auto max-w-6xl">
+    <section aria-labelledby="pricing-heading">
+      <div class="text-center">
+        <p class="mb-3 text-sm font-semibold uppercase tracking-widest text-indigo-600">Simple pricing</p>
+        <h2 id="pricing-heading" class="mb-4 text-center text-3xl font-bold text-gray-900">Pay monthly. Cancel anytime.</h2>
+        <p class="mx-auto mb-12 max-w-2xl text-center text-lg text-gray-600">
+          14-day free trial on all plans. No credit card required to start.
+        </p>
+      </div>
+
+      <div class="mx-auto grid max-w-5xl grid-cols-1 items-start gap-8 overflow-visible md:grid-cols-3">
+        <article class="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <p class="mb-2 text-lg font-semibold text-gray-900">Starter</p>
+          <p class="flex flex-wrap items-baseline gap-1">
+            <span class="text-4xl font-bold text-gray-900">₹499</span>
+            <span class="text-lg text-gray-500">/month</span>
+          </p>
+          <p class="mb-2 mt-1 text-sm text-gray-500">₹4,999/year — save 2 months</p>
+          <span class="mb-6 mt-2 inline-block rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-600">Up to 100 orders/month</span>
+
+          <div class="mb-6 border-t border-gray-100"></div>
+
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">WhatsApp order intake</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">AI order parsing</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">4-gate RTO protection</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">Delhivery shipping</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">Live tracking</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">Order dashboard</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">WhatsApp notifications</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-gray-300" aria-hidden="true">❌</span><span class="text-sm text-gray-600">Priority support</span></li>
+          </ul>
+
+          <%= link_to "Start Free Trial", new_seller_registration_path, class: "mt-8 block w-full rounded-lg border-2 border-indigo-600 px-6 py-3 text-center font-medium text-indigo-600 transition-colors hover:bg-indigo-50" %>
+          <p class="mt-3 text-center text-xs text-gray-400">Best for 10-100 orders/month</p>
+        </article>
+
+        <article class="relative z-10 rounded-2xl bg-indigo-600 p-8 shadow-lg md:scale-105">
+          <span class="absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full bg-amber-400 px-4 py-1 text-xs font-bold text-amber-900">Most Popular</span>
+          <p class="mb-2 text-lg font-semibold text-white">Growth</p>
+          <p class="flex flex-wrap items-baseline gap-1">
+            <span class="text-4xl font-bold text-white">₹999</span>
+            <span class="text-lg text-indigo-200">/month</span>
+          </p>
+          <p class="mb-2 mt-1 text-sm text-indigo-200">₹9,999/year — save 2 months</p>
+          <span class="mb-6 mt-2 inline-block rounded-full bg-white px-3 py-1 text-sm font-medium text-indigo-900">Up to 300 orders/month</span>
+
+          <div class="mb-6 border-t border-indigo-500"></div>
+
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-white" aria-hidden="true">✅</span><span class="text-sm text-indigo-100">Everything in Starter</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-white" aria-hidden="true">✅</span><span class="text-sm text-indigo-100">Priority WhatsApp support</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-white" aria-hidden="true">✅</span><span class="text-sm text-indigo-100">Advanced order analytics</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-white" aria-hidden="true">✅</span><span class="text-sm text-indigo-100">Bulk order management</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-white" aria-hidden="true">✅</span><span class="text-sm text-indigo-100">Branded tracking page</span></li>
+          </ul>
+
+          <%= link_to "Start Free Trial", new_seller_registration_path, class: "mt-8 block w-full rounded-lg bg-white px-6 py-3 text-center font-bold text-indigo-600 transition-colors hover:bg-indigo-50" %>
+          <p class="mt-3 text-center text-xs text-indigo-200">Best for 100-300 orders/month</p>
+        </article>
+
+        <article class="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <p class="mb-2 text-lg font-semibold text-gray-900">Scale</p>
+          <p class="flex flex-wrap items-baseline gap-1">
+            <span class="text-4xl font-bold text-gray-900">₹1,999</span>
+            <span class="text-lg text-gray-500">/month</span>
+          </p>
+          <p class="mb-2 mt-1 text-sm text-gray-500">₹19,999/year — save 2 months</p>
+          <span class="mb-6 mt-2 inline-block rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-600">Unlimited orders</span>
+
+          <div class="mb-6 border-t border-gray-100"></div>
+
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">Everything in Growth</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">Unlimited orders</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">Dedicated account manager</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">API access</span></li>
+            <li class="flex items-center gap-3"><span class="flex-shrink-0 font-bold text-green-500" aria-hidden="true">✅</span><span class="text-sm text-gray-600">Custom WhatsApp number (coming soon)</span></li>
+          </ul>
+
+          <%= link_to "Start Free Trial", new_seller_registration_path, class: "mt-8 block w-full rounded-lg border-2 border-indigo-600 px-6 py-3 text-center font-medium text-indigo-600 transition-colors hover:bg-indigo-50" %>
+          <p class="mt-3 text-center text-xs text-gray-400">Best for 300+ orders/month</p>
+        </article>
+      </div>
+
+      <div class="mx-auto mt-16 max-w-3xl rounded-2xl border border-gray-200 bg-gray-50 p-8">
+        <h3 class="mb-2 text-lg font-semibold text-gray-900">Shipping charged separately at cost</h3>
+        <p class="mb-6 text-sm text-gray-600">
+          Subscription covers platform access only. Shipping is charged at exact Delhivery rates — no TrustShip markup. You pay what we pay.
+        </p>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div>
+            <p class="mb-3 text-sm font-semibold text-gray-700">COD Rates</p>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>Upto 500g</span><span>~₹87</span></div>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>500g - 1kg</span><span>~₹120</span></div>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>1kg - 2kg</span><span>~₹155</span></div>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>2kg - 5kg</span><span>~₹210</span></div>
+          </div>
+          <div>
+            <p class="mb-3 text-sm font-semibold text-green-700">UPI/Prepaid Rates</p>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>Upto 500g</span><span class="font-medium text-green-600">~₹47</span></div>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>500g - 1kg</span><span class="font-medium text-green-600">~₹80</span></div>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>1kg - 2kg</span><span class="font-medium text-green-600">~₹115</span></div>
+            <div class="flex justify-between border-b border-gray-100 py-2 text-sm text-gray-600"><span>2kg - 5kg</span><span class="font-medium text-green-600">~₹170</span></div>
+          </div>
+        </div>
+
+        <p class="mt-4 text-xs italic text-gray-400">
+          ~ Approximate rates. Exact rate depends on delivery zone. COD handling charge included in COD rates.
+        </p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="bg-gray-50 py-20 px-4">
+  <div class="mx-auto max-w-3xl">
+    <section aria-labelledby="faq-heading">
+      <div class="text-center">
+        <h2 id="faq-heading" class="mb-4 text-center text-3xl font-bold text-gray-900">Common questions</h2>
+        <p class="mb-12 text-center text-lg text-gray-600">Everything you need to know before starting.</p>
+      </div>
+
+      <div class="space-y-3" data-controller="accordion">
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">Do I need a website or Shopify store?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              No. TrustShip works purely on WhatsApp. Share your unique shop code with buyers. They message you with the code and their order details — orders appear in your dashboard automatically. No website needed at all.
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">Do I need a Delhivery account?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              No. TrustShip manages all shipping through our Delhivery account. You just click Ship Now and we handle everything — AWB generation, label creation, pickup scheduling, and buyer notification.
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">What if my buyer writes in Hindi or Hinglish?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              Our AI handles Hindi, English, and Hinglish automatically. It reads messages like 'bhai ek blue earring chahiye, surat 395009, COD, raj 9876543210' and extracts all the order details correctly.
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">How does the 14-day free trial work?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              You get full access to every feature for 14 days completely free. No credit card needed to start. After 14 days choose a plan to continue. You can ship up to 20 orders during your trial.
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">What is RTO and how does TrustShip reduce it?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              RTO — Return to Origin — is when a shipment cannot be delivered and comes back to you. You pay forward shipping and return shipping — ₹150+ wasted per order with zero revenue. TrustShip's 4-gate verification system checks every order before shipping, reducing RTOs by up to 80%.
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">Which courier do you use?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              We use Delhivery — India's largest logistics network covering 18,500+ pincodes across India. Surface shipping with delivery in 3-7 business days depending on destination.
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">How do I get paid for COD orders?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              Delhivery collects the COD amount from the buyer at delivery and remits it directly to your registered bank account as per their standard remittance schedule — typically within 7-10 business days.
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-open="false">
+          <button type="button" class="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left" data-action="click->accordion#toggle" data-accordion-target="item">
+            <span class="text-base font-semibold text-gray-900">Can I cancel my subscription anytime?</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 rotate-0 text-gray-400 transition-transform duration-200" data-accordion-target="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="max-h-0 overflow-hidden transition-all duration-200" data-accordion-target="panel">
+            <div class="px-6 pb-5 text-sm leading-relaxed text-gray-600">
+              Yes. No lock-in, no cancellation fee. Cancel anytime from your account settings. Your account stays active until the end of your current billing period.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="bg-indigo-600 py-20 px-4">
+  <div class="mx-auto max-w-4xl text-center">
+    <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-indigo-200">Join sellers across India</p>
+    <h2 class="mb-6 text-4xl font-bold leading-tight text-white">
+      <span class="block">Ready to stop managing</span>
+      <span class="block">orders manually?</span>
+    </h2>
+    <p class="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-indigo-200">
+      TrustShip automates your entire order flow — from WhatsApp message to Delhivery delivery. Start your free trial today.
+    </p>
+
+    <div class="flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center sm:justify-center">
+      <%= link_to "Start Your Free 14-Day Trial →", new_seller_registration_path, class: "flex w-full justify-center rounded-lg bg-white px-8 py-4 text-base font-bold text-indigo-600 shadow-sm transition-colors hover:bg-indigo-50 sm:w-auto" %>
+      <%= link_to "Questions? WhatsApp us →", "https://wa.me/918160055744", class: "flex w-full justify-center rounded-lg border-2 border-indigo-400 px-8 py-4 text-base font-medium text-white transition-colors hover:bg-indigo-500 sm:w-auto", target: "_blank", rel: "noopener noreferrer" %>
     </div>
 
-    <div class="mt-10 text-center">
-      <%= link_to "Start Shipping Today →", new_seller_registration_path, class: "inline-flex justify-center rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
-      <p class="mt-3 text-xs text-gray-500">No monthly fee · No setup cost · Pay only when you ship</p>
-    </div>
-  </section>
+    <p class="mt-6 text-center text-sm text-indigo-300">
+      No credit card · No setup fee · Cancel anytime · Full access for 14 days
+    </p>
+  </div>
 </div>

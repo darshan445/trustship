@@ -37,10 +37,10 @@
   <% w = Order::WEIGHT_TIERS %>
   <%= f.select :weight_grams,
         [
-          [ "Upto 500g (₹#{w[500]})", 500 ],
-          [ "500g - 1kg (₹#{w[1000]})", 1000 ],
-          [ "1kg - 2kg (₹#{w[2000]})", 2000 ],
-          [ "2kg - 5kg (₹#{w[5000]})", 5000 ]
+          [ "Upto 500g — COD ₹#{w[500][:cod]} / UPI ₹#{w[500][:prepaid]}", 500 ],
+          [ "500g - 1kg — COD ₹#{w[1000][:cod]} / UPI ₹#{w[1000][:prepaid]}", 1000 ],
+          [ "1kg - 2kg — COD ₹#{w[2000][:cod]} / UPI ₹#{w[2000][:prepaid]}", 2000 ],
+          [ "2kg - 5kg — COD ₹#{w[5000][:cod]} / UPI ₹#{w[5000][:prepaid]}", 5000 ]
         ],
         {},
         class: parsed ? order_parse_input_classes(autofilled, :weight_grams) : manual_input %>

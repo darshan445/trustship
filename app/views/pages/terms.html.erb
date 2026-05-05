@@ -69,13 +69,34 @@
 
     <section id="section-4">
       <h2 class="text-lg font-semibold text-gray-900">4. Pricing & payments</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>TrustShip charges ₹25 per shipped order</li>
-        <li>Charges are deducted per shipment</li>
-        <li>No subscription fee or setup fee</li>
-        <li>Razorpay handles payment processing</li>
-        <li>Pricing may change with 30 days’ notice</li>
+      <% w = Order::WEIGHT_TIERS %>
+      <% labels = { 500 => "Upto 500g", 1000 => "500g - 1kg", 2000 => "1kg - 2kg", 5000 => "2kg - 5kg" } %>
+      <p class="mt-3 font-medium text-gray-800">COD Shipment Rates</p>
+      <ul class="mt-2 list-disc space-y-1 pl-6 text-gray-600 leading-relaxed">
+        <% w.each do |grams, rates| %>
+          <li><%= labels[grams] %>: ₹<%= rates[:cod] %> per shipment</li>
+        <% end %>
       </ul>
+      <p class="mt-4 font-medium text-gray-800">UPI/Prepaid Shipment Rates (₹<%= w[500][:cod] - w[500][:prepaid] %> less)</p>
+      <ul class="mt-2 list-disc space-y-1 pl-6 text-gray-600 leading-relaxed">
+        <% w.each do |grams, rates| %>
+          <li><%= labels[grams] %>: ₹<%= rates[:prepaid] %> per shipment</li>
+        <% end %>
+      </ul>
+      <p class="mt-4 text-gray-600 leading-relaxed">All rates are inclusive of:</p>
+      <ul class="mt-2 list-disc space-y-1 pl-6 text-gray-600 leading-relaxed">
+        <li>Delhivery forward shipping charges</li>
+        <li>COD handling charges (for COD orders)</li>
+        <li>GST (18%)</li>
+        <li>TrustShip platform and verification fee</li>
+        <li>No additional charges apply</li>
+      </ul>
+      <p class="mt-4 text-gray-600 leading-relaxed">
+        RTO/Return shipping charges are separate and billed directly by Delhivery.
+      </p>
+      <p class="mt-4 text-gray-600 leading-relaxed">
+        Razorpay handles payment processing where applicable. Pricing may change with 30 days’ notice.
+      </p>
     </section>
 
     <section id="section-5">
