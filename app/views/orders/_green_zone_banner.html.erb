@@ -1,6 +1,7 @@
 <%# locals: (order:) %>
 <% if order.green_zone? %>
   <% cod_collect = order_shipment_cod_to_collect(order) %>
+  <% shipping_inr = order_shipping_inr_for_checkout(order) %>
   <div data-controller="ship-modal">
     <section class="rounded-xl border-2 p-6 shadow-sm <%= order.full_prepaid? ? 'border-emerald-300 bg-emerald-50' : (order.partial_cod? ? 'border-emerald-200 bg-emerald-50/90' : 'border-amber-300 bg-amber-50') %>" aria-label="Green zone status">
       <% if order.full_prepaid? %>
@@ -80,13 +81,20 @@
           <% end %>
           <div class="border-t border-gray-200 pt-3">
             <p><span class="font-medium text-gray-900">📦</span> <%= order.weight_tier_label %></p>
-            <p class="mt-1"><span class="font-medium text-gray-900">💰 Shipping charge:</span> ₹<%= order.shipping_rate %></p>
+            <p class="mt-1"><span class="font-medium text-gray-900">💰 Delhivery shipping (pass-through):</span> ₹<%= shipping_inr ? number_with_precision(shipping_inr, precision: 2) : "—" %></p>
             <% if order.full_cod? || order.partial_cod? %>
-              <p class="mt-2 text-xs font-medium text-amber-800">Includes Delhivery shipping + ₹40 COD charge + GST. All inclusive.</p>
+              <p class="mt-2 text-xs font-medium text-amber-800">Includes Delhivery shipping + COD handling + GST as per rate card.</p>
             <% elsif order.full_prepaid? %>
-              <p class="mt-2 text-xs font-medium text-green-800">UPI rate applied — no COD charge. All inclusive.</p>
+              <p class="mt-2 text-xs font-medium text-green-800">UPI rate applied — no COD handling on prepaid lane.</p>
             <% end %>
           </div>
+
+          <% unless order.shipping_payment_paid? %>
+            <div class="rounded-lg border border-amber-200 bg-amber-50/90 p-3 text-amber-950">
+              <p class="text-sm font-medium">Pay shipping before we create your AWB</p>
+              <p class="mt-1 text-xs text-amber-900/90">You’ll complete payment on Razorpay. We don’t mark up Delhivery rates.</p>
+            </div>
+          <% end %>
         </div>
         <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
@@ -95,11 +103,28 @@
             class="w-full cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 sm:w-auto">
             Cancel
           </button>
-          <%= button_to "Confirm & Ship",
-                ship_order_path(order),
-                method: :post,
-                form: { class: "w-full sm:w-auto", data: { turbo: false } },
-                class: "w-full cursor-pointer rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto" %>
+
+          <% if order.shipping_payment_paid? %>
+            <%= button_to "Confirm & Ship",
+                  ship_order_path(order),
+                  method: :post,
+                  form: { class: "w-full sm:w-auto", data: { turbo: false } },
+                  class: "w-full cursor-pointer rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto" %>
+          <% elsif order.shipping_payment_link_url.present? %>
+            <%= link_to "Pay Shipping Cost",
+                  order.shipping_payment_link_url,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  class: "inline-flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto" %>
+          <% elsif shipping_inr %>
+            <%= button_to "Get payment link — ₹#{number_with_precision(shipping_inr, precision: 2)}",
+                  create_shipping_payment_link_order_path(order),
+                  method: :post,
+                  form: { class: "w-full sm:w-auto" },
+                  class: "w-full cursor-pointer rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:w-auto" %>
+          <% else %>
+            <p class="w-full text-sm text-red-700">Could not determine shipping rate. Contact support.</p>
+          <% end %>
         </div>
       </div>
     </div>

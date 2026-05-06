@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     end
     resource :razorpay, only: [], controller: "razorpay" do
       get "/", action: :payment_callback, on: :collection
+      get "shipping_callback", action: :shipping_callback, on: :collection
     end
     resource :delhivery, only: [], controller: "delhivery" do
       post "/", action: :receive, on: :collection
@@ -41,6 +42,7 @@ Rails.application.routes.draw do
         post :cancel_order
         post :ship
         post :fetch_label
+        post :create_shipping_payment_link
       end
     end
     resource :account, only: [ :show, :edit, :update ], controller: "account" do

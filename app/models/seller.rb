@@ -7,6 +7,9 @@ class Seller < ApplicationRecord
 
   enum :status, { active: "active", inactive: "inactive" }, default: :active
 
+  # early_access: platform fee waived during Early Access (default true for new sellers).
+  # trial_ends_at: reserved for future time-limited access; nil means no end date for now.
+
   has_one_attached :seller_logo
   has_many :orders, inverse_of: :seller, dependent: :restrict_with_exception
 

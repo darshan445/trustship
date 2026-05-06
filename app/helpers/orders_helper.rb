@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 module OrdersHelper
+  # Amount seller must pay Razorpay for Delhivery pass-through shipping (from ShippingRate or cached on order).
+  def order_shipping_inr_for_checkout(order)
+    return order.shipping_amount if order.shipping_amount.present?
+
+    r = Orders::CalculateShippingCost.execute(order: order)
+    r.success? ? r.data : nil
+  end
+
   def order_status_tabs
     STATUS_TABS
   end

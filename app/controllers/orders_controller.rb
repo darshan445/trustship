@@ -4,7 +4,7 @@ class OrdersController < ApplicationController
   layout "dashboard"
 
   before_action :authenticate_seller!
-  before_action :set_order, only: [ :show, :override_risk, :cancel_order, :ship, :fetch_label ]
+  before_action :set_order, only: [ :show, :override_risk, :cancel_order, :ship, :fetch_label, :create_shipping_payment_link ]
 
   def index
     scope = current_seller.orders.includes(:buyer).order(created_at: :desc)
@@ -102,7 +102,21 @@ class OrdersController < ApplicationController
     end
   end
 
+  def create_shipping_payment_link
+    result = Orders::CreateShippingPaymentLink.execute(order: @order)
+    if result.success?
+      redirect_to order_path(@order), notice: "Payment link ready — pay the shipping amount to complete your shipment."
+    else
+      redirect_to order_path(@order), alert: result.errors.to_s
+    end
+  end
+
   def ship
+    unless @order.shipping_payment_paid?
+      redirect_to order_path(@order), alert: "Pay the shipping charge before shipping."
+      return
+    end
+
     result = Orders::ShipOrder.execute(order_id: @order.id, seller_id: current_seller.id)
 
     if result.success?

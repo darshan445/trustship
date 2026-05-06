@@ -37,7 +37,7 @@
               <%= button_to "Sign out", destroy_seller_session_path, method: :delete, class: "rounded-lg border border-indigo-600 bg-white px-4 py-2.5 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50" %>
             <% else %>
               <%= link_to "Sign in", new_seller_session_path, class: "rounded-lg border border-indigo-600 bg-white px-4 py-2.5 text-sm font-medium text-indigo-600 shadow-sm hover:bg-indigo-50" %>
-              <%= link_to "Get Started Free", new_seller_registration_path, class: "rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:px-5" %>
+              <%= link_to "Join Early Access", new_seller_registration_path, class: "rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:px-5" %>
             <% end %>
           </div>
         </nav>
@@ -82,9 +82,9 @@
               <nav class="space-y-3" aria-label="Product">
                 <%= link_to "How it works", root_path(anchor: "how-it-works"), class: "block text-sm text-gray-400 transition-colors hover:text-white" %>
                 <%= link_to "Features", root_path(anchor: "features"), class: "block text-sm text-gray-400 transition-colors hover:text-white" %>
-                <%= link_to "Pricing", root_path(anchor: "pricing"), class: "block text-sm text-gray-400 transition-colors hover:text-white" %>
+                <%= link_to "Early access", root_path(anchor: "pricing"), class: "block text-sm text-gray-400 transition-colors hover:text-white" %>
                 <%= link_to "Sign in", new_seller_session_path, class: "block text-sm text-gray-400 transition-colors hover:text-white" %>
-                <%= link_to "Start Free Trial", new_seller_registration_path, class: "block text-sm text-gray-400 transition-colors hover:text-white" %>
+                <%= link_to "Join Early Access", new_seller_registration_path, class: "block text-sm text-gray-400 transition-colors hover:text-white" %>
               </nav>
             </div>
 

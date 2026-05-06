@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_04_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_06_070001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -95,6 +95,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_170000) do
     t.uuid "seller_id", null: false
     t.text "seller_note"
     t.datetime "shipped_at"
+    t.decimal "shipping_amount", precision: 10, scale: 2
+    t.datetime "shipping_paid_at"
+    t.string "shipping_payment_id"
+    t.string "shipping_payment_link_id"
+    t.string "shipping_payment_link_url"
+    t.string "shipping_payment_status", default: "pending", null: false
     t.string "state", null: false
     t.datetime "undeliverable_at"
     t.datetime "updated_at", null: false
@@ -104,12 +110,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_170000) do
     t.index ["buyer_id"], name: "index_orders_on_buyer_id"
     t.index ["razorpay_payment_link_id"], name: "index_orders_on_razorpay_payment_link_id", unique: true, where: "(razorpay_payment_link_id IS NOT NULL)"
     t.index ["seller_id"], name: "index_orders_on_seller_id"
+    t.index ["shipping_payment_link_id"], name: "index_orders_on_shipping_payment_link_id", unique: true, where: "(shipping_payment_link_id IS NOT NULL)"
   end
 
   create_table "sellers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "business_name", null: false
     t.datetime "created_at", null: false
     t.string "delhivery_pickup_location_name"
+    t.boolean "early_access", default: true, null: false
     t.string "encrypted_password", null: false
     t.string "name", null: false
     t.string "phone", null: false
@@ -126,10 +134,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_04_170000) do
     t.string "status", default: "active", null: false
     t.boolean "terms_accepted", default: false, null: false
     t.datetime "terms_accepted_at"
+    t.datetime "trial_ends_at"
     t.datetime "updated_at", null: false
     t.index ["phone"], name: "index_sellers_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_sellers_on_reset_password_token", unique: true
     t.index ["shop_code"], name: "index_sellers_on_shop_code", unique: true
+  end
+
+  create_table "shipping_rates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.boolean "is_active", default: true, null: false
+    t.integer "max_weight_grams"
+    t.integer "min_weight_grams", default: 0, null: false
+    t.string "name", null: false
+    t.string "payment_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payment_type", "min_weight_grams", "max_weight_grams"], name: "index_shipping_rates_on_type_and_weight_range", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

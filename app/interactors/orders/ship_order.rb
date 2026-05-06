@@ -20,6 +20,9 @@ module Orders
         seller = order.seller
 
         raise_string_error("Order is not in green zone") unless order.green_zone?
+        unless order.shipping_payment_status == "paid"
+          raise_string_error("Pay the shipping charge before creating a Delhivery shipment")
+        end
         unless seller.pickup_address_complete?
           raise_string_error("Please add your pickup address before shipping")
         end

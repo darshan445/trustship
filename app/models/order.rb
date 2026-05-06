@@ -40,6 +40,10 @@ class Order < ApplicationRecord
   validates :weight_grams, inclusion: { in: WEIGHT_TIERS.keys }
 
   def shipping_rate
+    pt = full_prepaid? ? "prepaid" : "cod"
+    row = ShippingRate.find_for_order(payment_type: pt, weight_grams: weight_grams)
+    return row.amount if row.present?
+
     tier = current_tier_rates
     full_prepaid? ? tier[:prepaid] : tier[:cod]
   end
@@ -51,6 +55,10 @@ class Order < ApplicationRecord
   def prepaid_discount
     tier = current_tier_rates
     tier[:cod] - tier[:prepaid]
+  end
+
+  def shipping_payment_paid?
+    shipping_payment_status == "paid"
   end
 
   def weight_tier_label
