@@ -5,38 +5,32 @@ module Orders
     include ExecuteMethodHelper
     include LogHelper
 
-    def self.execute(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, address_line:, city:, state:, pincode:, raw_message: nil, seller_note: nil, payment_type: "full_cod", weight_grams: 500)
+    def self.execute(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, raw_address:, raw_message: nil, seller_note: nil, payment_type: "full_cod", product_id: nil)
       new(
         seller_id: seller_id,
         buyer_name: buyer_name,
         buyer_phone: buyer_phone,
         product_name: product_name,
         amount: amount,
-        address_line: address_line,
-        city: city,
-        state: state,
-        pincode: pincode,
+        raw_address: raw_address,
         raw_message: raw_message,
         seller_note: seller_note,
         payment_type: payment_type,
-        weight_grams: weight_grams
+        product_id: product_id
       ).execute
     end
 
-    def initialize(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, address_line:, city:, state:, pincode:, raw_message: nil, seller_note: nil, payment_type: "full_cod", weight_grams: 500)
+    def initialize(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, raw_address:, raw_message: nil, seller_note: nil, payment_type: "full_cod", product_id: nil)
       @seller_id = seller_id
       @buyer_name = buyer_name
       @buyer_phone = buyer_phone
       @product_name = product_name
       @amount = amount
-      @address_line = address_line
-      @city = city
-      @state = state
-      @pincode = pincode
+      @raw_address = raw_address
       @raw_message = raw_message
       @seller_note = seller_note
       @payment_type = payment_type
-      @weight_grams = weight_grams
+      @product_id = product_id
     end
 
     def execute
@@ -50,8 +44,7 @@ module Orders
     private
 
     attr_reader :seller_id, :buyer_name, :buyer_phone, :product_name, :amount,
-                :address_line, :city, :state, :pincode, :raw_message, :seller_note, :payment_type,
-                :weight_grams
+                :raw_address, :raw_message, :seller_note, :payment_type, :product_id
 
     def find_seller!
       seller = Seller.find_by(id: seller_id)
@@ -76,19 +69,24 @@ module Orders
     end
 
     def create_order!(seller, buyer)
+      raise_string_error("raw_address is required") if raw_address.to_s.strip.blank?
+
+      buyer_address = buyer.buyer_addresses.create!(
+        raw_address: raw_address.to_s.strip,
+        address_confidence: "pending",
+        is_primary: buyer.buyer_addresses.none?
+      )
+
       order = Order.create!(
         seller: seller,
         buyer: buyer,
+        buyer_address: buyer_address,
+        product: find_product_for_seller(seller),
         raw_message: raw_message,
         product_name: product_name,
         amount: amount,
-        address_line: address_line,
-        city: city,
-        state: state,
-        pincode: pincode,
         seller_note: seller_note.presence,
-        payment_type: normalize_payment_type!,
-        weight_grams: normalize_weight_grams!
+        payment_type: normalize_payment_type!
       )
       Orders::RunGateOneJob.perform_later(order.id)
       order
@@ -116,15 +114,11 @@ module Orders
       pt
     end
 
-    def normalize_weight_grams!
-      wg = weight_grams.to_i
-      wg = 500 if wg <= 0
+    def find_product_for_seller(seller)
+      return nil if product_id.blank?
 
-      unless Order::WEIGHT_TIERS.key?(wg)
-        raise_string_error("weight_grams must be one of: #{Order::WEIGHT_TIERS.keys.join(', ')}")
-      end
-
-      wg
+      seller.products.active.find_by(id: product_id)
     end
+
   end
 end

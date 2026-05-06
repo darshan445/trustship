@@ -6,22 +6,26 @@ module Orders
 
     queue_as :default
 
-    def perform(phone:, message:)
-      result = Orders::CreateOrderFromWhatsapp.execute(phone: phone, message: message)
+    def perform(seller_id:, buyer_phone:, message:)
+      result = Orders::CreateOrderFromWhatsapp.execute(
+        seller_id: seller_id,
+        buyer_phone: buyer_phone,
+        message: message
+      )
 
       if result.success?
-        Rails.logger.info { "WhatsApp order created: order_id=#{result.data.id} phone=#{phone}" }
+        Rails.logger.info { "WhatsApp order created: order_id=#{result.data.id} buyer_phone=#{buyer_phone}" }
         return
       end
 
-      Rails.logger.error { "WhatsApp order creation failed for #{phone}: #{result.errors}" }
+      Rails.logger.error { "WhatsApp order creation failed for #{buyer_phone}: #{result.errors}" }
 
       template_name = Rails.application.credentials.meta[:order_failed_template_name].to_s
       return if template_name.blank?
 
       validate_result_without_raising_error(
         Whatsapp::SendMessage.execute(
-          phone: phone,
+          phone: buyer_phone,
           template_name: template_name,
           parameters: [ "there" ]
         )

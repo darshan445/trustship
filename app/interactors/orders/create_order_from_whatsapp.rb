@@ -6,63 +6,65 @@ module Orders
     include LogHelper
     include PhoneHelper
 
-    def self.execute(phone:, message:)
-      new(phone: phone, message: message).execute
+    def self.execute(seller_id:, buyer_phone:, message:)
+      new(seller_id: seller_id, buyer_phone: buyer_phone, message: message).execute
     end
 
-    def initialize(phone:, message:)
-      @phone = phone
+    def initialize(seller_id:, buyer_phone:, message:)
+      @seller_id = seller_id
+      @buyer_phone = buyer_phone
       @message = message
     end
 
     def execute
       execute_log_and_return_open_struct do
-        normalized_phone = normalize_phone(phone)
-        raise_string_error("Phone is required") if normalized_phone.blank?
+        seller = Seller.find_by(id: seller_id)
+        raise_string_error("Seller not found") if seller.blank?
+
+        normalized_buyer = normalize_phone(buyer_phone)
+        raise_string_error("Invalid buyer phone") if normalized_buyer.blank?
+        raise_string_error("Invalid buyer phone") unless normalized_buyer.match?(Buyer::PHONE_REGEX)
         raise_string_error("Message cannot be blank") if message.to_s.strip.blank?
 
-        shop_code = message.strip.split(" ").first&.upcase
-        raise_string_error("Message cannot be blank") if shop_code.blank?
+        parsed = validate_result(Orders::ParseWhatsappMessage.execute(raw_message: message, seller: seller)).data
 
-        seller = Seller.find_by(shop_code: shop_code)
-        raise_string_error("Unknown shop code: #{shop_code}") if seller.blank?
-
-        clean_message = message.split(" ").drop(1).join(" ").strip
-        raise_string_error("Message has no order details") if clean_message.blank?
-
-        parsed = validate_result(Orders::ParseWhatsappMessage.execute(raw_message: clean_message)).data
-
-        buyer_phone = normalize_phone(parsed.buyer_phone).presence || normalized_phone
-        raise_string_error("Invalid buyer phone") unless buyer_phone.match?(Buyer::PHONE_REGEX)
+        resolved_phone = normalize_phone(parsed.buyer_phone).presence || normalized_buyer
+        raise_string_error("Invalid buyer phone") unless resolved_phone.match?(Buyer::PHONE_REGEX)
 
         product_name = parsed.product_name.to_s.strip
         raise_string_error("Could not extract product from message") if product_name.blank?
 
         amount = parsed.amount.presence || 0
         payment_type = parsed.is_cod ? "full_cod" : "full_prepaid"
+        raw_address = [
+          parsed.address_line,
+          parsed.city,
+          parsed.state,
+          parsed.pincode
+        ].map { |v| v.to_s.strip.presence }.compact.join(", ")
+        raw_address = "Address pending verification" if raw_address.blank?
 
         order = validate_result(
           Orders::CreateOrder.execute(
             seller_id: seller.id,
             buyer_name: parsed.buyer_name.presence || "WhatsApp Buyer",
-            buyer_phone: buyer_phone,
+            buyer_phone: resolved_phone,
             product_name: product_name,
+            product_id: parsed.matched_product_id,
             amount: amount,
-            address_line: parsed.address_line.presence || "Address pending verification",
-            city: parsed.city.presence || "Pending",
-            state: parsed.state.presence || "Pending",
-            pincode: parsed.pincode.to_s.strip.match?(/\A\d{6}\z/) ? parsed.pincode.to_s.strip : "000000",
+            raw_address: raw_address,
             raw_message: message,
+            seller_note: parsed.special_instructions.to_s.presence,
             payment_type: payment_type
           )
         ).data
 
         validate_result_without_raising_error(
-          Whatsapp::SendOrderAcknowledgement.execute(order_id: order.id, phone: buyer_phone)
+          Whatsapp::SendOrderAcknowledgement.execute(order_id: order.id, phone: resolved_phone)
         )
 
         Rails.logger.info do
-          "Order #{order.id} created from WhatsApp for seller #{shop_code} — buyer #{buyer_phone}"
+          "Order #{order.id} created from WhatsApp for seller #{seller.id} — buyer #{resolved_phone}"
         end
 
         order
@@ -71,6 +73,6 @@ module Orders
 
     private
 
-    attr_reader :phone, :message
+    attr_reader :seller_id, :buyer_phone, :message
   end
 end

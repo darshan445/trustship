@@ -1,163 +1,179 @@
-<% content_for :title, "Terms & Conditions — TrustShip" %>
+<% content_for :title, "Terms of Service — TrustShip" %>
 
-<div class="print:bg-white">
-  <p class="mb-6">
-    <%= link_to "← Back to home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
-  </p>
-
-  <header class="border-b border-gray-200 pb-6">
-    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Terms & Conditions</h1>
-    <p class="mt-2 text-sm font-medium text-gray-500">Last updated: May 2026</p>
-    <p class="mt-4 text-sm text-gray-600 leading-relaxed">
-      Business: TrustShip · Owner: Darshan Thakor (sole proprietorship) ·
-      Website: <%= link_to app_domain.sub(/\Ahttps?:\/\//i, ""), app_domain, class: "text-indigo-600 hover:text-indigo-500" %> ·
-      Email: <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %><br>
-      Address: Chekhalarani, Sadra, Gandhinagar, Gujarat - 382320, India · Effective date: May 2026
-    </p>
+<article class="print:bg-white">
+  <header class="border-b border-gray-200 pb-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Terms of Service</h1>
+    <p class="mt-3 text-sm font-medium text-gray-500">Last updated: June 2025</p>
   </header>
 
-  <nav class="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm print:hidden" aria-label="Table of contents">
+  <nav class="mt-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm print:hidden" aria-label="Table of contents">
     <p class="font-semibold text-gray-900">On this page</p>
-    <ol class="mt-3 list-decimal space-y-1 pl-5 text-gray-700">
-      <li><a href="#section-1" class="text-indigo-600 hover:text-indigo-500">Introduction</a></li>
-      <li><a href="#section-2" class="text-indigo-600 hover:text-indigo-500">Services</a></li>
-      <li><a href="#section-3" class="text-indigo-600 hover:text-indigo-500">Seller responsibilities</a></li>
-      <li><a href="#section-4" class="text-indigo-600 hover:text-indigo-500">Pricing & payments</a></li>
-      <li><a href="#section-5" class="text-indigo-600 hover:text-indigo-500">Shipping & Delhivery</a></li>
-      <li><a href="#section-6" class="text-indigo-600 hover:text-indigo-500">Limitation of liability</a></li>
-      <li><a href="#section-7" class="text-indigo-600 hover:text-indigo-500">Account termination</a></li>
-      <li><a href="#section-8" class="text-indigo-600 hover:text-indigo-500">Intellectual property</a></li>
-      <li><a href="#section-9" class="text-indigo-600 hover:text-indigo-500">Governing law</a></li>
-      <li><a href="#section-10" class="text-indigo-600 hover:text-indigo-500">Contact</a></li>
+    <ol class="mt-4 grid list-decimal gap-x-8 gap-y-2 pl-5 text-gray-700 sm:grid-cols-2">
+      <li class="pl-1"><a href="#introduction" class="text-indigo-600 hover:text-indigo-500">Introduction</a></li>
+      <li class="pl-1"><a href="#who-can-use" class="text-indigo-600 hover:text-indigo-500">Who Can Use TrustShip</a></li>
+      <li class="pl-1"><a href="#what-trustship-does" class="text-indigo-600 hover:text-indigo-500">What TrustShip Does</a></li>
+      <li class="pl-1"><a href="#what-trustship-does-not" class="text-indigo-600 hover:text-indigo-500">What TrustShip Does NOT Do</a></li>
+      <li class="pl-1"><a href="#whatsapp-meta" class="text-indigo-600 hover:text-indigo-500">WhatsApp Integration &amp; Meta Policies</a></li>
+      <li class="pl-1"><a href="#data" class="text-indigo-600 hover:text-indigo-500">Your Data &amp; Your Buyers&apos; Data</a></li>
+      <li class="pl-1"><a href="#early-access-pricing" class="text-indigo-600 hover:text-indigo-500">Early Access &amp; Pricing</a></li>
+      <li class="pl-1"><a href="#acceptable-use" class="text-indigo-600 hover:text-indigo-500">Acceptable Use</a></li>
+      <li class="pl-1"><a href="#service-availability" class="text-indigo-600 hover:text-indigo-500">Service Availability</a></li>
+      <li class="pl-1"><a href="#limitation-of-liability" class="text-indigo-600 hover:text-indigo-500">Limitation of Liability</a></li>
+      <li class="pl-1"><a href="#termination" class="text-indigo-600 hover:text-indigo-500">Termination</a></li>
+      <li class="pl-1"><a href="#changes-to-terms" class="text-indigo-600 hover:text-indigo-500">Changes to Terms</a></li>
+      <li class="pl-1"><a href="#governing-law" class="text-indigo-600 hover:text-indigo-500">Governing Law</a></li>
+      <li class="pl-1"><a href="#contact" class="text-indigo-600 hover:text-indigo-500">Contact</a></li>
     </ol>
   </nav>
 
-  <div class="mt-10 space-y-10">
-    <section id="section-1">
-      <h2 class="text-lg font-semibold text-gray-900">1. Introduction</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">
-        TrustShip is a logistics technology platform operated by Darshan Thakor as a sole proprietorship.
-        By using TrustShip, you agree to these terms. If you do not agree, please do not use the platform.
+  <div class="mt-12 space-y-12 text-gray-600 leading-relaxed">
+    <section id="introduction" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">1. Introduction</h2>
+      <p class="mt-4">
+        Welcome to TrustShip. By creating an account and using our platform, you agree to these Terms of Service. Please read them carefully.
+      </p>
+      <p class="mt-4">
+        TrustShip is a technology platform that helps WhatsApp sellers automatically capture, parse, and verify orders. We are not a logistics company, courier service, or shipping aggregator.
       </p>
     </section>
 
-    <section id="section-2">
-      <h2 class="text-lg font-semibold text-gray-900">2. Services</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">TrustShip provides:</p>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>Order verification before shipping (4-gate system)</li>
-        <li>WhatsApp-based buyer confirmation</li>
-        <li>Delhivery shipping integration</li>
-        <li>Real-time order tracking</li>
-        <li>RTO risk reduction for COD orders</li>
+    <section id="who-can-use" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">2. Who Can Use TrustShip</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>You must be 18 years or older.</li>
+        <li>You must be a legitimate business seller and comply with applicable laws in your jurisdiction.</li>
+        <li>You must have a valid WhatsApp Business number.</li>
+        <li>You must provide accurate business information during signup.</li>
+        <li>TrustShip reserves the right to reject or terminate accounts that violate these terms.</li>
       </ul>
-      <p class="mt-4 text-gray-600 leading-relaxed">
-        TrustShip is not a courier company. Actual shipping is handled by Delhivery.
+    </section>
+
+    <section id="what-trustship-does" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">3. What TrustShip Does</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>Connects to your WhatsApp Business number via Meta&apos;s official API.</li>
+        <li>Reads incoming messages to identify and parse order information.</li>
+        <li>Runs automated verification checks on orders.</li>
+        <li>Sends WhatsApp messages to your buyers for order confirmation.</li>
+        <li>Provides an order management dashboard.</li>
+      </ul>
+      <p class="mt-4">
+        TrustShip does <strong class="font-semibold text-gray-800">not</strong> handle physical shipping, payments between seller and buyer, or logistics operations.
       </p>
     </section>
 
-    <section id="section-3">
-      <h2 class="text-lg font-semibold text-gray-900">3. Seller responsibilities</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>Provide an accurate pickup address</li>
-        <li>Ensure products are legal and not prohibited</li>
-        <li>Maintain sufficient Delhivery wallet balance</li>
-        <li>Do not use the platform for fraudulent transactions</li>
-        <li>Keep account credentials confidential</li>
+    <section id="what-trustship-does-not" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">4. What TrustShip Does NOT Do</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>TrustShip is not responsible for shipping, delivery, or courier operations.</li>
+        <li>TrustShip does not handle cash on delivery payments.</li>
+        <li>TrustShip does not guarantee delivery of any shipment.</li>
+        <li>TrustShip does not mediate disputes between sellers and their buyers.</li>
+        <li>TrustShip does not provide refunds for shipping costs or lost shipments.</li>
+        <li>Shipping is entirely the seller&apos;s responsibility.</li>
       </ul>
     </section>
 
-    <section id="section-4">
-      <h2 class="text-lg font-semibold text-gray-900">4. Pricing & payments</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">
-        TrustShip is in Early Access: there is no monthly platform subscription fee right now. You pay per-shipment Delhivery pass-through rates below (no TrustShip markup on shipping). If we introduce a platform fee in the future, we will give notice before it applies.
-      </p>
-      <% w = Order::WEIGHT_TIERS %>
-      <% labels = { 500 => "Upto 500g", 1000 => "500g - 1kg", 2000 => "1kg - 2kg", 5000 => "2kg - 5kg" } %>
-      <p class="mt-3 font-medium text-gray-800">COD Shipment Rates</p>
-      <ul class="mt-2 list-disc space-y-1 pl-6 text-gray-600 leading-relaxed">
-        <% w.each do |grams, rates| %>
-          <li><%= labels[grams] %>: ₹<%= rates[:cod] %> per shipment</li>
-        <% end %>
-      </ul>
-      <p class="mt-4 font-medium text-gray-800">UPI/Prepaid Shipment Rates (₹<%= w[500][:cod] - w[500][:prepaid] %> less)</p>
-      <ul class="mt-2 list-disc space-y-1 pl-6 text-gray-600 leading-relaxed">
-        <% w.each do |grams, rates| %>
-          <li><%= labels[grams] %>: ₹<%= rates[:prepaid] %> per shipment</li>
-        <% end %>
-      </ul>
-      <p class="mt-4 text-gray-600 leading-relaxed">All rates are inclusive of:</p>
-      <ul class="mt-2 list-disc space-y-1 pl-6 text-gray-600 leading-relaxed">
-        <li>Delhivery forward shipping charges</li>
-        <li>COD handling charges (for COD orders)</li>
-        <li>GST (18%)</li>
-        <li>TrustShip platform and verification fee</li>
-        <li>No additional charges apply</li>
-      </ul>
-      <p class="mt-4 text-gray-600 leading-relaxed">
-        RTO/Return shipping charges are separate and billed directly by Delhivery.
-      </p>
-      <p class="mt-4 text-gray-600 leading-relaxed">
-        Razorpay handles payment processing where applicable. Pricing may change with 30 days’ notice.
-      </p>
-    </section>
-
-    <section id="section-5">
-      <h2 class="text-lg font-semibold text-gray-900">5. Shipping & Delhivery</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>TrustShip uses Delhivery for all shipments</li>
-        <li>Shipping charges are separate from TrustShip fees</li>
-        <li>TrustShip is not responsible for shipping delays, lost packages, or damaged goods</li>
-        <li>Delhivery’s terms apply to all shipments</li>
-        <li>RTO (return to origin) costs are borne by the seller</li>
+    <section id="whatsapp-meta" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">5. WhatsApp Integration &amp; Meta Policies</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>By connecting your WhatsApp number to TrustShip, you agree to Meta&apos;s WhatsApp Business API Terms of Service.</li>
+        <li>You are responsible for ensuring your use of WhatsApp via TrustShip complies with Meta&apos;s policies.</li>
+        <li>TrustShip sends automated messages to your buyers — you are responsible for ensuring your buyers have opted in to receive such messages.</li>
+        <li>TrustShip cannot be held responsible for WhatsApp service interruptions, message delivery failures, or Meta policy changes.</li>
       </ul>
     </section>
 
-    <section id="section-6">
-      <h2 class="text-lg font-semibold text-gray-900">6. Limitation of liability</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>TrustShip is not liable for failed deliveries</li>
-        <li>TrustShip is not liable for buyer fraud</li>
-        <li>TrustShip is not liable for Delhivery errors</li>
-        <li>Maximum liability is limited to fees paid in the last 30 days</li>
-        <li>TrustShip makes no guarantee of RTO reduction</li>
+    <section id="data" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">6. Your Data &amp; Your Buyers&apos; Data</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>You are responsible for your buyers&apos; data shared through TrustShip.</li>
+        <li>You must have legitimate basis for sharing buyer information (name, phone, address) with TrustShip.</li>
+        <li>TrustShip stores this data securely to provide the service.</li>
+        <li>TrustShip does not sell buyer or seller data to third parties.</li>
+        <li>See our <%= link_to "Privacy Policy", privacy_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %> for full details on data handling.</li>
       </ul>
     </section>
 
-    <section id="section-7">
-      <h2 class="text-lg font-semibold text-gray-900">7. Account termination</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>TrustShip may terminate accounts for policy violations</li>
-        <li>Sellers may close an account anytime by contacting support</li>
-        <li>Outstanding dues must be settled before closure</li>
+    <section id="early-access-pricing" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">7. Early Access &amp; Pricing</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>TrustShip is currently free during Early Access.</li>
+        <li>We reserve the right to introduce pricing at any time.</li>
+        <li>We will notify all users at least 30 days before any charges apply.</li>
+        <li>Early Access users will receive preferential pricing when paid plans are introduced.</li>
+        <li>Continued use after pricing introduction means acceptance of new pricing terms.</li>
       </ul>
     </section>
 
-    <section id="section-8">
-      <h2 class="text-lg font-semibold text-gray-900">8. Intellectual property</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>The TrustShip name, logo, and platform are proprietary</li>
-        <li>Sellers may not copy or replicate the platform</li>
-        <li>Seller data belongs to the seller</li>
+    <section id="acceptable-use" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">8. Acceptable Use</h2>
+      <p class="mt-4">You agree <strong class="font-semibold text-gray-800">not</strong> to use TrustShip to:</p>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>Process fraudulent or fake orders.</li>
+        <li>Spam buyers with unsolicited messages.</li>
+        <li>Violate Meta&apos;s WhatsApp Business policies.</li>
+        <li>Sell prohibited or illegal products.</li>
+        <li>Misrepresent your business or products to buyers.</li>
+        <li>Attempt to reverse engineer or copy TrustShip&apos;s technology.</li>
       </ul>
     </section>
 
-    <section id="section-9">
-      <h2 class="text-lg font-semibold text-gray-900">9. Governing law</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>These terms are governed by Indian law</li>
-        <li>Disputes are subject to the jurisdiction of courts in Gandhinagar, Gujarat, India</li>
-        <li>Parties should attempt mediation before litigation</li>
+    <section id="service-availability" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">9. Service Availability</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>TrustShip aims for high availability but does not guarantee 100% uptime.</li>
+        <li>Scheduled maintenance will be communicated in advance where possible.</li>
+        <li>TrustShip is not liable for losses due to service interruptions.</li>
+        <li>We reserve the right to modify or discontinue features at any time.</li>
       </ul>
     </section>
 
-    <section id="section-10">
-      <h2 class="text-lg font-semibold text-gray-900">10. Contact</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">
-        For questions about these terms:<br>
-        Email: <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %><br>
-        Address: Chekhalarani, Sadra, Gandhinagar, Gujarat - 382320, India
+    <section id="limitation-of-liability" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">10. Limitation of Liability</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>TrustShip&apos;s liability is limited to the amount paid by you in the last 3 months (currently zero during Early Access).</li>
+        <li>TrustShip is not liable for indirect losses, lost revenue, RTO losses, or business disruption.</li>
+        <li>TrustShip is not liable for actions of third parties including Meta or external courier partners.</li>
+      </ul>
+    </section>
+
+    <section id="termination" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">11. Termination</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>You can delete your account at any time from dashboard settings.</li>
+        <li>TrustShip can suspend or terminate accounts that violate these terms.</li>
+        <li>On termination, your data will be retained for 90 days then permanently deleted.</li>
+        <li>You can request immediate data deletion by emailing hello@trustship.in.</li>
+      </ul>
+    </section>
+
+    <section id="changes-to-terms" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">12. Changes to Terms</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>TrustShip may update these terms from time to time.</li>
+        <li>We will notify you via email at least 14 days before significant changes take effect.</li>
+        <li>Continued use after changes means acceptance of new terms.</li>
+      </ul>
+    </section>
+
+    <section id="governing-law" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">13. Governing Law</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>These terms are governed by applicable laws of the jurisdiction.</li>
+        <li>Any disputes will be subject to courts in the jurisdiction of the business owner.</li>
+      </ul>
+    </section>
+
+    <section id="contact" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">14. Contact</h2>
+      <p class="mt-4">
+        If you have any questions about these Terms of Service, contact us at hello@trustship.in
       </p>
     </section>
   </div>
-</div>
+
+  <p class="mt-14 border-t border-gray-200 pt-10 print:mt-8">
+    <%= link_to "← Back to Home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  </p>
+</article>

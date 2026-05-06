@@ -25,7 +25,7 @@ module Whatsapp
           buyer.name,
           order.product_name,
           agent_name.to_s.presence || "Delivery Agent",
-          agent_phone.to_s.presence || "Contact Delhivery helpline"
+          agent_phone.to_s.presence || "Contact delivery support"
         ]
 
         validate_result(

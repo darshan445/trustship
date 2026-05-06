@@ -1,16 +1,28 @@
 # frozen_string_literal: true
 
 module OrdersHelper
-  # Amount seller must pay Razorpay for Delhivery pass-through shipping (from ShippingRate or cached on order).
-  def order_shipping_inr_for_checkout(order)
-    return order.shipping_amount if order.shipping_amount.present?
-
-    r = Orders::CalculateShippingCost.execute(order: order)
-    r.success? ? r.data : nil
-  end
-
   def order_status_tabs
     STATUS_TABS
+  end
+
+  def orders_sort_link(label, key)
+    next_dir = (params[:sort_by].to_s == key && params[:sort_dir].to_s == "asc") ? "desc" : "asc"
+    arrow = if params[:sort_by].to_s == key
+      params[:sort_dir].to_s == "asc" ? "↑" : "↓"
+    else
+      ""
+    end
+    link_to "#{label} #{arrow}".strip, orders_path(request.query_parameters.merge(sort_by: key, sort_dir: next_dir, page: nil)), class: "text-xs font-semibold uppercase tracking-wide text-gray-500 hover:text-gray-700"
+  end
+
+  def buyers_sort_link(label, key)
+    next_dir = (params[:sort_by].to_s == key && params[:sort_dir].to_s == "asc") ? "desc" : "asc"
+    arrow = if params[:sort_by].to_s == key
+      params[:sort_dir].to_s == "asc" ? "↑" : "↓"
+    else
+      ""
+    end
+    link_to "#{label} #{arrow}".strip, buyers_path(request.query_parameters.merge(sort_by: key, sort_dir: next_dir, page: nil)), class: "text-xs font-semibold uppercase tracking-wide text-gray-500 hover:text-gray-700"
   end
 
   def order_parse_input_classes(autofilled, field_key)
@@ -27,9 +39,8 @@ module OrdersHelper
   STATUS_TABS = [
     { label: "All", param: nil },
     { label: "Pending", param: "pending" },
-    { label: "High Risk", param: "high_risk" },
     { label: "Confirmed", param: "confirmed" },
-    { label: "Green Zone", param: "green_zone" },
+    { label: "High Risk", param: "high_risk" },
     { label: "Shipped", param: "shipped" },
     { label: "Delivered", param: "delivered" },
     { label: "RTO", param: "rto" }
@@ -71,6 +82,38 @@ module OrdersHelper
     end
   end
 
+  def compact_risk_badge(order)
+    return nil unless order.order_events.where(event_name: "gate_2_completed").exists?
+
+    case order.buyer.risk_level.to_s
+    when "high"
+      { label: "🔴 High", classes: "bg-red-100 text-red-800" }
+    when "medium"
+      { label: "🟡 Med", classes: "bg-amber-100 text-amber-800" }
+    when "low"
+      { label: "🟢 Low", classes: "bg-green-100 text-green-800" }
+    else
+      { label: "🔵 New", classes: "bg-blue-100 text-blue-800" }
+    end
+  end
+
+  def compact_location_text(order)
+    formatted = order.buyer_address&.address_formatted.to_s
+    fallback = order.buyer_address&.raw_address.to_s
+    source = formatted.present? ? formatted : fallback
+    return "Address unverified" if source.blank?
+
+    pincode = source[/\b\d{5,6}\b/]
+    parts = source.split(",").map(&:strip).reject(&:blank?)
+    city_state =
+      if parts.size >= 2
+        [parts[-3], parts[-2]].compact.join(", ").presence || parts.last(2).join(", ")
+      else
+        parts.first
+      end
+    [city_state.presence || "Address unverified", pincode.presence].compact.join(" · ")
+  end
+
   def order_shipment_cod_to_collect(order)
     return nil if order.full_prepaid?
 
@@ -106,11 +149,7 @@ module OrdersHelper
     when "out_for_delivery" then "Out for Delivery"
     when "delivery_failed" then "Delivery Attempt Failed"
     else
-      if (m = event_name.to_s.match(/\Adelhivery_(.+)\z/))
-        m[1].tr("_", " ").titleize
-      else
-        event_name.to_s.tr("_", " ").titleize
-      end
+      event_name.to_s.tr("_", " ").titleize
     end
   end
 
@@ -127,19 +166,11 @@ module OrdersHelper
     when "delivery_failed"
       r = meta["remarks"].presence
       r ? [ "Remarks: #{r}" ] : []
+    when "mark_undeliverable"
+      r = meta["reason"].presence
+      r ? [ "Reason: #{r}" ] : []
     else
-      if event.event_name.to_s.start_with?("delhivery_") && meta.except("agent_name", "agent_phone").any?
-        instructions = meta["instructions"].presence || meta["remarks"].presence
-        [
-          meta["status_type"].present? ? "Type: #{meta['status_type']}" : nil,
-          meta["status_name"].present? ? "Status: #{meta['status_name']}" : nil,
-          meta["location"].present? ? "Location: #{meta['location']}" : nil,
-          meta["datetime"].present? ? "Time: #{meta['datetime']}" : nil,
-          instructions ? "Instructions: #{instructions}" : nil
-        ].compact
-      else
-        []
-      end
+      []
     end
   end
 

@@ -18,11 +18,14 @@ module Orders
         order = find_order!
         raise_string_error("Order must be pending verification for Gate 3") unless order.pending_verification?
 
-        validate_result(Whatsapp::SendOrderConfirmation.execute(order_id: order.id))
+        result = Orders::SendConfirmation.execute(order: order)
+        unless result.success?
+          log_gate_event(order, "gate_3_failed", errors: result.errors.to_s)
+          Orders::RunGateThreeJob.set(wait: 5.minutes).perform_later(order.id)
+          next order.reload
+        end
 
-        Orders::SendConfirmationReminderJob.set(wait: 4.hours).perform_later(order.id)
-
-        Rails.logger.info { "Gate 3 started for order #{order.id} — confirmation sent to buyer" }
+        log_gate_event(order, "gate_3_started", sent_at: Time.current)
 
         order.reload
       end
@@ -37,6 +40,16 @@ module Orders
       raise_string_error("Order not found") if order.blank?
 
       order
+    end
+
+    def log_gate_event(order, event_name, metadata)
+      order.order_events.create!(
+        from_state: order.aasm_state,
+        to_state: order.aasm_state,
+        event_name: event_name,
+        triggered_by: "system",
+        metadata: metadata
+      )
     end
   end
 end

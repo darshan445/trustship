@@ -49,8 +49,7 @@ module Orders
 
         order.update!(
           payment_type: payment_type_sym,
-          advance_amount: advance,
-          razorpay_payment_id: razorpay_payment_id.presence
+          advance_amount: advance
         )
 
         Rails.logger.info do

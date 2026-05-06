@@ -1,0 +1,60 @@
+<% content_for :title, "Buyers — TrustShip" %>
+<% content_for :page_title, "Buyers" %>
+
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+  <%= form_with url: buyers_path, method: :get, local: true, data: { controller: "orders-list" }, class: "border-b border-gray-100 px-4 py-3" do %>
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+        <i class="ti ti-search text-sm text-gray-400"></i>
+        <%= text_field_tag :q, @query, placeholder: "Search buyer name or phone...", class: "w-full border-none bg-transparent text-sm outline-none", data: { orders_list_target: "search", action: "input->orders-list#search" } %>
+      </div>
+
+      <%= select_tag :risk, options_for_select([["All Risks", "all"], ["Low", "low"], ["Medium", "medium"], ["High", "high"]], @risk.presence || "all"), class: "rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700", data: { action: "change->orders-list#submit" } %>
+      <%= select_tag :per_page, options_for_select([10, 25, 50, 100], @per_page), class: "rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700", data: { action: "change->orders-list#submit" } %>
+      <%= hidden_field_tag :sort_by, @sort_by %>
+      <%= hidden_field_tag :sort_dir, @sort_dir %>
+    </div>
+  <% end %>
+
+  <% if @buyers.any? %>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-100">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left"><%= buyers_sort_link("Buyer", "name") %></th>
+            <th class="px-4 py-3 text-left"><%= buyers_sort_link("Phone", "phone") %></th>
+            <th class="px-4 py-3 text-left"><%= buyers_sort_link("Risk", "risk") %></th>
+            <th class="px-4 py-3 text-left"><%= buyers_sort_link("RTO", "rto_count") %></th>
+            <th class="px-4 py-3 text-left"><%= buyers_sort_link("Successful", "successful_delivery_count") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 bg-white">
+          <% @buyers.each do |buyer| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 text-sm font-semibold text-gray-900"><%= buyer.name %></td>
+              <td class="px-4 py-3 text-sm text-gray-700"><%= buyer.phone %></td>
+              <td class="px-4 py-3 text-sm">
+                <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold <%= risk_badge_classes(buyer.risk_level) %>">
+                  <%= buyer.risk_level.humanize %>
+                </span>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-700"><%= buyer.rto_count %></td>
+              <td class="px-4 py-3 text-sm text-gray-700"><%= buyer.successful_delivery_count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="border-t border-gray-100 px-4 py-3">
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    </div>
+  <% else %>
+    <div class="py-16 text-center">
+      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+        <i class="ti ti-users text-2xl"></i>
+      </div>
+      <p class="mt-3 text-lg font-medium text-gray-700">No buyers yet</p>
+      <p class="mt-1 text-sm text-gray-500">Buyers will appear automatically as orders come in.</p>
+    </div>
+  <% end %>
+</div>

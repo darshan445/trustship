@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
   namespace :webhooks do
@@ -10,17 +8,15 @@ Rails.application.routes.draw do
     end
     resource :razorpay, only: [], controller: "razorpay" do
       get "/", action: :payment_callback, on: :collection
-      get "shipping_callback", action: :shipping_callback, on: :collection
-    end
-    resource :delhivery, only: [], controller: "delhivery" do
-      post "/", action: :receive, on: :collection
     end
   end
 
-  devise_for :sellers, controllers: {
-    sessions: "sellers/sessions",
-    registrations: "sellers/registrations",
-    passwords: "sellers/passwords"
+  devise_for :sellers, **{
+    controllers: {
+      sessions: "sellers/sessions",
+      registrations: "sellers/registrations",
+      passwords: "sellers/passwords"
+    }
   }
 
   root "pages#home"
@@ -28,11 +24,12 @@ Rails.application.routes.draw do
   get "/terms", to: "pages#terms", as: :terms
   get "/privacy", to: "pages#privacy", as: :privacy
   get "/refund", to: "pages#refund", as: :refund
+  get "/cookies", to: "pages#cookies", as: :cookies
   get "/shipping-policy", to: "pages#shipping_policy", as: :shipping_policy
 
   authenticate :seller do
     get "dashboard", to: "orders#index", as: :dashboard
-    resources :orders, only: [ :index, :new, :create, :show ] do
+    resources :orders, only: [ :index, :new, :create, :show, :update ] do
       collection do
         post :parse
         get :manual
@@ -40,13 +37,10 @@ Rails.application.routes.draw do
       member do
         post :override_risk
         post :cancel_order
-        post :ship
-        post :fetch_label
-        post :create_shipping_payment_link
       end
     end
-    resource :account, only: [ :show, :edit, :update ], controller: "account" do
-      post :retry_delhivery_registration, on: :member
-    end
+    resources :products, except: [:show]
+    resources :buyers, only: [:index]
+    resource :account, only: [ :show, :edit, :update ], controller: "account"
   end
 end

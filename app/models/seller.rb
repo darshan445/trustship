@@ -12,16 +12,15 @@ class Seller < ApplicationRecord
 
   has_one_attached :seller_logo
   has_many :orders, inverse_of: :seller, dependent: :restrict_with_exception
+  has_many :products, inverse_of: :seller, dependent: :restrict_with_exception
 
   validates :name, presence: true
   validates :business_name, presence: true
   validates :phone, presence: true,
             uniqueness: true,
             format: { with: PHONE_REGEX, message: "must be a valid 10-digit Indian mobile number" }
-  validates :shop_code, presence: true, uniqueness: true
 
   before_validation :normalize_phone
-  before_validation :assign_shop_code, on: :create
 
   def email_required?
     false
@@ -35,8 +34,7 @@ class Seller < ApplicationRecord
     pickup_address_line.present? &&
       pickup_city.present? &&
       pickup_state.present? &&
-      pickup_pincode.present? &&
-      delhivery_pickup_location_name.present?
+      pickup_pincode.present?
   end
 
   def pickup_address_saved?
@@ -71,18 +69,5 @@ class Seller < ApplicationRecord
 
   def normalize_phone
     self.phone = phone.to_s.gsub(/\s+/, "") if phone.present?
-  end
-
-  def assign_shop_code
-    return if shop_code.present?
-
-    self.shop_code = generate_unique_shop_code
-  end
-
-  def generate_unique_shop_code
-    loop do
-      code = "SHOP#{SecureRandom.alphanumeric(4).upcase}"
-      return code unless Seller.exists?(shop_code: code)
-    end
   end
 end

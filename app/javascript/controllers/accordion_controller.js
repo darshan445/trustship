@@ -6,7 +6,7 @@ export default class extends Controller {
   connect() {
     this.panelTargets.forEach((panel) => {
       panel.classList.add("max-h-0", "overflow-hidden")
-      panel.classList.remove("max-h-96")
+      panel.classList.remove("max-h-[2000px]")
     })
     this.iconTargets.forEach((icon) => {
       icon.classList.add("rotate-0")
@@ -29,7 +29,7 @@ export default class extends Controller {
     const isOpen = wrapper && wrapper.getAttribute("data-open") === "true"
 
     if (isOpen) {
-      panel.classList.remove("max-h-96")
+      panel.classList.remove("max-h-[2000px]")
       panel.classList.add("max-h-0", "overflow-hidden")
       icon.classList.remove("rotate-180")
       icon.classList.add("rotate-0")
@@ -38,7 +38,7 @@ export default class extends Controller {
     }
 
     this.panelTargets.forEach((p, i) => {
-      p.classList.remove("max-h-96")
+      p.classList.remove("max-h-[2000px]")
       p.classList.add("max-h-0", "overflow-hidden")
       this.iconTargets[i].classList.remove("rotate-180")
       this.iconTargets[i].classList.add("rotate-0")
@@ -47,7 +47,7 @@ export default class extends Controller {
     })
 
     panel.classList.remove("max-h-0")
-    panel.classList.add("max-h-96", "overflow-hidden")
+    panel.classList.add("max-h-[2000px]", "overflow-hidden")
     icon.classList.remove("rotate-0")
     icon.classList.add("rotate-180")
     if (wrapper) wrapper.setAttribute("data-open", "true")

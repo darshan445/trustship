@@ -27,9 +27,6 @@ module Orders
 
         order.mark_delivered!
 
-        delivered_ts = parse_delivered_at
-        order.update!(delivered_at: delivered_ts)
-
         buyer.increment_successful_delivery_count!
 
         wa = validate_result_without_raising_error(Whatsapp::SendDeliveredNotification.execute(order_id: order.id))

@@ -18,28 +18,35 @@ module Orders
         order = find_order!
         raise_string_error("Order must be pending verification for Gate 1") unless order.pending_verification?
 
-        pin = validate_result(Delhivery::ValidatePincode.execute(pincode: order.pincode)).data
-
-        if !pin.valid || !pin.serviceable
-          Rails.logger.info { "Gate 1 failed for order #{order.id}" }
-          validate_result(
-            Orders::MarkUndeliverable.execute(
-              order_id: order.id,
-              reason: "Pincode invalid or unserviceable"
-            )
-          )
-          order.reload
-        else
-          attrs = { pincode_verified_at: Time.current }
-          attrs[:city] = pin.city if pin.city.present? && order.city.blank?
-          attrs[:state] = pin.state if pin.state.present? && order.state.blank?
-          order.update!(attrs)
-          Rails.logger.info { "Gate 1 passed for order #{order.id}" }
-          validate_result(Orders::RunGateTwo.execute(order_id: order.id))
-          order.reload
+        raw_address = build_raw_address(order)
+        if raw_address.blank?
+          log_gate_event(order, "gate_1_failed", reason: "No address provided")
+          Orders::RunGateTwoJob.perform_later(order.id)
+          next order.reload
         end
 
-        order
+        find_result = validate_result(BuyerAddresses::FindOrCreate.execute(buyer: order.buyer, raw_address: raw_address))
+        buyer_address = find_result.data[:buyer_address]
+
+        unless find_result.data[:reused]
+          validate_result_without_raising_error(
+            BuyerAddresses::ValidateWithGoogleMaps.execute(buyer_address: buyer_address)
+          )
+        end
+
+        order.update!(buyer_address_id: buyer_address.id)
+        order.reload
+
+        log_gate_event(
+          order,
+          "gate_1_completed",
+          confidence: order.buyer_address&.address_confidence,
+          formatted: order.buyer_address&.address_formatted,
+          reused: find_result.data[:reused]
+        )
+
+        Orders::RunGateTwoJob.perform_later(order.id)
+        order.reload
       end
     end
 
@@ -52,6 +59,20 @@ module Orders
       raise_string_error("Order not found") if order.blank?
 
       order
+    end
+
+    def build_raw_address(order)
+      order.buyer_address&.raw_address.to_s.strip
+    end
+
+    def log_gate_event(order, event_name, metadata)
+      order.order_events.create!(
+        from_state: order.aasm_state,
+        to_state: order.aasm_state,
+        event_name: event_name,
+        triggered_by: "system",
+        metadata: metadata
+      )
     end
   end
 end

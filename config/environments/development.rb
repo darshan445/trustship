@@ -40,8 +40,9 @@ Rails.application.configure do
   # Set localhost to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
-  # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :log
+  # Devise 4.9 emits noisy route deprecations on reload under Rails 8.1.
+  # Silence deprecations in development to keep console output usable.
+  config.active_support.report_deprecations = false
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load

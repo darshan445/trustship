@@ -1,130 +1,259 @@
 <% content_for :title, "Privacy Policy — TrustShip" %>
 
-<div class="print:bg-white">
-  <p class="mb-6">
-    <%= link_to "← Back to home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
-  </p>
-
-  <header class="border-b border-gray-200 pb-6">
-    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Privacy Policy</h1>
-    <p class="mt-2 text-sm font-medium text-gray-500">Last updated: May 2026</p>
+<article class="print:bg-white">
+  <header class="border-b border-gray-200 pb-8">
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Privacy Policy</h1>
+    <p class="mt-3 text-sm font-medium text-gray-500">Last updated: June 2025</p>
   </header>
 
-  <nav class="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm print:hidden" aria-label="Table of contents">
+  <nav class="mt-10 rounded-xl border border-gray-200 bg-gray-50 p-5 text-sm print:hidden" aria-label="Table of contents">
     <p class="font-semibold text-gray-900">On this page</p>
-    <ol class="mt-3 list-decimal space-y-1 pl-5 text-gray-700">
-      <li><a href="#privacy-1" class="text-indigo-600 hover:text-indigo-500">Information we collect</a></li>
-      <li><a href="#privacy-2" class="text-indigo-600 hover:text-indigo-500">How we use information</a></li>
-      <li><a href="#privacy-3" class="text-indigo-600 hover:text-indigo-500">Data sharing</a></li>
-      <li><a href="#privacy-4" class="text-indigo-600 hover:text-indigo-500">Data security</a></li>
-      <li><a href="#privacy-5" class="text-indigo-600 hover:text-indigo-500">Data retention</a></li>
-      <li><a href="#privacy-6" class="text-indigo-600 hover:text-indigo-500">Your rights</a></li>
-      <li><a href="#privacy-7" class="text-indigo-600 hover:text-indigo-500">Cookies</a></li>
-      <li><a href="#privacy-8" class="text-indigo-600 hover:text-indigo-500">WhatsApp & third parties</a></li>
-      <li><a href="#privacy-9" class="text-indigo-600 hover:text-indigo-500">Children’s privacy</a></li>
-      <li><a href="#privacy-10" class="text-indigo-600 hover:text-indigo-500">Contact</a></li>
+    <ol class="mt-4 grid list-decimal gap-x-8 gap-y-2 pl-5 text-gray-700 sm:grid-cols-2">
+      <li class="pl-1"><a href="#introduction" class="text-indigo-600 hover:text-indigo-500">Introduction</a></li>
+      <li class="pl-1"><a href="#who-this-policy-covers" class="text-indigo-600 hover:text-indigo-500">Who This Policy Covers</a></li>
+      <li class="pl-1"><a href="#data-we-collect" class="text-indigo-600 hover:text-indigo-500">Data We Collect</a></li>
+      <li class="pl-1"><a href="#why-we-collect" class="text-indigo-600 hover:text-indigo-500">Why We Collect This Data</a></li>
+      <li class="pl-1"><a href="#ai-automation" class="text-indigo-600 hover:text-indigo-500">How We Use AI &amp; Automation</a></li>
+      <li class="pl-1"><a href="#data-sharing" class="text-indigo-600 hover:text-indigo-500">Data Sharing</a></li>
+      <li class="pl-1"><a href="#storage-security" class="text-indigo-600 hover:text-indigo-500">Data Storage &amp; Security</a></li>
+      <li class="pl-1"><a href="#retention" class="text-indigo-600 hover:text-indigo-500">Data Retention</a></li>
+      <li class="pl-1"><a href="#seller-rights" class="text-indigo-600 hover:text-indigo-500">Your Rights as a Seller</a></li>
+      <li class="pl-1"><a href="#buyer-rights" class="text-indigo-600 hover:text-indigo-500">Buyer Rights</a></li>
+      <li class="pl-1"><a href="#cookies" class="text-indigo-600 hover:text-indigo-500">Cookies</a></li>
+      <li class="pl-1"><a href="#children" class="text-indigo-600 hover:text-indigo-500">Children&apos;s Privacy</a></li>
+      <li class="pl-1"><a href="#whatsapp-meta" class="text-indigo-600 hover:text-indigo-500">WhatsApp &amp; Meta</a></li>
+      <li class="pl-1"><a href="#changes" class="text-indigo-600 hover:text-indigo-500">Changes to This Policy</a></li>
+      <li class="pl-1"><a href="#contact" class="text-indigo-600 hover:text-indigo-500">Contact &amp; Complaints</a></li>
     </ol>
   </nav>
 
-  <div class="mt-10 space-y-10">
-    <section id="privacy-1">
-      <h2 class="text-lg font-semibold text-gray-900">1. Information we collect</h2>
-      <p class="mt-3 font-medium text-gray-800">From sellers</p>
-      <ul class="mt-2 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>Name, phone number, business name</li>
-        <li>Pickup address</li>
-        <li>GST number (optional)</li>
-      </ul>
-      <p class="mt-4 font-medium text-gray-800">From buyers (via seller’s orders)</p>
-      <ul class="mt-2 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>Name, phone number</li>
-        <li>Delivery address</li>
-        <li>Order details</li>
-        <li>Payment status</li>
-      </ul>
-    </section>
+  <div class="mt-10 grid gap-4 sm:grid-cols-3 print:hidden">
+    <div class="rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 text-sm leading-snug text-indigo-950">
+      <p class="font-semibold text-indigo-900">We never sell your data</p>
+    </div>
+    <div class="rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 text-sm leading-snug text-indigo-950">
+      <p class="font-semibold text-indigo-900">Raw WhatsApp messages are never stored</p>
+    </div>
+    <div class="rounded-xl border border-indigo-100 bg-indigo-50/80 px-4 py-3 text-sm leading-snug text-indigo-950">
+      <p class="font-semibold text-indigo-900">Buyer data is never used for marketing</p>
+    </div>
+  </div>
 
-    <section id="privacy-2">
-      <h2 class="text-lg font-semibold text-gray-900">2. How we use information</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>Process and verify orders</li>
-        <li>Send WhatsApp notifications to buyers</li>
-        <li>Create shipments via Delhivery</li>
-        <li>Improve RTO risk scoring</li>
-        <li>Communicate with sellers about their account</li>
-      </ul>
-    </section>
-
-    <section id="privacy-3">
-      <h2 class="text-lg font-semibold text-gray-900">3. Data sharing</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">We share data with:</p>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li><strong class="text-gray-800">Delhivery:</strong> buyer name, address, and phone for shipping</li>
-        <li><strong class="text-gray-800">Meta/WhatsApp:</strong> buyer phone for notifications</li>
-        <li><strong class="text-gray-800">Razorpay:</strong> buyer phone and order amount for payments</li>
-      </ul>
-      <p class="mt-4 text-gray-600 leading-relaxed">We do not sell data to third parties.</p>
-    </section>
-
-    <section id="privacy-4">
-      <h2 class="text-lg font-semibold text-gray-900">4. Data security</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>All data is encrypted in transit (HTTPS)</li>
-        <li>Passwords are encrypted and never stored in plain text</li>
-        <li>We follow industry-standard security practices</li>
-      </ul>
-    </section>
-
-    <section id="privacy-5">
-      <h2 class="text-lg font-semibold text-gray-900">5. Data retention</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>Seller account data: retained while the account is active</li>
-        <li>Order data: retained for 3 years for compliance</li>
-        <li>Deleted account data: removed within 30 days</li>
-      </ul>
-    </section>
-
-    <section id="privacy-6">
-      <h2 class="text-lg font-semibold text-gray-900">6. Your rights</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li><strong class="text-gray-800">Access your data:</strong> email <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %></li>
-        <li><strong class="text-gray-800">Correct inaccurate data:</strong> update in account settings</li>
-        <li><strong class="text-gray-800">Delete your data:</strong> email <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %></li>
-        <li><strong class="text-gray-800">Export your data:</strong> email <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %></li>
-      </ul>
-    </section>
-
-    <section id="privacy-7">
-      <h2 class="text-lg font-semibold text-gray-900">7. Cookies</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">We use minimal cookies for:</p>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>Keeping you logged in (session cookie)</li>
-        <li>No tracking or advertising cookies</li>
-      </ul>
-    </section>
-
-    <section id="privacy-8">
-      <h2 class="text-lg font-semibold text-gray-900">8. WhatsApp & third-party services</h2>
-      <ul class="mt-3 list-disc space-y-2 pl-6 text-gray-600 leading-relaxed">
-        <li>WhatsApp messages are sent via Meta Cloud API</li>
-        <li>Meta’s privacy policy applies to WhatsApp messages</li>
-        <li>Buyers can opt out by replying STOP</li>
-      </ul>
-    </section>
-
-    <section id="privacy-9">
-      <h2 class="text-lg font-semibold text-gray-900">9. Children’s privacy</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">
-        TrustShip is not intended for users under 18 years of age.
+  <div class="mt-12 space-y-12 text-gray-600 leading-relaxed">
+    <section id="introduction" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">1. Introduction</h2>
+      <p class="mt-4">
+        TrustShip (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) is committed to protecting your privacy and the privacy of your buyers. This Privacy Policy explains what data we collect, why we collect it, how we use it, and your rights over it.
+      </p>
+      <p class="mt-4">
+        TrustShip is operated by Darshan Thakor (sole proprietorship).
+      </p>
+      <p class="mt-4">
+        By using TrustShip, you agree to the collection and use of information as described in this policy. We aim to align with responsible data practices and applicable data protection laws where they apply to our processing.
       </p>
     </section>
 
-    <section id="privacy-10">
-      <h2 class="text-lg font-semibold text-gray-900">10. Contact</h2>
-      <p class="mt-3 text-gray-600 leading-relaxed">
-        Privacy questions:
-        <%= link_to support_email, "mailto:#{support_email}", class: "text-indigo-600 hover:text-indigo-500" %>
+    <section id="who-this-policy-covers" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">2. Who This Policy Covers</h2>
+      <p class="mt-4">This policy covers two types of people:</p>
+      <p class="mt-4">
+        <strong class="font-semibold text-gray-800">Sellers</strong> — businesses and individuals who create a TrustShip account to manage their WhatsApp orders.
+      </p>
+      <p class="mt-4">
+        <strong class="font-semibold text-gray-800">Buyers</strong> — end customers of sellers whose order information is processed through TrustShip as part of the order verification flow.
+      </p>
+    </section>
+
+    <section id="data-we-collect" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">3. Data We Collect</h2>
+
+      <h3 id="data-seller-provided" class="mt-6 scroll-mt-24 text-lg font-semibold text-gray-800">3a. Data You Give Us (Seller)</h3>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>Full name and business name</li>
+        <li>Email address and phone number</li>
+        <li>WhatsApp Business number</li>
+        <li>Business address</li>
+        <li>Bank/payment details if applicable in future</li>
+        <li>Any other information provided during signup or account setup</li>
+      </ul>
+
+      <h3 id="data-collected-automatically" class="mt-8 scroll-mt-24 text-lg font-semibold text-gray-800">3b. Data Collected Automatically (Seller)</h3>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>Login activity and session data</li>
+        <li>Device type, browser, IP address</li>
+        <li>Pages visited and features used within TrustShip</li>
+        <li>Error logs and performance data</li>
+      </ul>
+
+      <h3 id="data-buyer" class="mt-8 scroll-mt-24 text-lg font-semibold text-gray-800">3c. Buyer Data (Processed on Your Behalf)</h3>
+      <p class="mt-3">When your buyers send orders via WhatsApp, TrustShip processes:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>Buyer name</li>
+        <li>Buyer phone number</li>
+        <li>Delivery address</li>
+        <li>Order details (product, quantity, amount)</li>
+        <li>WhatsApp message content (for AI parsing only)</li>
+        <li>Order confirmation responses</li>
+      </ul>
+      <p class="mt-4 rounded-lg border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+        <strong class="font-semibold">Important:</strong> TrustShip processes buyer data as a <strong class="font-semibold">data processor</strong> on behalf of the seller (<strong class="font-semibold">data controller</strong>). Sellers are responsible for ensuring they have a legitimate basis for sharing buyer data with TrustShip.
+      </p>
+    </section>
+
+    <section id="why-we-collect" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">4. Why We Collect This Data</h2>
+      <p class="mt-4 font-medium text-gray-800">Seller data:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>To create and manage your TrustShip account</li>
+        <li>To provide order parsing and verification services</li>
+        <li>To send you product updates, alerts, and support communications</li>
+        <li>To improve TrustShip&apos;s features and AI accuracy</li>
+        <li>To comply with legal obligations</li>
+      </ul>
+      <p class="mt-6 font-medium text-gray-800">Buyer data:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>To parse and structure incoming order messages</li>
+        <li>To run automated verification checks (phone, address, RTO history)</li>
+        <li>To send WhatsApp confirmation messages to buyers</li>
+        <li>To maintain order history for RTO risk scoring</li>
+        <li>We do <strong class="font-semibold text-gray-800">not</strong> use buyer data for marketing or any purpose beyond order processing</li>
+      </ul>
+    </section>
+
+    <section id="ai-automation" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">5. How We Use AI &amp; Automation</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>Incoming WhatsApp messages are sent to Google Gemini API for order parsing</li>
+        <li>Message content is processed by Gemini to extract order details</li>
+        <li>Gemini&apos;s use of this data is governed by Google&apos;s API Terms</li>
+        <li>TrustShip does not use message content to train AI models</li>
+        <li>Parsed order data is stored in TrustShip&apos;s secure database</li>
+        <li>Phone numbers are verified via third party HLR lookup services</li>
+        <li>Addresses are validated via Google Maps Geocoding API</li>
+      </ul>
+    </section>
+
+    <section id="data-sharing" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">6. Data Sharing</h2>
+      <p class="mt-4">We share data only when necessary to provide the service:</p>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li><strong class="text-gray-800">Google Gemini API</strong> — for AI order parsing</li>
+        <li><strong class="text-gray-800">Google Maps API</strong> — for address validation</li>
+        <li><strong class="text-gray-800">MSG91 / HLR providers</strong> — for phone number verification</li>
+        <li><strong class="text-gray-800">Meta WhatsApp Cloud API</strong> — for sending confirmation messages</li>
+        <li><strong class="text-gray-800">Razorpay</strong> — for payment processing if applicable</li>
+        <li><strong class="text-gray-800">Cloud hosting provider</strong> — for secure data storage</li>
+      </ul>
+      <p class="mt-6 font-medium text-gray-800">We do NOT:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>Sell your data or your buyers&apos; data to anyone</li>
+        <li>Share data with advertisers</li>
+        <li>Share data with other sellers on TrustShip</li>
+        <li>Use your data for any purpose beyond providing TrustShip service</li>
+      </ul>
+    </section>
+
+    <section id="storage-security" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">7. Data Storage &amp; Security</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>All data is stored on secure cloud servers</li>
+        <li>Data is encrypted in transit (HTTPS/TLS)</li>
+        <li>Database access is restricted and logged</li>
+        <li>We conduct regular security reviews</li>
+        <li>In case of a data breach, we will notify affected users within 72 hours</li>
+      </ul>
+    </section>
+
+    <section id="retention" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">8. Data Retention</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li><strong class="text-gray-800">Seller account data</strong> — retained while account is active + 90 days after deletion</li>
+        <li><strong class="text-gray-800">Order and buyer data</strong> — retained for 12 months for RTO history and dispute purposes, then permanently deleted</li>
+        <li><strong class="text-gray-800">WhatsApp message content</strong> — deleted immediately after parsing; raw messages are not stored</li>
+        <li><strong class="text-gray-800">Payment data</strong> — retained as required by law (typically 7 years)</li>
+      </ul>
+    </section>
+
+    <section id="seller-rights" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">9. Your Rights as a Seller</h2>
+      <p class="mt-4">You have the right to:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>Access all data TrustShip holds about you</li>
+        <li>Correct inaccurate data</li>
+        <li>Request deletion of your account and data</li>
+        <li>Export your order data in CSV format</li>
+        <li>Withdraw consent for communications</li>
+        <li>Lodge a complaint with relevant authorities</li>
+      </ul>
+      <p class="mt-4">To exercise any of these rights, email hello@trustship.in</p>
+    </section>
+
+    <section id="buyer-rights" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">10. Buyer Rights</h2>
+      <p class="mt-4">If you are a buyer whose data has been processed through TrustShip:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>Your data was shared by the seller you purchased from</li>
+        <li>Contact the seller directly for data requests</li>
+        <li>For urgent concerns email hello@trustship.in and we will assist</li>
+      </ul>
+    </section>
+
+    <section id="cookies" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">11. Cookies</h2>
+      <p class="mt-4">TrustShip uses minimal cookies:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li><strong class="text-gray-800">Session cookie</strong> — keeps you logged in (essential)</li>
+        <li><strong class="text-gray-800">CSRF token</strong> — security protection (essential)</li>
+        <li>No advertising cookies</li>
+        <li>No third party tracking cookies</li>
+        <li>No analytics cookies without consent</li>
+      </ul>
+      <p class="mt-4">
+        See our <%= link_to "Cookie Policy", cookies_path, class: "font-medium text-indigo-600 hover:text-indigo-500" %> for full details.
+      </p>
+    </section>
+
+    <section id="children" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">12. Children&apos;s Privacy</h2>
+      <p class="mt-4">
+        TrustShip is not intended for use by anyone under 18 years of age. We do not knowingly collect data from minors.
+      </p>
+    </section>
+
+    <section id="whatsapp-meta" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">13. WhatsApp &amp; Meta</h2>
+      <p class="mt-4">By connecting your WhatsApp number to TrustShip:</p>
+      <ul class="mt-3 list-disc space-y-2 pl-6">
+        <li>Your WhatsApp message data passes through Meta&apos;s infrastructure</li>
+        <li>Meta&apos;s own Privacy Policy applies to WhatsApp data</li>
+        <li>TrustShip only receives message data that Meta forwards via webhook — we do not access your full WhatsApp history</li>
+      </ul>
+    </section>
+
+    <section id="changes" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">14. Changes to This Policy</h2>
+      <ul class="mt-4 list-disc space-y-2 pl-6">
+        <li>We will notify you via email of significant privacy policy changes</li>
+        <li>At least 14 days notice before changes take effect</li>
+        <li>Continued use after changes means acceptance of updated policy</li>
+        <li>Previous versions available on request</li>
+      </ul>
+    </section>
+
+    <section id="contact" class="scroll-mt-24">
+      <h2 class="text-xl font-semibold text-gray-900">15. Contact &amp; Complaints</h2>
+      <p class="mt-4">For any privacy related questions or concerns:</p>
+      <p class="mt-3">
+        <strong class="font-semibold text-gray-800">Email:</strong> hello@trustship.in<br>
+        <strong class="font-semibold text-gray-800">Response time:</strong> Within 3 business days
+      </p>
+      <p class="mt-4">
+        If you are not satisfied with our response, you may contact the relevant data protection authority in your jurisdiction.
       </p>
     </section>
   </div>
-</div>
+
+  <p class="mt-14 border-t border-gray-200 pt-10 print:mt-8">
+    <%= link_to "← Back to Home", root_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+  </p>
+</article>

@@ -33,12 +33,12 @@
 
 <div class="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
     <h2 class="text-lg font-semibold text-gray-900">Pickup Address</h2>
-    <p class="mt-1 text-sm text-gray-600">Delhivery will collect orders from this address</p>
+    <p class="mt-1 text-sm text-gray-600">Use this as your default pickup location for shipping.</p>
 
-    <% if current_seller.pickup_address_saved? && current_seller.pickup_address_complete? %>
+    <% if current_seller.pickup_address_saved? %>
       <div class="mt-4 space-y-2 text-sm">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">Ready to Ship ✅</span>
+          <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">Pickup address saved ✅</span>
         </div>
         <p class="text-gray-900"><%= current_seller.pickup_address_line %></p>
         <p class="text-gray-700"><%= current_seller.pickup_city %>, <%= current_seller.pickup_state %> <%= current_seller.pickup_pincode %></p>
@@ -47,36 +47,10 @@
           <%= current_seller.pickup_name.presence || current_seller.name %>
           · <%= current_seller.pickup_phone.presence || current_seller.phone %>
         </p>
-        <p class="text-gray-600">
-          <span class="font-medium text-gray-800">Delhivery pickup location:</span>
-          <span class="font-mono text-gray-900"><%= current_seller.delhivery_pickup_location_name %></span>
-        </p>
       </div>
       <p class="mt-4">
         <%= link_to "Edit Address →", edit_account_path, class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
       </p>
-    <% elsif current_seller.pickup_address_saved? %>
-      <div class="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-900">
-        <p class="font-medium">Pickup address saved — registering with Delhivery...</p>
-        <p class="mt-1 text-xs text-gray-600">
-          This usually completes automatically. If it takes too long, try saving your address again.
-        </p>
-      </div>
-      <div class="mt-4 space-y-2 text-sm">
-        <p class="text-gray-900"><%= current_seller.pickup_address_line %></p>
-        <p class="text-gray-700"><%= current_seller.pickup_city %>, <%= current_seller.pickup_state %> <%= current_seller.pickup_pincode %></p>
-        <p class="text-gray-600">
-          <span class="font-medium text-gray-800">Contact:</span>
-          <%= current_seller.pickup_name.presence || current_seller.name %>
-          · <%= current_seller.pickup_phone.presence || current_seller.phone %>
-        </p>
-      </div>
-      <div class="mt-4 flex flex-wrap items-center gap-3">
-        <%= link_to "Edit Address →", edit_account_path, class: "text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
-        <%= button_to "Retry Registration", retry_delhivery_registration_account_path,
-            method: :post,
-            class: "rounded-lg border border-yellow-300 bg-white px-3 py-1.5 text-xs font-semibold text-yellow-900 hover:bg-yellow-100" %>
-      </div>
     <% else %>
       <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
         <p class="font-medium">Add your pickup address to start shipping</p>
@@ -85,41 +59,6 @@
         </p>
       </div>
     <% end %>
-</div>
-
-<div class="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-  <h2 class="text-lg font-semibold text-gray-900">Your Shop Code</h2>
-  <p class="mt-1 text-sm text-gray-600">Tell your buyers to start their WhatsApp message with this code</p>
-
-  <div class="mt-4 flex flex-wrap items-center gap-3">
-    <span class="font-mono text-2xl font-bold tracking-wide text-indigo-700"><%= current_seller.shop_code %></span>
-    <div class="flex items-center gap-2" data-controller="clipboard" data-clipboard-text-value="<%= current_seller.shop_code %>">
-      <button
-        type="button"
-        data-action="click->clipboard#copy"
-        class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50">
-        Copy
-      </button>
-      <span data-clipboard-target="feedback" class="text-xs font-medium text-green-700" aria-live="polite"></span>
-    </div>
-  </div>
-
-  <div class="mt-6 rounded-lg border border-indigo-100 bg-indigo-50/60 p-4">
-    <h3 class="text-sm font-semibold text-indigo-900">How to tell your buyers</h3>
-    <p class="mt-2 text-sm text-indigo-950/90">
-      Ask your buyers to start their WhatsApp message with your shop code.
-      Example: <%= current_seller.shop_code %> bhai ek blue earring chahiye, surat 395009, COD, raj 9876543210
-    </p>
-  </div>
-
-  <% share_text = "Hi! To place an order with #{current_seller.business_name}, start your WhatsApp message with my shop code: #{current_seller.shop_code}\nExample: #{current_seller.shop_code} product name, your address, COD or Prepaid, your name and phone" %>
-  <p class="mt-4">
-    <%= link_to "Share instructions on WhatsApp",
-          "https://wa.me/?text=#{ERB::Util.url_encode(share_text)}",
-          target: "_blank",
-          rel: "noopener noreferrer",
-          class: "inline-flex items-center justify-center rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500" %>
-  </p>
 </div>
 
 <%= button_to "Sign out", destroy_seller_session_path, method: :delete, class: "mt-8 w-full rounded-lg border-2 border-red-600 bg-white px-5 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50" %>

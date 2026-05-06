@@ -27,9 +27,6 @@ module Orders
 
         order.mark_rto!
 
-        rto_ts = parse_rto_at
-        order.update!(rto_at: rto_ts)
-
         buyer.increment_rto_count!
 
         wa = validate_result_without_raising_error(Whatsapp::SendRtoNotification.execute(order_id: order.id))

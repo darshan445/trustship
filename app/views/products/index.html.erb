@@ -1,0 +1,61 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between gap-3">
+    <h1 class="text-2xl font-bold text-gray-900">Your Products</h1>
+    <%= link_to "Add Product", new_product_path, class: "inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" %>
+  </div>
+
+  <% if @products.any? %>
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+          <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <tr>
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">SKU</th>
+              <th class="px-4 py-3">Price</th>
+              <th class="px-4 py-3">COD Advance</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 bg-white text-gray-700">
+            <% @products.each do |product| %>
+              <tr>
+                <td class="px-4 py-3">
+                  <p class="font-medium text-gray-900"><%= product.name %></p>
+                  <% if product.description.present? %>
+                    <p class="mt-0.5 text-xs text-gray-500"><%= truncate(product.description, length: 80) %></p>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3"><%= product.sku.presence || "—" %></td>
+                <td class="px-4 py-3"><%= product.price.present? ? number_to_currency(product.price, unit: "₹") : "—" %></td>
+                <td class="px-4 py-3"><%= number_to_currency(product.cod_minimum_advance || 0, unit: "₹") %></td>
+                <td class="px-4 py-3">
+                  <% if product.is_active? %>
+                    <span class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">Active</span>
+                  <% else %>
+                    <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">Inactive</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center justify-end gap-2">
+                    <%= link_to "Edit", edit_product_path(product), class: "inline-flex items-center rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50" %>
+                    <%= button_to(product.is_active? ? "Disable" : "Enable", product_path(product), method: :delete, class: "inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold #{product.is_active? ? 'bg-red-50 text-red-700 hover:bg-red-100' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}") %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="flex justify-center">
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    </div>
+  <% else %>
+    <div class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-10 text-center">
+      <p class="text-sm text-gray-600">No products yet. Add your first product.</p>
+    </div>
+  <% end %>
+</div>

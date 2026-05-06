@@ -17,31 +17,7 @@ module Orders
 
     def execute
       execute_log_and_return_open_struct do
-        order = Order.find_by(id: order_id)
-        raise_string_error("Order not found") if order.blank?
-
-        if order.shipping_payment_status == "paid"
-          order
-        else
-          raise_string_error("Order is not awaiting shipping payment") unless order.shipping_payment_status == "pending"
-
-          order.update!(
-            shipping_payment_id: razorpay_payment_id,
-            shipping_paid_at: Time.current,
-            shipping_payment_status: "paid"
-          )
-
-          Rails.logger.info { "Order #{order.id} shipping paid ₹#{amount_paid} (#{razorpay_payment_id})" }
-
-          ship_result = Orders::ShipOrder.execute(order_id: order.id, seller_id: order.seller_id)
-          unless ship_result.success?
-            Rails.logger.error do
-              "Shipping paid for order #{order.id} but ShipOrder failed: #{ship_result.errors}. Seller can retry Ship Now."
-            end
-          end
-
-          order.reload
-        end
+        raise_string_error("Shipping payment flow is disabled after orders table cleanup")
       end
     end
 

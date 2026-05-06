@@ -19,7 +19,7 @@ module Whatsapp
         buyer = order.buyer
 
         raise_string_error("Order no longer pending") unless order.pending_verification?
-        raise_string_error("Confirmation not sent yet") if order.confirmation_sent_at.blank?
+        raise_string_error("Confirmation not sent yet") unless order.order_events.where(event_name: "confirmation_sent").exists?
 
         parameters = [ buyer.name, order.product_name ]
 
@@ -31,7 +31,13 @@ module Whatsapp
           )
         )
 
-        order.update!(confirmation_reminder_sent_at: Time.current)
+        order.order_events.create!(
+          from_state: order.aasm_state,
+          to_state: order.aasm_state,
+          event_name: "confirmation_reminder_sent",
+          triggered_by: "system",
+          metadata: {}
+        )
         order.reload
       end
     end

@@ -27,14 +27,30 @@ module Webhooks
       end
 
       payload = JSON.parse(raw_post)
-      messages = payload.dig("entry", 0, "changes", 0, "value", "messages")
+      value = payload.dig("entry", 0, "changes", 0, "value")
+      messages = value&.dig("messages")
+      metadata = value&.dig("metadata") || {}
+
       if messages.blank?
         head :ok
         return
       end
 
+      to_phone = normalize_phone(metadata["display_phone_number"].presence)
+      if to_phone.blank?
+        Rails.logger.warn { "WhatsApp webhook: could not normalize receiving phone #{metadata['display_phone_number'].inspect}" }
+        head :ok
+        return
+      end
+
+      seller = Seller.find_by(phone: to_phone)
+      unless seller
+        head :ok
+        return
+      end
+
       Array(messages).each do |msg|
-        process_incoming_message(msg)
+        process_incoming_message(msg, seller)
       end
 
       head :ok
@@ -48,36 +64,65 @@ module Webhooks
 
     private
 
-    def process_incoming_message(msg)
+    def process_incoming_message(msg, seller)
       return unless msg.is_a?(Hash)
       return unless msg["type"].to_s == "text"
 
-      from_raw = msg["from"].to_s
       body = msg.dig("text", "body")
       return if body.blank?
 
-      from = normalize_phone(from_raw)
-      if from.blank?
+      from_raw = msg["from"].to_s
+      from_phone = normalize_phone(from_raw)
+      if from_phone.blank?
         Rails.logger.warn { "WhatsApp webhook: could not normalize sender phone #{from_raw.inspect}" }
         return
       end
 
-      first_word = body.strip.split(" ").first&.upcase
-      seller = Seller.find_by(shop_code: first_word) if first_word.present?
-
-      if seller.present?
-        Orders::CreateOrderFromWhatsappJob.perform_later(phone: from, message: body)
+      if from_phone == seller.phone
+        handle_seller_decision_reply(seller: seller, message: body)
         return
       end
 
-      result = Orders::ProcessBuyerReply.execute(phone: from, reply: body)
-      if result.success?
-        Rails.logger.info { "ProcessBuyerReply ok for #{from}" }
-      else
-        Rails.logger.info { "ProcessBuyerReply failed for #{from}: #{result.errors}" }
+      buyer = Buyer.find_by(phone: from_phone)
+      if buyer
+        pending_confirmation = Order.joins(:order_confirmation)
+                                    .where(buyer_id: buyer.id, order_confirmations: { responded_at: nil })
+                                    .where(aasm_state: "pending_verification")
+                                    .order(created_at: :desc)
+                                    .first
+        if pending_confirmation
+          Orders::ProcessBuyerConfirmationReply.execute(order: pending_confirmation, message: body)
+          return
+        end
       end
+
+      Orders::CreateOrderFromWhatsappJob.perform_later(
+        seller_id: seller.id,
+        buyer_phone: from_phone,
+        message: body
+      )
     rescue StandardError => e
       Rails.logger.error { "WhatsApp process message error: #{e.class}: #{e.message}" }
+    end
+
+    def handle_seller_decision_reply(seller:, message:)
+      normalized = message.to_s.strip.downcase
+      decision = if normalized.start_with?("keep")
+        "keep_waiting"
+      elsif normalized.start_with?("cancel")
+        "cancelled"
+      end
+      return if decision.blank?
+
+      target = seller.orders
+                     .joins(:order_confirmation)
+                     .where(order_confirmations: { responded_at: nil })
+                     .where.not(order_confirmations: { seller_notified_at: nil })
+                     .order(created_at: :desc)
+                     .first
+      return if target.blank?
+
+      Orders::ProcessSellerConfirmationDecision.execute(order: target, decision: decision)
     end
 
     def meta_signature_valid?(raw_body)

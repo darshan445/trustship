@@ -18,11 +18,25 @@ module Orders
         order = find_order!
         raise_string_error("Order must be confirmed for Gate 4") unless order.confirmed?
 
-        validate_result(Whatsapp::SendPrepaidIncentive.execute(order_id: order.id))
+        advance_amount = order.product&.cod_minimum_advance.to_d
+        unless order.payment_type == "full_cod" && advance_amount.positive?
+          log_gate_event(
+            order,
+            "gate_4_skipped",
+            reason: order.payment_type != "full_cod" ? "prepaid_order" : "no_advance_configured_for_product"
+          )
+          return order
+        end
 
-        Orders::AutoEnterGreenZoneJob.set(wait: 30.minutes).perform_later(order.id)
+        result = Orders::SendAdvancePaymentRequest.execute(order: order)
+        if result.failure?
+          log_gate_event(order, "gate_4_failed", errors: result.errors)
+          Orders::RunGateFourJob.set(wait: 5.minutes).perform_later(order.id)
+          return order
+        end
 
-        Rails.logger.info { "Gate 4 started for order #{order.id} — payment options sent to buyer" }
+        log_gate_event(order, "gate_4_started", advance_amount: advance_amount, sent_at: Time.current)
+        Rails.logger.info { "Gate 4 started for order #{order.id} — COD advance requested" }
 
         order.reload
       end
@@ -37,6 +51,16 @@ module Orders
       raise_string_error("Order not found") if order.blank?
 
       order
+    end
+
+    def log_gate_event(order, event_name, metadata)
+      order.order_events.create!(
+        from_state: order.aasm_state,
+        to_state: order.aasm_state,
+        event_name: event_name,
+        triggered_by: "system",
+        metadata: metadata
+      )
     end
   end
 end

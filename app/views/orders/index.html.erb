@@ -1,72 +1,103 @@
 <% content_for :title, "Orders — TrustShip" %>
-
-<h1 class="text-2xl font-bold text-gray-900">Orders</h1>
-
-<% w = Order::WEIGHT_TIERS %>
-<% tier_rows = [
-  [ "Upto 500g", w[500] ],
-  [ "500g-1kg", w[1000] ],
-  [ "1kg-2kg", w[2000] ],
-  [ "2kg-5kg", w[5000] ]
-] %>
-<section class="mt-6 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-  <h2 class="text-lg font-bold text-gray-900">Your Shipping Rates</h2>
-  <p class="mt-1 text-sm text-gray-600">All inclusive — no hidden charges</p>
-  <div class="mt-4 overflow-x-auto">
-    <table class="w-full min-w-[280px] text-left text-sm">
-      <thead>
-        <tr class="border-b border-gray-200 text-gray-500">
-          <th class="pb-2 pr-3 font-medium">Weight</th>
-          <th class="pb-2 pr-3 font-medium">COD</th>
-          <th class="pb-2 font-medium">UPI Payment</th>
-        </tr>
-      </thead>
-      <tbody class="text-gray-900">
-        <% tier_rows.each do |label, rates| %>
-          <tr class="border-b border-gray-100 last:border-0">
-            <td class="py-2 pr-3"><%= label %></td>
-            <td class="py-2 pr-3">₹<%= rates[:cod] %></td>
-            <td class="py-2">₹<%= rates[:prepaid] %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-  <p class="mt-4 text-xs text-gray-500">
-    Rates include Delhivery shipping, COD charge, GST, and TrustShip platform fee.
-    UPI payment saves ₹<%= w[500][:cod] - w[500][:prepaid] %> per shipment.
-  </p>
-</section>
-
-<div class="-mx-4 mt-6 flex gap-4 overflow-x-auto border-b border-gray-200 px-4 pb-0">
-  <% order_status_tabs.each do |tab| %>
-    <% active = orders_status_filter_active?(tab[:param]) %>
-    <% path = tab[:param].present? ? orders_path(status: tab[:param]) : orders_path %>
-    <%= link_to path,
-          class: [
-            "shrink-0 whitespace-nowrap border-b-2 pb-2 text-sm transition-colors",
-            active ? "border-indigo-600 font-bold text-indigo-600" : "border-transparent font-medium text-gray-500 hover:text-gray-800"
-          ].join(" ") do %>
-      <%= tab[:label] %>
-    <% end %>
+<% content_for :page_title, "Orders" %>
+<% content_for :topbar_actions do %>
+  <%= link_to new_order_path, class: "btn-primary" do %>
+    <i class="ti ti-plus text-sm"></i>
+    New Order
   <% end %>
+<% end %>
+
+<div class="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+  <div class="stat-card">
+    <div class="stat-label">Total Orders</div>
+    <div class="stat-value"><%= @total_orders %></div>
+    <div class="stat-sub">Lifetime</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pending</div>
+    <div class="stat-value text-amber-600"><%= @pending_orders %></div>
+    <div class="stat-sub">Awaiting gates</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Confirmed</div>
+    <div class="stat-value text-green-700"><%= @confirmed_orders %></div>
+    <div class="stat-sub">Ready to ship</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">RTO Rate</div>
+    <div class="stat-value <%= @rto_rate > 10 ? 'text-red-600' : 'text-green-700' %>"><%= @rto_rate %>%</div>
+    <div class="stat-sub"><%= @rto_rate < 10 ? "Excellent" : "Needs attention" %></div>
+  </div>
 </div>
 
-<div class="mt-6 space-y-4">
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+  <%= form_with url: orders_path, method: :get, local: true, data: { controller: "orders-list" }, class: "border-b border-gray-100 px-4 py-3" do %>
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+        <i class="ti ti-search text-sm text-gray-400"></i>
+        <%= text_field_tag :q, @query, placeholder: "Search buyer, product, phone...", class: "w-full border-none bg-transparent text-sm outline-none", data: { orders_list_target: "search", action: "input->orders-list#search" } %>
+      </div>
+
+      <%= select_tag :status, options_for_select([["All Statuses", "all"], ["Pending", "pending_verification"], ["Confirmed", "confirmed"], ["High Risk", "high_risk"], ["Shipped", "shipped"], ["Delivered", "delivered"], ["RTO", "rto"]], @status.presence || "all"), class: "rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700", data: { action: "change->orders-list#submit" } %>
+      <%= select_tag :per_page, options_for_select([10, 25, 50, 100], @per_page), class: "rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700", data: { action: "change->orders-list#submit" } %>
+      <%= hidden_field_tag :sort_by, @sort_by %>
+      <%= hidden_field_tag :sort_dir, @sort_dir %>
+    </div>
+  <% end %>
+
   <% if @orders.any? %>
-    <% @orders.each do |order| %>
-      <%= render "orders/order_card", order: order %>
-    <% end %>
+    <div class="overflow-x-auto" data-controller="orders-list">
+      <table class="min-w-full divide-y divide-gray-100">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left"><%= orders_sort_link("Buyer", "buyer") %></th>
+            <th class="px-4 py-3 text-left"><%= orders_sort_link("Product", "product") %></th>
+            <th class="px-4 py-3 text-right"><%= orders_sort_link("Amount", "amount") %></th>
+            <th class="px-4 py-3 text-left"><%= orders_sort_link("Status", "status") %></th>
+            <th class="px-4 py-3 text-left"><%= orders_sort_link("Created", "created_at") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 bg-white">
+          <% @orders.each do |order| %>
+            <tr data-action="click->orders-list#go" data-url="<%= order_path(order) %>" class="cursor-pointer hover:bg-gray-50">
+              <td class="px-4 py-3">
+                <p class="text-sm font-semibold text-gray-900"><%= order.buyer&.name || "Unknown" %></p>
+                <p class="text-xs text-gray-500"><%= order.buyer&.phone %></p>
+              </td>
+              <td class="px-4 py-3">
+                <p class="text-sm text-gray-800"><%= order.product_name %></p>
+                <p class="text-xs text-gray-500"><%= compact_location_text(order) %></p>
+              </td>
+              <td class="px-4 py-3 text-right">
+                <p class="text-sm font-semibold text-gray-900">₹<%= number_with_precision(order.amount, precision: 2) %></p>
+                <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold <%= order_payment_type_badge_classes(order) %>"><%= order.payment_type.humanize %></span>
+              </td>
+              <td class="px-4 py-3">
+                <span class="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold <%= status_badge_classes(order) %>"><%= order.aasm_state.humanize %></span>
+              </td>
+              <td class="px-4 py-3">
+                <p class="text-sm text-gray-700"><%= time_ago_in_words(order.created_at) %> ago</p>
+                <% risk = compact_risk_badge(order) %>
+                <% if risk.present? %>
+                  <span class="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold <%= risk[:classes] %>"><%= risk[:label] %></span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="border-t border-gray-100 px-4 py-3">
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    </div>
   <% else %>
-    <div class="rounded-xl border border-dashed border-gray-200 bg-white py-16 text-center">
-      <p class="text-lg font-medium text-gray-600">No orders yet</p>
-      <%= link_to "Create your first order →", new_order_path, class: "mt-4 inline-block font-semibold text-indigo-600 hover:text-indigo-500" %>
+    <div class="py-16 text-center">
+      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+        <i class="ti ti-package text-2xl"></i>
+      </div>
+      <p class="mt-3 text-lg font-medium text-gray-700">No orders found</p>
+      <p class="mt-1 text-sm text-gray-500">Try changing filters or search terms.</p>
     </div>
   <% end %>
 </div>
-
-<% if @pagy.pages > 1 %>
-  <div class="mt-8 flex justify-center">
-    <%== pagy_nav(@pagy) %>
-  </div>
-<% end %>

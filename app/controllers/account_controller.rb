@@ -17,23 +17,14 @@ class AccountController < ApplicationController
     @seller = current_seller
     permitted = seller_params.to_h.symbolize_keys.compact
 
-    result = Sellers::UpdateProfile.execute(seller_id: current_seller.id, **permitted)
+    profile_result = Sellers::UpdateProfile.execute(seller_id: current_seller.id, **permitted)
 
-    if result.success?
+    if profile_result.success?
       redirect_to account_path, notice: "Profile updated successfully"
     else
       @seller.assign_attributes(seller_params)
-      flash.now[:alert] = result.errors.to_s
+      flash.now[:alert] = profile_result.errors.to_s
       render :edit, status: :unprocessable_entity
-    end
-  end
-
-  def retry_delhivery_registration
-    result = Delhivery::RegisterPickupLocation.execute(seller_id: current_seller.id)
-    if result.success?
-      redirect_to account_path, notice: "Pickup location registered successfully! You can now ship orders."
-    else
-      redirect_to account_path, alert: "Registration failed: #{result.errors}. Please try again."
     end
   end
 
@@ -43,7 +34,7 @@ class AccountController < ApplicationController
     params.require(:seller).permit(
       :name, :business_name,
       :pickup_address_line, :pickup_city, :pickup_state, :pickup_pincode,
-      :pickup_name, :pickup_phone, :delhivery_pickup_location_name
+      :pickup_name, :pickup_phone
     )
   end
 end

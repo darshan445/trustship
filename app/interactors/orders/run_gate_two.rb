@@ -22,12 +22,24 @@ module Orders
 
         if risk_data.risk_level == "high"
           flagged = validate_result(Orders::MarkHighRisk.execute(order_id: order.id)).data
-          flagged.update!(buyer_risk_assessed_at: Time.current)
+          flagged.order_events.create!(
+            from_state: flagged.aasm_state,
+            to_state: flagged.aasm_state,
+            event_name: "gate_2_completed",
+            triggered_by: "system",
+            metadata: { risk_level: "high" }
+          )
           Rails.logger.info { "Gate 2 flagged order #{order.id} as high risk" }
           flagged.reload
         else
           Rails.logger.info { "Gate 2 passed for order #{order.id}, buyer risk: #{risk_data.risk_level}" }
-          order.update!(buyer_risk_assessed_at: Time.current)
+          order.order_events.create!(
+            from_state: order.aasm_state,
+            to_state: order.aasm_state,
+            event_name: "gate_2_completed",
+            triggered_by: "system",
+            metadata: { risk_level: risk_data.risk_level }
+          )
           validate_result(Orders::RunGateThree.execute(order_id: order.id))
           order.reload
         end

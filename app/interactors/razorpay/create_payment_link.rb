@@ -16,7 +16,7 @@ module Razorpay
     READ_TIMEOUT = 15
     OPEN_TIMEOUT = 5
 
-    # +link_purpose+ :buyer_advance — buyer order payment (default). :seller_shipping — seller pays Delhivery pass-through shipping.
+    # +link_purpose+ :buyer_advance — buyer order payment (default). :seller_shipping reserved for legacy compatibility.
     def self.execute(order_id:, amount:, payment_type:, link_purpose: :buyer_advance, description: nil, callback_url: nil)
       new(
         order_id: order_id,
@@ -63,21 +63,6 @@ module Razorpay
         link_id = parsed["id"]
         short_url = parsed["short_url"]
         raise_string_error("Razorpay API error: missing link id or url") if link_id.blank? || short_url.blank?
-
-        if buyer_advance?
-          order.update!(
-            razorpay_payment_link_id: link_id,
-            razorpay_payment_link_url: short_url,
-            payment_link_expires_at: expires_at
-          )
-        else
-          order.update!(
-            shipping_amount: BigDecimal(amount.to_s),
-            shipping_payment_link_id: link_id,
-            shipping_payment_link_url: short_url,
-            shipping_payment_status: "pending"
-          )
-        end
 
         Rails.logger.info { "Razorpay payment link (#{link_purpose}) for order #{order.id}: #{short_url}" }
 

@@ -1,130 +1,123 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "TrustShip" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "dashboard", "data-turbo-track": "reload" %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
     <%= javascript_importmap_tags %>
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
-    <header class="fixed left-0 right-0 top-0 z-30 h-14 border-b border-gray-200 bg-white">
-      <div class="mx-auto flex h-full max-w-5xl items-center justify-between gap-3 px-4">
-        <%= link_to dashboard_path, class: "shrink-0 text-lg font-bold text-indigo-600" do %>
-          TrustShip
+  <body class="text-gray-900 antialiased" data-controller="sidebar">
+    <div class="flex h-screen overflow-hidden bg-gray-50">
+      <div data-sidebar-target="overlay" data-action="click->sidebar#close" class="fixed inset-0 z-30 hidden bg-black/30 md:hidden"></div>
+
+      <aside id="sidebar" data-sidebar-target="panel" class="fixed inset-y-0 left-0 z-40 hidden w-[220px] -translate-x-full border-r border-gray-200 bg-white transition-transform duration-200 md:static md:block md:translate-x-0">
+        <div class="flex h-full flex-col px-3 py-4">
+          <div class="px-2 pb-4">
+            <%= link_to "TrustShip", dashboard_path, class: "text-[18px] font-medium text-[#534AB7]" %>
+          </div>
+
+          <nav class="space-y-1">
+            <%= link_to orders_path, class: "sidebar-nav-item #{dashboard_sidebar_active(:orders)}" do %>
+              <i class="ti ti-package text-base"></i>
+              <span>Orders</span>
+              <% if dashboard_pending_orders_count.positive? %>
+                <span class="ml-auto rounded-full bg-[#EEEDFE] px-2 py-0.5 text-[10px] font-semibold text-[#534AB7]"><%= dashboard_pending_orders_count %></span>
+              <% end %>
+            <% end %>
+
+            <%= link_to products_path, class: "sidebar-nav-item #{dashboard_sidebar_active(:products)}" do %>
+              <i class="ti ti-box text-base"></i>
+              <span>Products</span>
+            <% end %>
+
+            <%= link_to buyers_path, class: "sidebar-nav-item #{dashboard_sidebar_active(:buyers)}" do %>
+              <i class="ti ti-users text-base"></i>
+              <span>Buyers</span>
+            <% end %>
+
+            <p class="px-2 pt-2 text-[11px] font-medium uppercase tracking-wide text-gray-400">Account</p>
+
+            <%= link_to account_path, class: "sidebar-nav-item #{dashboard_sidebar_active(:settings)}" do %>
+              <i class="ti ti-settings text-base"></i>
+              <span>Settings</span>
+            <% end %>
+
+            <%= link_to account_path, class: "sidebar-nav-item" do %>
+              <i class="ti ti-brand-whatsapp text-base"></i>
+              <span>WhatsApp</span>
+            <% end %>
+
+            <%= link_to "#", class: "sidebar-nav-item" do %>
+              <i class="ti ti-help-circle text-base"></i>
+              <span>Help</span>
+            <% end %>
+          </nav>
+
+          <div class="mt-auto pt-4">
+            <details class="group relative">
+              <summary class="flex list-none cursor-pointer items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 [&::-webkit-details-marker]:hidden">
+                <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[#EEEDFE] text-xs font-semibold text-[#534AB7]">
+                  <%= initials_for_business(current_seller.business_name) %>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-semibold text-gray-900"><%= current_seller.business_name %></p>
+                  <p class="text-xs text-gray-500">Early Access</p>
+                </div>
+                <i class="ti ti-chevron-down text-sm text-gray-500"></i>
+              </summary>
+              <div class="absolute bottom-full left-0 mb-2 w-full rounded-lg border border-gray-100 bg-white py-1 shadow-lg">
+                <%= link_to "Account Settings", account_path, class: "block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50" %>
+                <%= button_to "Sign Out", destroy_seller_session_path, method: :delete, class: "block w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50" %>
+              </div>
+            </details>
+          </div>
+        </div>
+      </aside>
+
+      <div class="flex flex-1 flex-col overflow-hidden">
+        <header class="flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 md:px-6">
+          <div class="flex items-center gap-3">
+            <button type="button" data-action="click->sidebar#toggle" class="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 md:hidden" aria-label="Toggle navigation">
+              <i class="ti ti-menu-2 text-lg"></i>
+            </button>
+            <h1 class="text-base font-semibold text-gray-900"><%= content_for?(:page_title) ? yield(:page_title) : "Dashboard" %></h1>
+          </div>
+          <div class="flex items-center gap-2">
+            <%= yield :topbar_actions if content_for?(:topbar_actions) %>
+          </div>
+        </header>
+
+        <% if notice.present? %>
+          <div class="border-b border-green-100 bg-green-50 px-4 py-2 text-sm text-green-800" data-controller="flash" role="status"><%= notice %></div>
         <% end %>
-        <p class="hidden min-w-0 flex-1 truncate text-center text-sm font-medium text-gray-500 md:block">
-          <%= current_seller.business_name %>
-        </p>
-        <div class="relative shrink-0">
-          <details class="group relative">
-            <summary class="flex cursor-pointer list-none items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
-              <span class="max-w-[10rem] truncate"><%= current_seller.name %></span>
-              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-              </svg>
-            </summary>
-            <div class="absolute right-0 z-40 mt-1 w-44 rounded-lg border border-gray-100 bg-white py-1 shadow-lg">
-              <%= button_to "Sign out", destroy_seller_session_path, method: :delete, class: "block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50" %>
-            </div>
-          </details>
-        </div>
+        <% if alert.present? %>
+          <div class="border-b border-red-100 bg-red-50 px-4 py-2 text-sm text-red-800" data-controller="flash" role="alert"><%= alert %></div>
+        <% end %>
+
+        <main class="flex-1 overflow-y-auto p-4 pb-24 md:p-6 md:pb-6">
+          <%= yield %>
+        </main>
       </div>
-    </header>
 
-    <div class="min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-14">
-      <% if !current_seller.pickup_address_saved? && !current_seller.pickup_address_complete? %>
-        <div
-          class="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm text-amber-900"
-          data-controller="dismissible"
-          data-dismissible-storage-key-value="pickupAddressBanner"
-          role="status">
-          <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-2">
-            <span class="font-medium">Complete your profile to start shipping from ₹<%= Order::WEIGHT_TIERS[500][:cod] %> per order</span>
-            <%= link_to "Add Now →", edit_account_path, class: "shrink-0 font-semibold text-amber-950 underline decoration-amber-700 underline-offset-2 hover:text-amber-950" %>
-            <button
-              type="button"
-              class="ml-1 shrink-0 rounded px-2 py-0.5 text-xs font-semibold text-amber-900 hover:bg-amber-100"
-              data-action="click->dismissible#dismiss"
-              aria-label="Dismiss reminder">
-              Dismiss
-            </button>
-          </div>
+      <nav id="mobile-bottom-nav" data-sidebar-target="mobileNav" class="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white md:hidden">
+        <div class="grid grid-cols-4 gap-1 px-2 py-2">
+          <%= link_to orders_path, class: dashboard_mobile_nav_classes(controller_name == "orders") do %>
+            <i class="ti ti-package text-lg"></i><span class="text-[11px]">Orders</span>
+          <% end %>
+          <%= link_to products_path, class: dashboard_mobile_nav_classes(controller_name == "products") do %>
+            <i class="ti ti-box text-lg"></i><span class="text-[11px]">Products</span>
+          <% end %>
+          <%= link_to account_path, class: dashboard_mobile_nav_classes(controller_name == "account") do %>
+            <i class="ti ti-settings text-lg"></i><span class="text-[11px]">Settings</span>
+          <% end %>
+          <%= link_to account_path, class: dashboard_mobile_nav_classes(controller_name == "account" && action_name == "show") do %>
+            <i class="ti ti-user text-lg"></i><span class="text-[11px]">Account</span>
+          <% end %>
         </div>
-      <% elsif current_seller.pickup_address_saved? && !current_seller.pickup_address_complete? %>
-        <div
-          class="border-b border-yellow-200 bg-yellow-50 px-4 py-2.5 text-center text-sm text-yellow-900"
-          data-controller="dismissible"
-          data-dismissible-storage-key-value="pickupRegistrationBanner"
-          role="status">
-          <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-2">
-            <span class="font-medium">Pickup address saved — waiting for Delhivery registration</span>
-            <%= link_to "Check Status →", account_path, class: "shrink-0 font-semibold text-yellow-950 underline decoration-yellow-700 underline-offset-2 hover:text-yellow-950" %>
-            <button
-              type="button"
-              class="ml-1 shrink-0 rounded px-2 py-0.5 text-xs font-semibold text-yellow-900 hover:bg-yellow-100"
-              data-action="click->dismissible#dismiss"
-              aria-label="Dismiss reminder">
-              Dismiss
-            </button>
-          </div>
-        </div>
-      <% end %>
-      <% if notice.present? %>
-        <div
-          class="border-b border-green-100 bg-green-50 px-4 py-3 text-center text-sm text-green-800 opacity-100 transition-opacity duration-300 ease-out"
-          data-controller="flash"
-          role="status">
-          <%= notice %>
-        </div>
-      <% end %>
-      <% if alert.present? %>
-        <div
-          class="border-b border-red-100 bg-red-50 px-4 py-3 text-center text-sm text-red-800 opacity-100 transition-opacity duration-300 ease-out"
-          data-controller="flash"
-          role="alert">
-          <%= alert %>
-        </div>
-      <% end %>
-
-      <main class="mx-auto max-w-5xl px-4 py-6">
-        <%= yield %>
-      </main>
-
-      <footer class="border-t border-gray-200 px-4 py-4 text-center text-xs text-gray-400">
-        © 2026 TrustShip ·
-        <%= link_to "Terms", terms_path, class: "hover:text-gray-600" %>
-        ·
-        <%= link_to "Privacy", privacy_path, class: "hover:text-gray-600" %>
-        ·
-        <%= link_to support_email, "mailto:#{support_email}", class: "hover:text-gray-600" %>
-      </footer>
+      </nav>
     </div>
-
-    <nav
-      class="fixed bottom-0 left-0 right-0 z-30 border-t border-gray-200 bg-white pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
-      aria-label="Primary">
-      <div class="mx-auto grid max-w-5xl grid-cols-3 gap-1 px-2">
-        <%= link_to dashboard_path, class: dashboard_tab_classes(orders_tab_active?) do %>
-          <svg class="mx-auto h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h-.007v.008h.007v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-          </svg>
-          <span class="mt-0.5 block text-xs font-medium">Orders</span>
-        <% end %>
-        <%= link_to new_order_path, class: dashboard_tab_classes(new_order_tab_active?) do %>
-          <svg class="mx-auto h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          <span class="mt-0.5 block text-xs font-medium">New Order</span>
-        <% end %>
-        <%= link_to account_path, class: dashboard_tab_classes(account_tab_active?) do %>
-          <svg class="mx-auto h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-          </svg>
-          <span class="mt-0.5 block text-xs font-medium">Account</span>
-        <% end %>
-      </div>
-    </nav>
   </body>
 </html>

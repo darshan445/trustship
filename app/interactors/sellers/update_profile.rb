@@ -7,7 +7,7 @@ module Sellers
 
     UPDATE_KEYS = %i[
       name business_name pickup_address_line pickup_city pickup_state pickup_pincode
-      pickup_name pickup_phone delhivery_pickup_location_name
+      pickup_name pickup_phone
     ].freeze
 
     def self.execute(seller_id:, **attrs)
@@ -35,8 +35,6 @@ module Sellers
           raise_string_error(seller.errors.full_messages.join(", "))
         end
 
-        register_pickup_with_delhivery_if_needed(seller)
-
         seller
       end
     end
@@ -44,23 +42,6 @@ module Sellers
     private
 
     attr_reader :seller_id, :attrs
-
-    def register_pickup_with_delhivery_if_needed(seller)
-      pickup_fields_changed = %i[
-        pickup_address_line
-        pickup_city
-        pickup_state
-        pickup_pincode
-      ].any? { |field| seller.saved_change_to_attribute?(field) }
-      return unless pickup_fields_changed && seller.pickup_address_saved?
-
-      registration_result = Delhivery::RegisterPickupLocation.execute(seller_id: seller.id)
-      return if registration_result.success?
-
-      Rails.logger.error do
-        "Delhivery pickup registration failed for seller #{seller.id}: #{registration_result.errors}"
-      end
-    end
 
     def find_seller!
       seller = Seller.find_by(id: seller_id)

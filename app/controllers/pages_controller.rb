@@ -11,5 +11,7 @@ class PagesController < ApplicationController
 
   def refund; end
 
+  def cookies; end
+
   def shipping_policy; end
 end

@@ -13,20 +13,31 @@ module ApplicationHelper
     Rails.application.credentials.app[:domain]
   end
 
-  def dashboard_tab_classes(active)
-    base = "flex flex-col items-center rounded-lg py-2 text-center transition-colors"
-    active ? "#{base} font-semibold text-indigo-600" : "#{base} font-medium text-gray-500 hover:text-gray-800"
+  def dashboard_sidebar_active(section)
+    current =
+      case section
+      when :orders then controller_name == "orders"
+      when :products then controller_name == "products"
+      when :settings then controller_name == "account"
+      else false
+      end
+    current ? "active" : ""
   end
 
-  def orders_tab_active?
-    controller_name == "orders" && action_name == "index"
+  def dashboard_mobile_nav_classes(active)
+    base = "flex flex-col items-center gap-0.5 rounded-lg py-1 text-center"
+    active ? "#{base} text-[#534AB7]" : "#{base} text-gray-500"
   end
 
-  def new_order_tab_active?
-    controller_name == "orders" && %w[new create].include?(action_name)
+  def dashboard_pending_orders_count
+    return 0 unless respond_to?(:current_seller) && current_seller.present?
+
+    @dashboard_pending_orders_count ||= current_seller.orders.where(aasm_state: "pending_verification").count
   end
 
-  def account_tab_active?
-    controller_name == "account"
+  def initials_for_business(name)
+    return "TS" if name.blank?
+
+    name.split.first(2).map { |part| part.first.to_s.upcase }.join
   end
 end

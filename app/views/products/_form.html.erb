@@ -1,0 +1,35 @@
+<%= form_with model: product, class: "space-y-6" do |f| %>
+  <div class="space-y-2">
+    <%= f.label :name, "Name", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :name, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" %>
+  </div>
+
+  <div class="space-y-2">
+    <%= f.label :description, "Description", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :description, rows: 4, class: "w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" %>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div class="space-y-2">
+      <%= f.label :price, "Price ₹", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :price, step: "0.01", min: "0", class: "w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" %>
+      <p class="text-xs text-gray-500">Default price. Can be changed per order.</p>
+    </div>
+    <div class="space-y-2">
+      <%= f.label :cod_minimum_advance, "COD advance ₹", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :cod_minimum_advance, step: "0.01", min: "0", class: "w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" %>
+      <p class="text-xs text-gray-500">Per product COD advance. Default is ₹0.</p>
+    </div>
+  </div>
+
+  <div class="space-y-2">
+    <%= f.label :sku, "SKU", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :sku, class: "w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" %>
+    <p class="text-xs text-gray-500">Your own product code. Optional.</p>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit "Save Product", class: "inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" %>
+    <%= link_to "Cancel", products_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900" %>
+  </div>
+<% end %>

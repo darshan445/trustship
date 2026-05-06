@@ -19,7 +19,7 @@ module Whatsapp
         buyer = order.buyer
         seller = order.seller
 
-        full_address = "#{order.address_line}, #{order.city}, #{order.state} - #{order.pincode}"
+        full_address = order.buyer_address&.address_formatted.presence || order.buyer_address&.raw_address.to_s
         amount_string =
           if order.full_prepaid?
             "₹#{order.amount} Prepaid"
@@ -43,7 +43,13 @@ module Whatsapp
           )
         )
 
-        order.update!(confirmation_sent_at: Time.current)
+        order.order_events.create!(
+          from_state: order.aasm_state,
+          to_state: order.aasm_state,
+          event_name: "confirmation_sent",
+          triggered_by: "system",
+          metadata: {}
+        )
         order.reload
       end
     end

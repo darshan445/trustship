@@ -5,6 +5,7 @@ class Buyer < ApplicationRecord
 
   enum :risk_level, { low: "low", medium: "medium", high: "high" }, default: :low
 
+  has_many :buyer_addresses, inverse_of: :buyer, dependent: :destroy
   has_many :orders, inverse_of: :buyer, dependent: :restrict_with_exception
 
   validates :name, presence: true

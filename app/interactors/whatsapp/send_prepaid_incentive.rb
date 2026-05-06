@@ -48,7 +48,13 @@ module Whatsapp
           )
         )
 
-        order.update!(prepaid_incentive_sent_at: Time.current)
+        order.order_events.create!(
+          from_state: order.aasm_state,
+          to_state: order.aasm_state,
+          event_name: "prepaid_incentive_sent",
+          triggered_by: "system",
+          metadata: {}
+        )
         order.reload
       end
     end
