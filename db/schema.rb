@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_06_103000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_06_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -164,12 +164,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_103000) do
     t.string "encrypted_password", null: false
     t.string "name", null: false
     t.string "phone", null: false
-    t.string "pickup_address_line"
-    t.string "pickup_city"
-    t.string "pickup_name"
-    t.string "pickup_phone"
-    t.string "pickup_pincode"
-    t.string "pickup_state"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"

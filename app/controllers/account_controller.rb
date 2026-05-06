@@ -32,9 +32,7 @@ class AccountController < ApplicationController
 
   def seller_params
     params.require(:seller).permit(
-      :name, :business_name,
-      :pickup_address_line, :pickup_city, :pickup_state, :pickup_pincode,
-      :pickup_name, :pickup_phone
+      :name, :business_name
     )
   end
 end

@@ -5,10 +5,7 @@ module Sellers
     include ExecuteMethodHelper
     include LogHelper
 
-    UPDATE_KEYS = %i[
-      name business_name pickup_address_line pickup_city pickup_state pickup_pincode
-      pickup_name pickup_phone
-    ].freeze
+    UPDATE_KEYS = %i[name business_name].freeze
 
     def self.execute(seller_id:, **attrs)
       new(seller_id: seller_id, **attrs).execute
@@ -22,13 +19,6 @@ module Sellers
     def execute
       execute_log_and_return_open_struct do
         seller = find_seller!
-
-        if @attrs.key?(:pickup_pincode)
-          pc = @attrs[:pickup_pincode].to_s
-          if pc.present? && !pc.match?(/\A\d{6}\z/)
-            raise_string_error("Pickup pincode must be 6 digits")
-          end
-        end
 
         seller.assign_attributes(@attrs)
         unless seller.save
