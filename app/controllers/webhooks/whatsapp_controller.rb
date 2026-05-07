@@ -36,14 +36,21 @@ module Webhooks
         return
       end
 
-      to_phone = normalize_phone(metadata["display_phone_number"].presence)
-      if to_phone.blank?
-        Rails.logger.warn { "WhatsApp webhook: could not normalize receiving phone #{metadata['display_phone_number'].inspect}" }
-        head :ok
-        return
+      phone_number_id = metadata["phone_number_id"].to_s
+      seller = if phone_number_id.present?
+        Seller.find_by(whatsapp_phone_number_id: phone_number_id)
       end
 
-      seller = Seller.find_by(phone: to_phone)
+      if seller.blank?
+        to_phone = normalize_phone(metadata["display_phone_number"].presence)
+        if to_phone.blank?
+          Rails.logger.warn { "WhatsApp webhook: missing phone_number_id and invalid display_phone_number #{metadata['display_phone_number'].inspect}" }
+          head :ok
+          return
+        end
+        seller = Seller.find_by(phone: to_phone)
+      end
+
       unless seller
         head :ok
         return

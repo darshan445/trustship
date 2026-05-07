@@ -6,6 +6,12 @@ class Seller < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
 
   enum :status, { active: "active", inactive: "inactive" }, default: :active
+  enum :whatsapp_onboarding_status, {
+    not_connected: "not_connected",
+    pending: "pending",
+    connected: "connected",
+    failed: "failed"
+  }, default: :not_connected
 
   # early_access: platform fee waived during Early Access (default true for new sellers).
   # trial_ends_at: reserved for future time-limited access; nil means no end date for now.
@@ -19,6 +25,7 @@ class Seller < ApplicationRecord
   validates :phone, presence: true,
             uniqueness: true,
             format: { with: PHONE_REGEX, message: "must be a valid 10-digit Indian mobile number" }
+  validates :whatsapp_phone_number_id, uniqueness: true, allow_nil: true
 
   before_validation :normalize_phone
 
@@ -28,6 +35,10 @@ class Seller < ApplicationRecord
 
   def devise_will_save_change_to_email?
     false
+  end
+
+  def whatsapp_connected?
+    connected? && whatsapp_phone_number_id.present?
   end
 
   protected

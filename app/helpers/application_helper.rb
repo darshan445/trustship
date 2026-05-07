@@ -18,7 +18,9 @@ module ApplicationHelper
       case section
       when :orders then controller_name == "orders"
       when :products then controller_name == "products"
+      when :buyers then controller_name == "buyers"
       when :settings then controller_name == "account"
+      when :whatsapp then controller_name == "whatsapp"
       else false
       end
     current ? "active" : ""

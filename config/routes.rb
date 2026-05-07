@@ -41,6 +41,8 @@ Rails.application.routes.draw do
     end
     resources :products, except: [:show]
     resources :buyers, only: [:index]
+    resource :whatsapp, only: [:show], controller: "whatsapp"
+    post "whatsapp/embedded_signup_complete", to: "whatsapp#embedded_signup_complete", as: :whatsapp_embedded_signup_complete
     resource :account, only: [ :show, :edit, :update ], controller: "account"
   end
 end
