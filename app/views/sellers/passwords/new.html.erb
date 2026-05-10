@@ -1,14 +1,14 @@
 <% content_for :title, "Reset password — TrustShip" %>
 
 <h2 class="text-2xl font-semibold text-gray-900">Forgot your password?</h2>
-<p class="mt-1 text-sm text-gray-600">Enter the phone number for your seller account.</p>
+<p class="mt-1 text-sm text-gray-600">Enter the email address for your seller account.</p>
 
 <%= render "sellers/shared/error_messages", resource: resource %>
 
 <%= form_with model: resource, scope: resource_name, url: password_path(resource_name), local: true, class: "mt-6 space-y-4" do |f| %>
   <div>
-    <%= f.label :phone, "Phone Number", class: "mb-1 block text-sm font-medium text-gray-700" %>
-    <%= f.telephone_field :phone, autofocus: true, autocomplete: "tel", class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+    <%= f.label :email, "Email Address", class: "mb-1 block text-sm font-medium text-gray-700" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
   </div>
 
   <div>

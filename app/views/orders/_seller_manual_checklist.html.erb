@@ -1,0 +1,210 @@
+<%# locals: (order:) %>
+<% buyer = order.buyer %>
+<% address = order.buyer_address %>
+<% advance = order.order_advance_payment %>
+<% adv_event = order.order_events.where(event_name: Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT).order(created_at: :desc).first %>
+<% adv_meta = adv_event&.metadata.is_a?(Hash) ? adv_event.metadata.stringify_keys : {} %>
+<% advance_url = advance&.razorpay_payment_link_url.presence || adv_meta["payment_link_url"].presence %>
+<% advance_skipped = adv_meta["skipped"].present? %>
+
+<section class="rounded-xl border border-indigo-100 bg-gradient-to-b from-indigo-50/80 to-white p-6 shadow-sm" aria-labelledby="manual-checklist-heading" data-controller="confirm-modal">
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h2 id="manual-checklist-heading" class="text-lg font-bold text-gray-900">Seller verification checklist</h2>
+      <p class="mt-1 max-w-2xl text-sm text-gray-600">
+        Complete each step in order. This path does not send WhatsApp automation — you control risk scoring, address validation, confirmation, and COD advance (Razorpay) from the dashboard.
+      </p>
+    </div>
+    <span class="inline-flex shrink-0 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">Manual flow</span>
+  </div>
+
+  <ol class="mt-6 space-y-4">
+    <%# 1 Risk %>
+    <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= order.seller_manual_risk_completed? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
+        <%= order.seller_manual_risk_completed? ? "✓" : "1" %>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 class="font-semibold text-gray-900">Risk scoring</h3>
+        <p class="mt-1 text-sm text-gray-600">Uses the same buyer risk model as the automated flow.</p>
+        <% if order.seller_manual_risk_completed? %>
+          <p class="mt-2 text-sm text-green-800">
+            Done — buyer is <span class="font-semibold capitalize"><%= buyer.risk_level %></span>
+            <% if order.high_risk? %><span class="text-orange-800"> (order flagged high risk)</span><% end %>
+          </p>
+        <% else %>
+          <%= button_to "Run risk score", seller_manual_risk_order_path(order), method: :post, class: "mt-3 inline-flex cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+        <% end %>
+      </div>
+    </li>
+
+    <%# 2 Address %>
+    <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= order.seller_manual_address_completed? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
+        <%= order.seller_manual_address_completed? ? "✓" : "2" %>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 class="font-semibold text-gray-900">Address validation</h3>
+        <p class="mt-1 text-sm text-gray-600">Same maps-based validation as the automated flow.</p>
+        <% if order.seller_manual_address_completed? %>
+          <p class="mt-2 text-sm text-green-800">Done — <%= address&.confidence_label || "Validated" %></p>
+          <% if address&.address_formatted.present? %>
+            <p class="mt-1 rounded-md border border-green-200 bg-green-50/80 px-2 py-1.5 text-xs text-green-950"><%= address.address_formatted %></p>
+          <% end %>
+          <% if address.present? %>
+            <p class="mt-3 text-xs text-gray-600">You can still edit the delivery text. If you change it, we run Google validation again before you can confirm the order.</p>
+            <%= form_with url: seller_manual_address_order_path(order), method: :post, class: "mt-2 space-y-3" do %>
+              <%= fields_for :buyer_address, address do |bf| %>
+                <div>
+                  <%= bf.label :raw_address, "Delivery address (editable)", class: "block text-sm font-medium text-gray-700" %>
+                  <%= bf.text_area :raw_address, rows: 4, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+                </div>
+              <% end %>
+              <%= submit_tag "Update address and verify again", class: "inline-flex cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50" %>
+            <% end %>
+          <% end %>
+        <% elsif order.seller_manual_risk_completed? && order.seller_manual_address_needs_correction? %>
+          <div class="mt-2 rounded-md border border-amber-200 bg-amber-50/90 px-3 py-2 text-sm text-amber-950" role="status">
+            <p class="font-medium">Address could not be validated as deliverable.</p>
+            <p class="mt-1 text-xs text-amber-900/90">Update the full address (street, area, city, PIN) and save — we will run Google validation again.</p>
+          </div>
+          <%= form_with url: seller_manual_address_order_path(order), method: :post, class: "mt-3 space-y-3" do %>
+            <%= fields_for :buyer_address, address do |bf| %>
+              <div>
+                <%= bf.label :raw_address, "Delivery address", class: "block text-sm font-medium text-gray-700" %>
+                <%= bf.text_area :raw_address, rows: 4, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+              </div>
+            <% end %>
+            <%= submit_tag "Save and verify again", class: "inline-flex cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+          <% end %>
+        <% elsif order.seller_manual_risk_completed? %>
+          <%= button_to "Verify the address", seller_manual_address_order_path(order), method: :post, class: "mt-3 inline-flex cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+        <% else %>
+          <p class="mt-2 text-xs text-gray-500">Complete risk scoring first.</p>
+        <% end %>
+      </div>
+    </li>
+
+    <%# 3 Confirm %>
+    <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= order.confirmed? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
+        <%= order.confirmed? ? "✓" : "3" %>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 class="font-semibold text-gray-900">Confirm the order</h3>
+        <p class="mt-1 text-sm text-gray-600">You confirm you have validated this order. No WhatsApp buyer confirmation is sent on this path.</p>
+        <% if order.confirmed? %>
+          <p class="mt-2 text-sm text-green-800">Order is confirmed.</p>
+        <% elsif order.seller_manual_address_completed? && (order.pending_verification? || order.high_risk?) %>
+          <button
+            type="button"
+            class="mt-3 inline-flex cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+            data-action="click->confirm-modal#openFromTrigger"
+            data-confirm-url="<%= seller_manual_confirm_order_path(order) %>"
+            data-confirm-title="Confirm this order?"
+            data-confirm-message="You are confirming on behalf of your shop. No WhatsApp buyer confirmation is sent on this path. You can still cancel later where your policy allows."
+            data-confirm-button-label="Confirm order"
+          >
+            Confirm order
+          </button>
+        <% else %>
+          <p class="mt-2 text-xs text-gray-500">Complete address validation first.</p>
+        <% end %>
+      </div>
+    </li>
+
+    <%# 4 COD advance link %>
+    <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+      <% step4_done = order.seller_manual_advance_link_created? %>
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= step4_done ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
+        <%= step4_done ? "✓" : "4" %>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 class="font-semibold text-gray-900">COD advance (Razorpay)</h3>
+        <% if !order.seller_manual_cod_advance_expected? %>
+          <p class="mt-2 text-sm text-gray-600">Not required — <%= order.full_prepaid? ? "prepaid order" : "product COD advance is ₹0" %>.</p>
+        <% elsif step4_done && advance_skipped %>
+          <p class="mt-2 text-sm text-gray-700">Skipped for this order.</p>
+        <% elsif step4_done && advance_url.present? %>
+          <% adv_amt = advance&.amount || (adv_meta["amount"].present? ? BigDecimal(adv_meta["amount"].to_s) : 0) %>
+          <p class="mt-2 text-sm text-green-800">Payment link generated (₹<%= number_with_precision(adv_amt, precision: 2) %>).</p>
+          <p class="mt-2 break-all rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5 font-mono text-xs text-gray-800"><%= advance_url %></p>
+          <%= link_to "Open Razorpay link →", advance_url, target: "_blank", rel: "noopener noreferrer", class: "mt-2 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+        <% elsif order.confirmed? %>
+          <%= button_to "Generate COD advance link", seller_manual_advance_link_order_path(order), method: :post, class: "mt-3 inline-flex cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+        <% else %>
+          <p class="mt-2 text-xs text-gray-500">Confirm the order first.</p>
+        <% end %>
+      </div>
+    </li>
+
+    <%# 5 Mark received %>
+    <% if order.seller_manual_cod_advance_expected? && !advance_skipped %>
+      <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= advance&.paid? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
+          <%= advance&.paid? ? "✓" : "5" %>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 class="font-semibold text-gray-900">COD advance received</h3>
+          <p class="mt-1 text-sm text-gray-600">Use when Razorpay marks the payment, or you collected the advance offline. Razorpay webhooks still update this order when configured.</p>
+          <% if advance&.paid? %>
+            <p class="mt-2 text-sm text-green-800">Recorded<%= advance.paid_at.present? ? " · #{time_ago_in_words(advance.paid_at)} ago" : "" %>.</p>
+          <% elsif advance_url.present? %>
+            <button
+              type="button"
+              class="mt-3 inline-flex cursor-pointer rounded-lg border border-green-600 bg-white px-4 py-2 text-sm font-semibold text-green-800 shadow-sm hover:bg-green-50"
+              data-action="click->confirm-modal#openFromTrigger"
+              data-confirm-url="<%= seller_manual_advance_received_order_path(order) %>"
+              data-confirm-title="Mark COD advance as received?"
+              data-confirm-message="Use this only if Razorpay shows the payment as paid, or you collected the advance by another agreed method. Webhooks may also update this order when configured."
+              data-confirm-button-label="Mark as received"
+            >
+              COD advance received
+            </button>
+          <% else %>
+            <p class="mt-2 text-xs text-gray-500">Generate the payment link first.</p>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+  </ol>
+
+  <%# Shared confirmation modal (replaces browser confirm for manual-flow actions) %>
+  <div
+    data-confirm-modal-target="shell"
+    class="fixed inset-0 z-[60] hidden cursor-default items-center justify-center bg-gray-900/45 p-4 backdrop-blur-[1px]"
+    data-action="click->confirm-modal#backdropClick"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="confirm-modal-title"
+  >
+    <div
+      class="pointer-events-auto w-full max-w-md cursor-auto rounded-2xl border border-gray-200/90 bg-white p-6 shadow-2xl ring-1 ring-black/5"
+      data-action="click->confirm-modal#stopPropagation"
+    >
+      <h3 id="confirm-modal-title" data-confirm-modal-target="title" class="text-lg font-semibold tracking-tight text-gray-900"></h3>
+      <p data-confirm-modal-target="message" class="mt-2 text-sm leading-relaxed text-gray-600"></p>
+      <div class="mt-6 flex flex-wrap justify-end gap-3">
+        <button
+          type="button"
+          class="inline-flex cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
+          data-action="click->confirm-modal#close"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          data-confirm-modal-target="submitButton"
+          class="inline-flex min-w-[7.5rem] cursor-pointer justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+          data-action="click->confirm-modal#confirmSubmit"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" action="#" data-confirm-modal-target="form" data-turbo="true" class="hidden" aria-hidden="true">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  </form>
+</section>

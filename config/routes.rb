@@ -37,6 +37,11 @@ Rails.application.routes.draw do
       member do
         post :override_risk
         post :cancel_order
+        post :seller_manual_risk
+        post :seller_manual_address
+        post :seller_manual_confirm
+        post :seller_manual_advance_link
+        post :seller_manual_advance_received
       end
     end
     resources :products, except: [:show]

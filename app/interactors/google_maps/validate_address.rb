@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 module GoogleMaps
+  # Thin wrapper for callers that still pass an +Order+ (same behaviour as buyer address validation).
   class ValidateAddress
     include ExecuteMethodHelper
     include LogHelper
-
-    GEOCODE_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
     def self.execute(order:)
       new(order: order).execute
@@ -20,11 +19,13 @@ module GoogleMaps
         query = build_query(@order)
         raise_string_error("Address query is empty") if query.blank?
 
-        validate_result(GoogleMaps::GeocodeAddress.execute(address: query)).data
+        validate_result(GoogleMaps::AddressValidation.execute(address: query)).data
       end
     end
 
     private
+
+    attr_reader :order
 
     def build_query(order)
       order.buyer_address&.raw_address.to_s.strip

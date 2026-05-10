@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_06_113000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_10_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -134,11 +134,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_113000) do
     t.uuid "seller_id", null: false
     t.text "seller_note"
     t.datetime "updated_at", null: false
+    t.string "verification_mode", default: "whatsapp_automated", null: false
     t.index ["aasm_state"], name: "index_orders_on_aasm_state"
     t.index ["buyer_address_id"], name: "index_orders_on_buyer_address_id"
     t.index ["buyer_id"], name: "index_orders_on_buyer_id"
     t.index ["product_id"], name: "index_orders_on_product_id"
     t.index ["seller_id"], name: "index_orders_on_seller_id"
+    t.index ["verification_mode"], name: "index_orders_on_verification_mode"
   end
 
   create_table "products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -161,9 +163,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_113000) do
     t.string "business_name", null: false
     t.datetime "created_at", null: false
     t.boolean "early_access", default: true, null: false
+    t.string "email"
     t.string "encrypted_password", null: false
     t.string "name", null: false
-    t.string "phone", null: false
+    t.string "phone"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
@@ -178,6 +181,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_06_113000) do
     t.string "whatsapp_phone_number_id"
     t.string "whatsapp_verified_name"
     t.string "whatsapp_waba_id"
+    t.index ["email"], name: "index_sellers_on_email", unique: true
     t.index ["phone"], name: "index_sellers_on_phone", unique: true
     t.index ["reset_password_token"], name: "index_sellers_on_reset_password_token", unique: true
     t.index ["whatsapp_onboarding_status"], name: "index_sellers_on_whatsapp_onboarding_status"

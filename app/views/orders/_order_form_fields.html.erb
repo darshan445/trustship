@@ -73,12 +73,6 @@
   <% end %>
 </div>
 
-<% unless parsed %>
-  <div>
-    <%= f.label :raw_message, "Raw WhatsApp Message", class: "mb-1 block text-sm font-medium text-gray-700" %>
-    <%= f.text_area :raw_message, rows: 4, placeholder: "Paste original WhatsApp message here if available", class: manual_input %>
-  </div>
-<% end %>
 
 <div>
   <%= f.label :seller_note, "Seller Note", class: "mb-1 block text-sm font-medium text-gray-700" %>

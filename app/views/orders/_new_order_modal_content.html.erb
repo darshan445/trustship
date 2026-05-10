@@ -1,0 +1,158 @@
+<%# locals: (embedded: true) %>
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm"
+  data-controller="order-modal"
+  data-order-modal-orders-path-value="<%= orders_path %>"
+  data-action="click->order-modal#backdropClick"
+>
+  <div
+    class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl ring-1 ring-gray-900/5 overflow-hidden"
+    data-action="click->order-modal#stopPropagation"
+  >
+    <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900">New Order</h2>
+        <p class="mt-0.5 text-sm text-gray-500">Enter buyer details and choose a product</p>
+      </div>
+      <% if embedded %>
+        <button
+          type="button"
+          data-action="order-modal#close"
+          class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+          aria-label="Close"
+        >
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          </svg>
+        </button>
+      <% else %>
+        <%= link_to orders_path, class: "rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600", aria: { label: "Close" } do %>
+          <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+          </svg>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%= form_with model: @order, url: orders_path, data: { turbo_frame: "_top" }, class: "px-6 py-5 space-y-4 max-h-[80vh] overflow-y-auto" do |f| %>
+
+      <% if flash[:alert].present? %>
+        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <% if @order.errors.any? %>
+        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+          <p class="text-sm font-medium text-red-800">
+            Please fix the following <%= pluralize(@order.errors.count, "error") %>:
+          </p>
+          <ul class="mt-1 list-disc pl-5 text-sm text-red-700 space-y-0.5">
+            <% @order.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :buyer_name, "Buyer Name", class: "mb-1 block text-sm font-medium text-gray-700" %>
+          <%= f.text_field :buyer_name,
+                placeholder: "Full name",
+                autocomplete: "off",
+                class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        </div>
+        <div>
+          <%= f.label :buyer_phone, "Phone Number", class: "mb-1 block text-sm font-medium text-gray-700" %>
+          <%= f.telephone_field :buyer_phone,
+                placeholder: "10-digit number",
+                autocomplete: "off",
+                class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :raw_address, "Delivery Address", class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= f.text_area :raw_address,
+              rows: 2,
+              placeholder: "Street, City, State, Pincode",
+              class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+      </div>
+
+      <div class="border-t border-gray-100"></div>
+
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700">Product</label>
+        <% if @products.any? %>
+          <select
+            data-order-modal-target="productSelect"
+            data-action="change->order-modal#productChanged"
+            class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="">Select a product…</option>
+            <% @products.each do |product| %>
+              <option
+                value="<%= product.id %>"
+                data-price="<%= product.price %>"
+                data-name="<%= product.name %>"
+                <%= "selected" if @order.product_id == product.id.to_s %>
+              >
+                <%= product.name %><%= product.price? ? " — ₹#{number_with_precision(product.price, precision: 0, delimiter: ',')}" : "" %>
+              </option>
+            <% end %>
+          </select>
+        <% else %>
+          <div class="mt-1 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+            <svg class="h-5 w-5 shrink-0 text-amber-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+            </svg>
+            <p class="text-sm text-amber-800">
+              No products yet.
+              <%= link_to "Add your first product →", new_product_path, class: "font-semibold underline underline-offset-2 hover:text-amber-900" %>
+            </p>
+          </div>
+        <% end %>
+
+        <%= f.hidden_field :product_id, data: { order_modal_target: "productId" } %>
+        <%= f.hidden_field :product_name, data: { order_modal_target: "productName" } %>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= f.label :amount, "Order Amount (₹)", class: "mb-1 block text-sm font-medium text-gray-700" %>
+          <%= f.number_field :amount,
+                step: "0.01",
+                min: 0,
+                placeholder: "0.00",
+                data: { order_modal_target: "amount" },
+                class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+          <p class="mt-1 text-xs text-gray-400">Auto-filled from product, editable</p>
+        </div>
+        <div>
+          <%= f.label :payment_type, "Payment", class: "mb-1 block text-sm font-medium text-gray-700" %>
+          <%= f.select :payment_type,
+                [["Cash on delivery", "full_cod"], ["Prepaid / online", "full_prepaid"]],
+                {},
+                class: "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" %>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-4">
+        <% if embedded %>
+          <button
+            type="button"
+            data-action="order-modal#close"
+            class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
+          >
+            Cancel
+          </button>
+        <% else %>
+          <%= link_to "Cancel", orders_path, class: "rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800" %>
+        <% end %>
+        <%= f.submit "Create Order →",
+              class: "cursor-pointer rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+      </div>
+    <% end %>
+  </div>
+</div>

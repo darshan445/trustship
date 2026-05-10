@@ -9,7 +9,7 @@ module Sellers
     def resource_params
       case action_name
       when "create"
-        params.require(:seller).permit(:phone)
+        params.require(:seller).permit(:email)
       when "update"
         params.require(:seller).permit(:reset_password_token, :password, :password_confirmation)
       else

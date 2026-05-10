@@ -90,7 +90,11 @@
     </dl>
   </section>
 
-  <%= render "orders/verification_gates", order: @order %>
+  <% if @order.seller_manual? %>
+    <%= render "orders/seller_manual_checklist", order: @order %>
+  <% else %>
+    <%= render "orders/verification_gates", order: @order %>
+  <% end %>
 
   <%# Shipment detail cards removed from order fields cleanup %>
 

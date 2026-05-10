@@ -22,44 +22,14 @@ class Seller < ApplicationRecord
 
   validates :name, presence: true
   validates :business_name, presence: true
-  validates :phone, presence: true,
-            uniqueness: true,
-            format: { with: PHONE_REGEX, message: "must be a valid 10-digit Indian mobile number" }
+  validates :phone, uniqueness: true, allow_nil: true,
+            format: { with: PHONE_REGEX, message: "must be a valid 10-digit Indian mobile number", allow_nil: true }
   validates :whatsapp_phone_number_id, uniqueness: true, allow_nil: true
 
-  before_validation :normalize_phone
-
-  def email_required?
-    false
-  end
-
-  def devise_will_save_change_to_email?
-    false
-  end
+  before_validation :normalize_phone, if: -> { phone.present? }
 
   def whatsapp_connected?
     connected? && whatsapp_phone_number_id.present?
-  end
-
-  protected
-
-  def send_devise_notification(notification, *args)
-    if notification == :reset_password_instructions
-      token = args.first
-      if Rails.env.development? && token.present?
-        opts = Rails.application.config.action_mailer.default_url_options || {}
-        url = Rails.application.routes.url_helpers.edit_seller_password_url(
-          reset_password_token: token,
-          **opts
-        )
-        Rails.logger.info("[Seller] Password reset (dev): #{url}")
-      else
-        Rails.logger.info("[Seller] Password reset requested; add SMS or mail delivery for production.")
-      end
-      return
-    end
-
-    super
   end
 
   private

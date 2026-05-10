@@ -19,13 +19,13 @@ module BuyerAddresses
           next { buyer_address: buyer_address, skipped: true }
         end
 
-        geocode_result = GoogleMaps::GeocodeAddress.execute(address: buyer_address.raw_address)
-        unless geocode_result.success?
+        validation_result = GoogleMaps::AddressValidation.execute(address: buyer_address.raw_address)
+        unless validation_result.success?
           buyer_address.update!(address_confidence: "unknown", validated_at: Time.current)
           next { buyer_address: buyer_address.reload, skipped: false }
         end
 
-        payload = geocode_result.data
+        payload = validation_result.data
         buyer_address.update!(
           address_formatted: payload[:formatted_address],
           address_confidence: payload[:confidence],

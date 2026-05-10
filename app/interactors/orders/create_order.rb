@@ -5,7 +5,7 @@ module Orders
     include ExecuteMethodHelper
     include LogHelper
 
-    def self.execute(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, raw_address:, raw_message: nil, seller_note: nil, payment_type: "full_cod", product_id: nil)
+    def self.execute(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, raw_address:, raw_message: nil, seller_note: nil, payment_type: "full_cod", product_id: nil, verification_mode: :whatsapp_automated)
       new(
         seller_id: seller_id,
         buyer_name: buyer_name,
@@ -16,11 +16,12 @@ module Orders
         raw_message: raw_message,
         seller_note: seller_note,
         payment_type: payment_type,
-        product_id: product_id
+        product_id: product_id,
+        verification_mode: verification_mode
       ).execute
     end
 
-    def initialize(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, raw_address:, raw_message: nil, seller_note: nil, payment_type: "full_cod", product_id: nil)
+    def initialize(seller_id:, buyer_name:, buyer_phone:, product_name:, amount:, raw_address:, raw_message: nil, seller_note: nil, payment_type: "full_cod", product_id: nil, verification_mode: :whatsapp_automated)
       @seller_id = seller_id
       @buyer_name = buyer_name
       @buyer_phone = buyer_phone
@@ -31,6 +32,7 @@ module Orders
       @seller_note = seller_note
       @payment_type = payment_type
       @product_id = product_id
+      @verification_mode = verification_mode.to_sym
     end
 
     def execute
@@ -44,7 +46,7 @@ module Orders
     private
 
     attr_reader :seller_id, :buyer_name, :buyer_phone, :product_name, :amount,
-                :raw_address, :raw_message, :seller_note, :payment_type, :product_id
+                :raw_address, :raw_message, :seller_note, :payment_type, :product_id, :verification_mode
 
     def find_seller!
       seller = Seller.find_by(id: seller_id)
@@ -86,9 +88,10 @@ module Orders
         product_name: product_name,
         amount: amount,
         seller_note: seller_note.presence,
-        payment_type: normalize_payment_type!
+        payment_type: normalize_payment_type!,
+        verification_mode: verification_mode
       )
-      Orders::RunGateOneJob.perform_later(order.id)
+      Orders::RunGateOneJob.perform_later(order.id) if order.whatsapp_automated?
       order
     end
 

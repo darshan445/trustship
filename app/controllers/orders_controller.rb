@@ -4,7 +4,11 @@ class OrdersController < ApplicationController
   layout "dashboard"
 
   before_action :authenticate_seller!
-  before_action :set_order, only: [:show, :update, :override_risk, :cancel_order]
+  before_action :set_order, only: [
+    :show, :update, :override_risk, :cancel_order,
+    :seller_manual_risk, :seller_manual_address, :seller_manual_confirm,
+    :seller_manual_advance_link, :seller_manual_advance_received
+  ]
 
   def index
     base_scope = current_seller.orders.includes(:buyer, :buyer_address)
@@ -55,6 +59,7 @@ class OrdersController < ApplicationController
 
   def new
     @order = OrderForm.new
+    @products = current_seller.products.active.order(:name)
   end
 
   def manual
@@ -104,6 +109,7 @@ class OrdersController < ApplicationController
 
   def create
     @order = OrderForm.new(order_params)
+    @products = current_seller.products.active.order(:name)
     unless @order.valid?
       return render :new, status: :unprocessable_entity
     end
@@ -118,11 +124,12 @@ class OrdersController < ApplicationController
       raw_address: @order.raw_address,
       raw_message: @order.raw_message,
       seller_note: @order.seller_note,
-      payment_type: @order.payment_type
+      payment_type: @order.payment_type,
+      verification_mode: :seller_manual
     )
 
     if result.success?
-      redirect_to order_path(result.data), notice: "Order created successfully."
+      redirect_to order_path(result.data), notice: "Order created successfully.", status: :see_other
     else
       flash.now[:alert] = result.errors.to_s
       render :new, status: :unprocessable_entity
@@ -174,7 +181,59 @@ class OrdersController < ApplicationController
     end
   end
 
+  def seller_manual_risk
+    redirect_with_manual_step(Orders::SellerManual::RunRiskStep.execute(order_id: @order.id), "Risk score updated for this buyer.")
+  end
+
+  def seller_manual_address
+    apply_manual_flow_buyer_address_edit_if_present
+    redirect_with_manual_step(
+      Orders::SellerManual::ValidateAddressStep.execute(order_id: @order.id),
+      "Address validated — you can confirm the order when ready."
+    )
+  end
+
+  def seller_manual_confirm
+    redirect_with_manual_step(Orders::SellerManual::ConfirmOrderStep.execute(order_id: @order.id), "Order confirmed.")
+  end
+
+  def seller_manual_advance_link
+    redirect_with_manual_step(Orders::SellerManual::CreateAdvanceLink.execute(order_id: @order.id), "COD advance payment link is ready.")
+  end
+
+  def seller_manual_advance_received
+    redirect_with_manual_step(Orders::SellerManual::MarkAdvanceReceived.execute(order_id: @order.id), "COD advance recorded as received.")
+  end
+
   private
+
+  def redirect_with_manual_step(result, notice)
+    if result.success?
+      redirect_to order_path(@order), notice: notice
+    else
+      redirect_to order_path(@order), alert: result.errors.to_s
+    end
+  end
+
+  # When the seller edits the delivery text from the checklist, clear prior validation
+  # so Google runs again on the new text (same POST as "Verify").
+  def apply_manual_flow_buyer_address_edit_if_present
+    raw = params.dig(:buyer_address, :raw_address)&.to_s&.strip
+    return if raw.blank?
+
+    addr = @order.buyer_address
+    return if addr.blank?
+    return if raw == addr.raw_address.to_s.strip
+
+    addr.update!(
+      raw_address: raw,
+      validated_at: nil,
+      address_confidence: "pending",
+      address_formatted: nil,
+      latitude: nil,
+      longitude: nil
+    )
+  end
 
   def calculate_rto_rate
     total = current_seller.orders.count

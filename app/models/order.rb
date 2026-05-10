@@ -2,6 +2,7 @@
 
 class Order < ApplicationRecord
   include AASM
+  include Orders::SellerManualFlow
 
   STATUS_FILTER_MAP = {
     "pending" => "pending_verification",
@@ -28,6 +29,11 @@ class Order < ApplicationRecord
     partial_cod: "partial_cod",
     full_cod: "full_cod"
   }, default: :full_cod
+
+  enum :verification_mode, {
+    whatsapp_automated: "whatsapp_automated",
+    seller_manual: "seller_manual"
+  }, default: :whatsapp_automated
 
   validates :product_name, presence: true
   validates :amount, presence: true

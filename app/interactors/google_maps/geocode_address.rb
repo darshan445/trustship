@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Legacy Geocoding API client. Buyer address verification uses
+# +GoogleMaps::AddressValidation+ (Address Validation API) instead.
+
 require "json"
 require "net/http"
 require "uri"

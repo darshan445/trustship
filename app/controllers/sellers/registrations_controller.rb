@@ -25,7 +25,7 @@ module Sellers
     protected
 
     def configure_sign_up_params
-      devise_parameter_sanitizer.permit(:sign_up, keys: %i[name phone business_name])
+      devise_parameter_sanitizer.permit(:sign_up, keys: %i[name email business_name])
     end
 
     def after_sign_up_path_for(_resource)
