@@ -20,6 +20,8 @@ class ApplicationController < ActionController::Base
       when :products then controller_name == "products"
       when :buyers then controller_name == "buyers"
       when :settings then controller_name == "account"
+      when :whatsapp then controller_name == "whatsapp"
+      when :help then controller_name == "help"
       else false
       end
     current ? "active" : ""

@@ -1,8 +1,73 @@
 <% content_for :title, "#{@order.product_name} — TrustShip" %>
+<% content_for :page_title, "Order" %>
 
 <p class="mb-4">
   <%= link_to "← Back to Orders", orders_path, class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
 </p>
+
+<% if @order.editable_by_seller? || @order.deletable_by_seller? %>
+<section class="mb-6 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm" data-controller="confirm-modal">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p class="text-sm text-gray-600">Manage this order</p>
+    <div class="flex flex-wrap items-center gap-2">
+      <% if @order.editable_by_seller? %>
+        <%= link_to edit_order_path(@order), class: "inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50" do %>
+          <i class="ti ti-pencil text-base"></i>
+          Edit
+        <% end %>
+      <% end %>
+      <% if @order.deletable_by_seller? %>
+        <details class="relative inline-block text-left" data-controller="details-dropdown">
+          <summary class="list-none inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
+            <i class="ti ti-dots-vertical text-base"></i>
+            More
+          </summary>
+          <div class="absolute right-0 z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+            <button
+              type="button"
+              class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50"
+              data-action="click->confirm-modal#openFromTrigger"
+              data-confirm-url="<%= order_path(@order) %>"
+              data-confirm-method="delete"
+              data-confirm-title="Delete this order?"
+              data-confirm-message="This permanently removes the order and its history from your dashboard. This cannot be undone."
+              data-confirm-button-label="Delete order"
+            >
+              <i class="ti ti-trash mr-2 text-base opacity-70"></i>Delete
+            </button>
+          </div>
+        </details>
+      <% end %>
+    </div>
+  </div>
+
+  <div
+    data-confirm-modal-target="shell"
+    class="fixed inset-0 z-[60] hidden cursor-default items-center justify-center bg-gray-900/45 p-4 backdrop-blur-[1px]"
+    data-action="click->confirm-modal#backdropClick"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="order-show-confirm-title"
+  >
+    <div
+      class="pointer-events-auto w-full max-w-md cursor-auto rounded-2xl border border-gray-200/90 bg-white p-6 shadow-2xl ring-1 ring-black/5"
+      data-action="click->confirm-modal#stopPropagation"
+    >
+      <h3 id="order-show-confirm-title" data-confirm-modal-target="title" class="text-lg font-semibold tracking-tight text-gray-900"></h3>
+      <p data-confirm-modal-target="message" class="mt-2 text-sm leading-relaxed text-gray-600"></p>
+      <div class="mt-6 flex flex-wrap justify-end gap-3">
+        <button type="button" class="inline-flex cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50" data-action="click->confirm-modal#close">Cancel</button>
+        <button type="button" data-confirm-modal-target="submitButton" class="inline-flex min-w-[7.5rem] cursor-pointer justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500" data-action="click->confirm-modal#confirmSubmit">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" action="#" data-confirm-modal-target="form" data-turbo="true" class="hidden" aria-hidden="true">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <input type="hidden" name="_method" value="delete" disabled autocomplete="off" data-confirm-modal-delete-field />
+  </form>
+</section>
+<% end %>
 
 <div class="space-y-6">
   <% if @order.amount.to_d.zero? %>

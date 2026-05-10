@@ -1,6 +1,10 @@
 <% content_for :title, "Account — TrustShip" %>
+<% content_for :page_title, "Account" %>
 
-<h1 class="text-2xl font-bold text-gray-900">Account</h1>
+<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <h1 class="text-2xl font-bold text-gray-900">Account</h1>
+  <%= link_to "Edit account", edit_account_path, class: "inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+</div>
 
 <div class="mt-8 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
   <dl class="space-y-4 text-sm">
@@ -9,8 +13,12 @@
       <dd class="mt-0.5 font-medium text-gray-900"><%= current_seller.name %></dd>
     </div>
     <div>
+      <dt class="font-medium text-gray-500">Email</dt>
+      <dd class="mt-0.5 font-medium text-gray-900"><%= current_seller.email.presence || "—" %></dd>
+    </div>
+    <div>
       <dt class="font-medium text-gray-500">Phone</dt>
-      <dd class="mt-0.5 font-medium text-gray-900"><%= current_seller.phone %></dd>
+      <dd class="mt-0.5 font-medium text-gray-900"><%= current_seller.phone.presence || "—" %></dd>
     </div>
     <div>
       <dt class="font-medium text-gray-500">Business Name</dt>

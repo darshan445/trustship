@@ -3,7 +3,8 @@
 module Orders
   module SellerManual
     # Creates a Razorpay payment link and persists +OrderAdvancePayment+ without sending
-    # WhatsApp (dashboard / manual flow). Automated flow keeps using +SendAdvancePaymentRequest+.
+    # WhatsApp (dashboard / manual flow): full-prepaid orders get a link for the order total;
+    # COD orders use the product minimum advance. Automated COD flow uses +SendAdvancePaymentRequest+.
     class CreateAdvanceLink
       include ExecuteMethodHelper
       include LogHelper
@@ -25,18 +26,28 @@ module Orders
           next order if order.order_advance_payment&.paid?
           next order if order.order_events.exists?(event_name: Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT)
 
-          unless order.full_cod?
-            LogEvent.call(order, Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT, { "skipped" => true, "reason" => "not_cod" })
-            next order.reload
-          end
+          link_result =
+            if order.full_prepaid?
+              prepaid_amount = BigDecimal(order.amount.to_s)
+              unless prepaid_amount.positive?
+                LogEvent.call(order, Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT, { "skipped" => true, "reason" => "no_order_amount" })
+                next order.reload
+              end
 
-          advance_amount = order.product&.cod_minimum_advance.to_d
-          unless advance_amount.positive?
-            LogEvent.call(order, Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT, { "skipped" => true, "reason" => "no_advance_on_product" })
-            next order.reload
-          end
+              validate_result(Orders::CreatePrepaidPaymentLink.execute(order: order))
+            elsif order.full_cod?
+              advance_amount = order.product&.cod_minimum_advance.to_d
+              unless advance_amount.positive?
+                LogEvent.call(order, Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT, { "skipped" => true, "reason" => "no_advance_on_product" })
+                next order.reload
+              end
 
-          link_result = validate_result(Orders::CreateAdvancePaymentLink.execute(order: order))
+              validate_result(Orders::CreateAdvancePaymentLink.execute(order: order))
+            else
+              LogEvent.call(order, Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT, { "skipped" => true, "reason" => "payment_type" })
+              next order.reload
+            end
+
           advance = order.order_advance_payment || OrderAdvancePayment.new(order: order)
           advance.update!(
             amount: link_result.data[:amount],
@@ -52,7 +63,8 @@ module Orders
             Orders::SellerManualFlow::MANUAL_ADVANCE_LINK_EVENT,
             {
               "amount" => advance.amount.to_s("F"),
-              "payment_link_url" => advance.razorpay_payment_link_url.to_s
+              "payment_link_url" => advance.razorpay_payment_link_url.to_s,
+              "link_kind" => (order.full_prepaid? ? "prepaid_full" : "cod_advance")
             }
           )
           order.reload

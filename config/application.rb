@@ -17,6 +17,8 @@ module Trustship
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks generators templates])
  
+    config.hosts << "6b35-2402-3a80-4633-c259-b0ee-9ebb-eab6-b23e.ngrok-free.app"
+    config.hosts << "6b35-2402-3a80-4633-c259-b0ee-9ebb-eab6-b23e.ngrok-free.app"
 
 
 

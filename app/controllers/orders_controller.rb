@@ -5,7 +5,7 @@ class OrdersController < ApplicationController
 
   before_action :authenticate_seller!
   before_action :set_order, only: [
-    :show, :update, :override_risk, :cancel_order,
+    :show, :edit, :update, :destroy, :override_risk, :cancel_order,
     :seller_manual_risk, :seller_manual_address, :seller_manual_confirm,
     :seller_manual_advance_link, :seller_manual_advance_received
   ]
@@ -55,6 +55,16 @@ class OrdersController < ApplicationController
     @order_events = @order.order_events.order(created_at: :desc)
     @latest_order_event = @order_events.first
     @ofd_event = @order.order_events.where(event_name: "out_for_delivery").order(created_at: :desc).first
+  end
+
+  def edit
+    unless @order.editable_by_seller?
+      redirect_to order_path(@order), alert: "This order can no longer be edited."
+      return
+    end
+
+    @order_form = order_form_from_order(@order)
+    @products = current_seller.products.active.order(:name)
   end
 
   def new
@@ -137,16 +147,53 @@ class OrdersController < ApplicationController
   end
 
   def update
-    product = current_seller.products.active.find_by(id: params[:product_id])
-    if product.nil?
-      render json: { error: "Invalid product selection" }, status: :unprocessable_entity
+    json_product_link =
+      request.patch? && params[:product_id].present? && params[:order].blank?
+    if request.format.json? || json_product_link
+      return update_product_link_json
+    end
+
+    unless @order.editable_by_seller?
+      redirect_to order_path(@order), alert: "This order can no longer be edited."
       return
     end
 
-    @order.update!(product: product)
-    render json: { ok: true, product_name: product.name }, status: :ok
-  rescue StandardError => e
-    render json: { error: e.message }, status: :unprocessable_entity
+    @order_form = OrderForm.new(order_params)
+    @products = current_seller.products.active.order(:name)
+    unless @order_form.valid?
+      flash.now[:alert] = @order_form.errors.full_messages.to_sentence
+      return render :edit, status: :unprocessable_entity
+    end
+
+    result = Orders::UpdateOrder.execute(
+      order_id: @order.id,
+      seller_id: current_seller.id,
+      buyer_name: @order_form.buyer_name,
+      buyer_phone: @order_form.buyer_phone,
+      product_name: @order_form.product_name,
+      product_id: order_params[:product_id],
+      amount: @order_form.amount,
+      raw_address: @order_form.raw_address,
+      raw_message: @order_form.raw_message,
+      seller_note: @order_form.seller_note,
+      payment_type: @order_form.payment_type
+    )
+
+    if result.success?
+      redirect_to order_path(@order), notice: "Order updated.", status: :see_other
+    else
+      flash.now[:alert] = result.errors.to_s
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    result = Orders::DestroyOrder.execute(order_id: @order.id, seller_id: current_seller.id)
+    if result.success?
+      redirect_to orders_path, notice: "Order deleted."
+    else
+      redirect_back fallback_location: orders_path, alert: result.errors.to_s
+    end
   end
 
   def override_risk
@@ -198,11 +245,28 @@ class OrdersController < ApplicationController
   end
 
   def seller_manual_advance_link
-    redirect_with_manual_step(Orders::SellerManual::CreateAdvanceLink.execute(order_id: @order.id), "COD advance payment link is ready.")
+    unless Orders::SellerManualFlow::ENABLE_BUYER_RAZORPAY_PAYMENT_LINKS
+      redirect_to order_path(@order), alert: "Razorpay payment link generation is disabled. Collect payment however you prefer, then mark it received on the order."
+      return
+    end
+
+    notice =
+      if @order.full_prepaid?
+        "Prepaid Razorpay payment link is ready."
+      else
+        "COD advance payment link is ready."
+      end
+    redirect_with_manual_step(Orders::SellerManual::CreateAdvanceLink.execute(order_id: @order.id), notice)
   end
 
   def seller_manual_advance_received
-    redirect_with_manual_step(Orders::SellerManual::MarkAdvanceReceived.execute(order_id: @order.id), "COD advance recorded as received.")
+    notice =
+      if @order.full_prepaid?
+        "Prepaid payment recorded as received."
+      else
+        "COD advance recorded as received."
+      end
+    redirect_with_manual_step(Orders::SellerManual::MarkAdvanceReceived.execute(order_id: @order.id), notice)
   end
 
   private
@@ -252,5 +316,38 @@ class OrdersController < ApplicationController
       :buyer_name, :buyer_phone, :product_name, :amount, :raw_address,
       :raw_message, :seller_note, :payment_type, :product_id
     )
+  end
+
+  def order_form_from_order(order)
+    OrderForm.new(
+      buyer_name: order.buyer.name,
+      buyer_phone: order.buyer.phone,
+      product_name: order.product_name,
+      product_id: order.product_id,
+      amount: order.amount,
+      raw_address: order.buyer_address&.raw_address,
+      raw_message: order.raw_message,
+      seller_note: order.seller_note,
+      payment_type: order.payment_type
+    )
+  end
+
+  def update_product_link_json
+    product_id = params[:product_id].presence || params.dig(:order, :product_id)
+    if product_id.blank?
+      render json: { error: "product_id is required" }, status: :unprocessable_entity
+      return
+    end
+
+    product = current_seller.products.active.find_by(id: product_id)
+    if product.nil?
+      render json: { error: "Invalid product selection" }, status: :unprocessable_entity
+      return
+    end
+
+    @order.update!(product: product)
+    render json: { ok: true, product_name: product.name }, status: :ok
+  rescue StandardError => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 end

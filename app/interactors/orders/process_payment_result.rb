@@ -20,7 +20,7 @@ module Orders
         order = find_order!
 
         if order.green_zone? || order.shipped? || order.delivered? || order.rto?
-          return order
+          next order
         end
 
         unless order.confirmed?

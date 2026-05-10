@@ -18,7 +18,7 @@ module Orders
       execute_log_and_return_open_struct do
         advance_payment = order.order_advance_payment
         raise_string_error("No advance payment record found") if advance_payment.nil?
-        return order if advance_payment.paid?
+        next order if advance_payment.paid?
 
         advance_payment.update!(razorpay_payment_id: razorpay_payment_id, paid_at: Time.current)
         order.update!(advance_amount: advance_payment.amount)
@@ -58,58 +58,5 @@ module Orders
         metadata: metadata
       )
     end
-  end
-end
-# frozen_string_literal: true
-
-module Orders
-  class ProcessAdvancePayment
-    include ExecuteMethodHelper
-    include LogHelper
-
-    def self.execute(order:, razorpay_payment_id:)
-      new(order: order, razorpay_payment_id: razorpay_payment_id).execute
-    end
-
-    def initialize(order:, razorpay_payment_id:)
-      @order = order
-      @razorpay_payment_id = razorpay_payment_id
-    end
-
-    def execute
-      execute_log_and_return_open_struct do
-        advance_payment = order.order_advance_payment
-        raise_string_error("No advance payment record found") if advance_payment.nil?
-        return advance_payment if advance_payment.paid?
-
-        advance_payment.update!(
-          razorpay_payment_id: razorpay_payment_id,
-          paid_at: Time.current
-        )
-        order.update!(advance_amount: advance_payment.amount)
-        log_event(order, "advance_payment_received", {
-          amount: advance_payment.amount,
-          razorpay_payment_id: razorpay_payment_id,
-          paid_at: Time.current
-        })
-
-        order.confirm! if order.may_confirm?
-
-        Whatsapp::SendTextMessage.execute(
-          to: order.seller.phone,
-          message: "Advance Received!\n\n" \
-            "Order ##{order.id.first(8).upcase}\n" \
-            "Buyer #{order.buyer.name} paid ₹#{advance_payment.amount} advance for " \
-            "#{order.product_name}.\n\n" \
-            "Order is now confirmed."
-        )
-
-        advance_payment
-      end
-    end
-
-    private
-
-    attr_reader :order, :razorpay_payment_id
   end
 end

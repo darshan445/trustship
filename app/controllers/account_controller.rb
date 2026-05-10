@@ -20,7 +20,7 @@ class AccountController < ApplicationController
     profile_result = Sellers::UpdateProfile.execute(seller_id: current_seller.id, **permitted)
 
     if profile_result.success?
-      redirect_to account_path, notice: "Profile updated successfully"
+      redirect_to account_path, notice: "Account updated successfully"
     else
       @seller.assign_attributes(seller_params)
       flash.now[:alert] = profile_result.errors.to_s
@@ -32,7 +32,9 @@ class AccountController < ApplicationController
 
   def seller_params
     params.require(:seller).permit(
-      :name, :business_name
-    )
+      :name, :business_name, :email, :phone
+    ).tap do |p|
+      p[:phone] = p[:phone].to_s.gsub(/\s+/, "").presence
+    end
   end
 end

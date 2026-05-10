@@ -5,7 +5,7 @@ module Sellers
     include ExecuteMethodHelper
     include LogHelper
 
-    UPDATE_KEYS = %i[name business_name].freeze
+    UPDATE_KEYS = %i[name business_name email phone].freeze
 
     def self.execute(seller_id:, **attrs)
       new(seller_id: seller_id, **attrs).execute

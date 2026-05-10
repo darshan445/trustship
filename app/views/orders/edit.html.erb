@@ -1,0 +1,96 @@
+<% content_for :title, "Edit order — TrustShip" %>
+<% content_for :page_title, "Edit order" %>
+
+<p class="mb-4">
+  <%= link_to "← Back to order", order_path(@order), class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+</p>
+
+<div
+  class="mx-auto max-w-2xl rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+  data-controller="order-modal"
+  data-order-modal-orders-path-value="<%= order_path(@order) %>"
+  data-order-modal-lock-scroll-value="false"
+>
+  <h1 class="text-lg font-semibold text-gray-900">Edit order</h1>
+  <p class="mt-1 text-sm text-gray-600">Update buyer, address, product, amount, or payment type. Address changes reset map validation until you verify again.</p>
+
+  <%= form_with model: @order_form, scope: :order, url: order_path(@order), method: :patch, class: "mt-6 space-y-4" do |f| %>
+    <% if flash[:alert].present? %>
+      <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <%= f.label :buyer_name, "Buyer name", class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= f.text_field :buyer_name, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      </div>
+      <div>
+        <%= f.label :buyer_phone, "Phone", class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= f.telephone_field :buyer_phone, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :raw_address, "Delivery address", class: "mb-1 block text-sm font-medium text-gray-700" %>
+      <%= f.text_area :raw_address, rows: 3, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+
+    <div class="border-t border-gray-100 pt-4">
+      <label class="mb-1 block text-sm font-medium text-gray-700">Product</label>
+      <% if @products.any? %>
+        <select
+          data-order-modal-target="productSelect"
+          data-action="change->order-modal#productChanged"
+          class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          <option value="">Select a product…</option>
+          <% @products.each do |product| %>
+            <option
+              value="<%= product.id %>"
+              data-price="<%= product.price %>"
+              data-name="<%= product.name %>"
+              <%= "selected" if @order_form.product_id == product.id.to_s %>
+            >
+              <%= product.name %><%= product.price? ? " — ₹#{number_with_precision(product.price, precision: 0, delimiter: ',')}" : "" %>
+            </option>
+          <% end %>
+        </select>
+      <% else %>
+        <p class="mt-1 text-sm text-amber-800">No active products — <%= link_to "add a product", new_product_path, class: "font-semibold underline" %> first.</p>
+      <% end %>
+      <%= f.hidden_field :product_id, data: { order_modal_target: "productId" } %>
+      <%= f.hidden_field :product_name, data: { order_modal_target: "productName" } %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <%= f.label :amount, "Amount (₹)", class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= f.number_field :amount, step: "0.01", min: 0, data: { order_modal_target: "amount" }, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      </div>
+      <div>
+        <%= f.label :payment_type, "Payment", class: "mb-1 block text-sm font-medium text-gray-700" %>
+        <%= f.select :payment_type,
+              [["Cash on delivery", "full_cod"], ["Prepaid / online", "full_prepaid"]],
+              {},
+              class: "mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :seller_note, "Seller note", class: "mb-1 block text-sm font-medium text-gray-700" %>
+      <%= f.text_area :seller_note, rows: 2, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+
+    <div>
+      <%= f.label :raw_message, "Original message (optional)", class: "mb-1 block text-sm font-medium text-gray-700" %>
+      <%= f.text_area :raw_message, rows: 2, class: "mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+    </div>
+
+    <div class="flex justify-end gap-3 border-t border-gray-100 pt-4">
+      <%= link_to "Cancel", order_path(@order), class: "rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100" %>
+      <%= f.submit "Save changes", class: "cursor-pointer rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+    </div>
+  <% end %>
+</div>

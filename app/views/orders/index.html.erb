@@ -7,7 +7,7 @@
   <% end %>
 <% end %>
 
-<div id="orders-index-page">
+<div id="orders-index-page" data-controller="confirm-modal">
 <div class="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
   <div class="stat-card">
     <div class="stat-label">Total Orders</div>
@@ -56,6 +56,7 @@
             <th class="px-4 py-3 text-right"><%= orders_sort_link("Amount", "amount") %></th>
             <th class="px-4 py-3 text-left"><%= orders_sort_link("Status", "status") %></th>
             <th class="px-4 py-3 text-left"><%= orders_sort_link("Created", "created_at") %></th>
+            <th class="px-4 py-3 text-right text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 bg-white">
@@ -83,6 +84,37 @@
                   <span class="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold <%= risk[:classes] %>"><%= risk[:label] %></span>
                 <% end %>
               </td>
+              <td class="px-4 py-3 text-right" data-action="click->orders-list#stopRowNavigation">
+                <details class="relative inline-block text-left" data-controller="details-dropdown">
+                  <summary class="list-none cursor-pointer rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 [&::-webkit-details-marker]:hidden" aria-label="Order actions">
+                    <i class="ti ti-dots-vertical text-lg"></i>
+                  </summary>
+                  <div class="absolute right-0 z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg" data-action="click->orders-list#stopRowNavigation">
+                    <% if order.editable_by_seller? %>
+                      <%= link_to edit_order_path(order), class: "block px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50", data: { turbo_frame: "_top", action: "click->orders-list#stopRowNavigation" } do %>
+                        <i class="ti ti-pencil mr-2 text-base opacity-70"></i>Edit
+                      <% end %>
+                    <% end %>
+                    <% if order.deletable_by_seller? %>
+                      <button
+                        type="button"
+                        class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50"
+                        data-action="click->confirm-modal#openFromTrigger"
+                        data-confirm-url="<%= order_path(order) %>"
+                        data-confirm-method="delete"
+                        data-confirm-title="Delete this order?"
+                        data-confirm-message="This permanently removes the order and its history from your dashboard. This cannot be undone."
+                        data-confirm-button-label="Delete order"
+                      >
+                        <i class="ti ti-trash mr-2 text-base opacity-70"></i>Delete
+                      </button>
+                    <% end %>
+                    <% if !order.editable_by_seller? && !order.deletable_by_seller? %>
+                      <span class="block px-4 py-2 text-left text-xs text-gray-400">No actions</span>
+                    <% end %>
+                  </div>
+                </details>
+              </td>
             </tr>
           <% end %>
         </tbody>
@@ -101,6 +133,32 @@
       <p class="mt-1 text-sm text-gray-500">Try changing filters or search terms.</p>
     </div>
   <% end %>
+
+  <div
+    data-confirm-modal-target="shell"
+    class="fixed inset-0 z-[60] hidden cursor-default items-center justify-center bg-gray-900/45 p-4 backdrop-blur-[1px]"
+    data-action="click->confirm-modal#backdropClick"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="orders-index-confirm-title"
+  >
+    <div
+      class="pointer-events-auto w-full max-w-md cursor-auto rounded-2xl border border-gray-200/90 bg-white p-6 shadow-2xl ring-1 ring-black/5"
+      data-action="click->confirm-modal#stopPropagation"
+    >
+      <h3 id="orders-index-confirm-title" data-confirm-modal-target="title" class="text-lg font-semibold tracking-tight text-gray-900"></h3>
+      <p data-confirm-modal-target="message" class="mt-2 text-sm leading-relaxed text-gray-600"></p>
+      <div class="mt-6 flex flex-wrap justify-end gap-3">
+        <button type="button" class="inline-flex cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50" data-action="click->confirm-modal#close">Cancel</button>
+        <button type="button" data-confirm-modal-target="submitButton" class="inline-flex min-w-[7.5rem] cursor-pointer justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500" data-action="click->confirm-modal#confirmSubmit">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" action="#" data-confirm-modal-target="form" data-turbo="true" class="hidden" aria-hidden="true">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <input type="hidden" name="_method" value="delete" disabled autocomplete="off" data-confirm-modal-delete-field />
+  </form>
 </div>
 </div>
 

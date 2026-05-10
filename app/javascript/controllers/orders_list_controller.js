@@ -20,6 +20,10 @@ export default class extends Controller {
     if (url) window.location.href = url
   }
 
+  stopRowNavigation(event) {
+    event.stopPropagation()
+  }
+
   debounce(fn, delay) {
     let timer
     return (...args) => {

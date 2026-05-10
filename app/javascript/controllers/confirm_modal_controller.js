@@ -43,6 +43,14 @@ export default class extends Controller {
         el.getAttribute("data-confirm-button-label") || "Confirm"
     }
 
+    const deleteMethodField = this.formTarget.querySelector(
+      "[data-confirm-modal-delete-field]"
+    )
+    if (deleteMethodField) {
+      deleteMethodField.disabled =
+        el.getAttribute("data-confirm-method") !== "delete"
+    }
+
     this.shellTarget.classList.remove("hidden")
     this.shellTarget.classList.add("flex")
     document.body.classList.add("overflow-hidden")

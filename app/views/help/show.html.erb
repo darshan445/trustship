@@ -1,0 +1,20 @@
+<% content_for :title, "Help — TrustShip" %>
+<% content_for :page_title, "Help" %>
+
+<div class="mx-auto max-w-lg space-y-6">
+  <section class="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+    <h2 class="text-lg font-semibold text-gray-900">Contact us</h2>
+    <p class="mt-2 text-sm text-gray-600">
+      Questions about orders, billing, or your account? Reach out and we will get back to you.
+    </p>
+    <p class="mt-4 text-sm text-gray-700">
+      <span class="font-medium text-gray-800">Email</span>
+      <% email = support_email.presence %>
+      <% if email.present? %>
+        <%= mail_to email, email, class: "ml-1 font-medium text-indigo-600 hover:text-indigo-500" %>
+      <% else %>
+        <span class="ml-1 text-amber-700">Support email is not configured yet. Add <code class="rounded bg-gray-100 px-1 text-xs">app.support_email</code> in credentials.</span>
+      <% end %>
+    </p>
+  </section>
+</div>

@@ -2,20 +2,29 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["productSelect", "productId", "productName", "amount"]
-  static values = { ordersPath: String }
+  static values = {
+    ordersPath: String,
+    // Full-screen new-order modal locks scroll; inline edit form does not.
+    lockScroll: { type: Boolean, default: true }
+  }
 
   connect() {
     this._onKeydown = this._onKeydown.bind(this)
-    document.addEventListener("keydown", this._onKeydown)
-    document.body.classList.add("overflow-hidden")
-
-    const first = this.element.querySelector("input:not([type=hidden]), select, textarea")
-    if (first) first.focus()
+    if (this.lockScrollValue) {
+      document.addEventListener("keydown", this._onKeydown)
+      document.body.classList.add("overflow-hidden")
+      const first = this.element.querySelector(
+        "input:not([type=hidden]), select, textarea"
+      )
+      if (first) first.focus()
+    }
   }
 
   disconnect() {
-    document.removeEventListener("keydown", this._onKeydown)
-    document.body.classList.remove("overflow-hidden")
+    if (this.lockScrollValue) {
+      document.removeEventListener("keydown", this._onKeydown)
+      document.body.classList.remove("overflow-hidden")
+    }
   }
 
   close() {
@@ -60,6 +69,7 @@ export default class extends Controller {
   }
 
   _onKeydown(event) {
+    if (!this.lockScrollValue) return
     if (event.key === "Escape") {
       event.preventDefault()
       this.close()

@@ -6,13 +6,18 @@
 <% adv_meta = adv_event&.metadata.is_a?(Hash) ? adv_event.metadata.stringify_keys : {} %>
 <% advance_url = advance&.razorpay_payment_link_url.presence || adv_meta["payment_link_url"].presence %>
 <% advance_skipped = adv_meta["skipped"].present? %>
+<% prepaid_manual = order.full_prepaid? %>
+<% payment_link_step_title = prepaid_manual ? "Prepaid payment (Razorpay)" : "COD advance (Razorpay)" %>
+<%# Payment step index when Razorpay link UI is disabled (`if false` below); bump if step 4 is re-enabled %>
+<% payment_received_step_number = 4 %>
 
 <section class="rounded-xl border border-indigo-100 bg-gradient-to-b from-indigo-50/80 to-white p-6 shadow-sm" aria-labelledby="manual-checklist-heading" data-controller="confirm-modal">
   <div class="flex flex-wrap items-start justify-between gap-3">
     <div>
       <h2 id="manual-checklist-heading" class="text-lg font-bold text-gray-900">Seller verification checklist</h2>
       <p class="mt-1 max-w-2xl text-sm text-gray-600">
-        Complete each step in order. This path does not send WhatsApp automation — you control risk scoring, address validation, confirmation, and COD advance (Razorpay) from the dashboard.
+        Complete each step in order. This path does not send WhatsApp automation — you control risk scoring, address validation, and confirmation from the dashboard.
+        Collect payment from the buyer however you prefer (UPI, cash, bank transfer, etc.), then mark it received in step <%= payment_received_step_number %> when you are ready.
       </p>
     </div>
     <span class="inline-flex shrink-0 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">Manual flow</span>
@@ -29,7 +34,11 @@
         <p class="mt-1 text-sm text-gray-600">Uses the same buyer risk model as the automated flow.</p>
         <% if order.seller_manual_risk_completed? %>
           <p class="mt-2 text-sm text-green-800">
-            Done — buyer is <span class="font-semibold capitalize"><%= buyer.risk_level %></span>
+            Done — buyer risk:
+            <span class="font-semibold capitalize"><%= buyer.risk_level %></span>
+            <% if buyer.risk_level.to_s == "low" %>
+              <span class="font-normal text-green-900/90"> (favorable for delivery)</span>
+            <% end %>
             <% if order.high_risk? %><span class="text-orange-800"> (order flagged high risk)</span><% end %>
           </p>
         <% else %>
@@ -113,56 +122,74 @@
       </div>
     </li>
 
-    <%# 4 COD advance link %>
-    <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
-      <% step4_done = order.seller_manual_advance_link_created? %>
-      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= step4_done ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
-        <%= step4_done ? "✓" : "4" %>
-      </div>
-      <div class="min-w-0 flex-1">
-        <h3 class="font-semibold text-gray-900">COD advance (Razorpay)</h3>
-        <% if !order.seller_manual_cod_advance_expected? %>
-          <p class="mt-2 text-sm text-gray-600">Not required — <%= order.full_prepaid? ? "prepaid order" : "product COD advance is ₹0" %>.</p>
-        <% elsif step4_done && advance_skipped %>
-          <p class="mt-2 text-sm text-gray-700">Skipped for this order.</p>
-        <% elsif step4_done && advance_url.present? %>
-          <% adv_amt = advance&.amount || (adv_meta["amount"].present? ? BigDecimal(adv_meta["amount"].to_s) : 0) %>
-          <p class="mt-2 text-sm text-green-800">Payment link generated (₹<%= number_with_precision(adv_amt, precision: 2) %>).</p>
-          <p class="mt-2 break-all rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5 font-mono text-xs text-gray-800"><%= advance_url %></p>
-          <%= link_to "Open Razorpay link →", advance_url, target: "_blank", rel: "noopener noreferrer", class: "mt-2 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
-        <% elsif order.confirmed? %>
-          <%= button_to "Generate COD advance link", seller_manual_advance_link_order_path(order), method: :post, class: "mt-3 inline-flex cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
-        <% else %>
-          <p class="mt-2 text-xs text-gray-500">Confirm the order first.</p>
-        <% end %>
-      </div>
-    </li>
-
-    <%# 5 Mark received %>
-    <% if order.seller_manual_cod_advance_expected? && !advance_skipped %>
+    <%# 4 Buyer Razorpay link (full prepaid or COD advance). Change `if false` to `if true` to restore Razorpay link UI. %>
+    <% if false %>
       <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= advance&.paid? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
-          <%= advance&.paid? ? "✓" : "5" %>
+        <% step4_done = order.seller_manual_advance_link_created? %>
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= step4_done ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
+          <%= step4_done ? "✓" : "4" %>
         </div>
         <div class="min-w-0 flex-1">
-          <h3 class="font-semibold text-gray-900">COD advance received</h3>
-          <p class="mt-1 text-sm text-gray-600">Use when Razorpay marks the payment, or you collected the advance offline. Razorpay webhooks still update this order when configured.</p>
+          <h3 class="font-semibold text-gray-900"><%= payment_link_step_title %></h3>
+          <% if !order.seller_manual_buyer_payment_link_expected? %>
+            <p class="mt-2 text-sm text-gray-600">
+              Not required — no buyer Razorpay link applies
+              <% if order.full_cod? %> (COD advance on the product is ₹0)<% elsif order.partial_cod? %> (this payment type is not supported for manual payment links)<% end %>.
+            </p>
+          <% elsif step4_done && advance_skipped %>
+            <p class="mt-2 text-sm text-gray-700">Skipped for this order.</p>
+          <% elsif step4_done && advance_url.present? %>
+            <% adv_amt = advance&.amount || (adv_meta["amount"].present? ? BigDecimal(adv_meta["amount"].to_s) : 0) %>
+            <p class="mt-2 text-sm text-green-800">
+              <%= prepaid_manual ? "Prepaid" : "COD advance" %> Razorpay link (₹<%= number_with_precision(adv_amt, precision: 2) %>).
+            </p>
+            <p class="mt-2 break-all rounded-md border border-gray-200 bg-gray-50 px-2 py-1.5 font-mono text-xs text-gray-800"><%= advance_url %></p>
+            <%= link_to "Open Razorpay link →", advance_url, target: "_blank", rel: "noopener noreferrer", class: "mt-2 inline-block text-sm font-semibold text-indigo-600 hover:text-indigo-500" %>
+          <% elsif order.confirmed? %>
+            <%= button_to(
+                  prepaid_manual ? "Generate prepaid payment link" : "Generate COD advance link",
+                  seller_manual_advance_link_order_path(order),
+                  method: :post,
+                  class: "mt-3 inline-flex cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                ) %>
+          <% else %>
+            <p class="mt-2 text-xs text-gray-500">Confirm the order first.</p>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+
+    <%# Mark payment received (prepaid full amount or COD advance) %>
+    <% if order.seller_manual_buyer_payment_link_expected? && !advance_skipped %>
+      <li class="flex gap-4 rounded-lg border border-gray-100 bg-white p-4 shadow-sm">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full <%= advance&.paid? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400' %> text-sm font-bold" aria-hidden="true">
+          <%= advance&.paid? ? "✓" : payment_received_step_number %>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 class="font-semibold text-gray-900"><%= prepaid_manual ? "Prepaid payment received" : "COD advance received" %></h3>
+          <p class="mt-1 text-sm text-gray-600">
+            <% if prepaid_manual %>
+              Mark when you have received the full order amount from the buyer (any method you agreed on).
+            <% else %>
+              Mark when you have received the COD advance from the buyer (any method you agreed on).
+            <% end %>
+          </p>
           <% if advance&.paid? %>
             <p class="mt-2 text-sm text-green-800">Recorded<%= advance.paid_at.present? ? " · #{time_ago_in_words(advance.paid_at)} ago" : "" %>.</p>
-          <% elsif advance_url.present? %>
+          <% elsif order.confirmed? %>
             <button
               type="button"
               class="mt-3 inline-flex cursor-pointer rounded-lg border border-green-600 bg-white px-4 py-2 text-sm font-semibold text-green-800 shadow-sm hover:bg-green-50"
               data-action="click->confirm-modal#openFromTrigger"
               data-confirm-url="<%= seller_manual_advance_received_order_path(order) %>"
-              data-confirm-title="Mark COD advance as received?"
-              data-confirm-message="Use this only if Razorpay shows the payment as paid, or you collected the advance by another agreed method. Webhooks may also update this order when configured."
+              data-confirm-title="<%= prepaid_manual ? 'Mark prepaid payment as received?' : 'Mark COD advance as received?' %>"
+              data-confirm-message="<%= prepaid_manual ? 'Only mark this after you have received the full prepaid amount.' : 'Only mark this after you have received the COD advance amount for this order.' %>"
               data-confirm-button-label="Mark as received"
             >
-              COD advance received
+              <%= prepaid_manual ? "Prepaid payment received" : "COD advance received" %>
             </button>
           <% else %>
-            <p class="mt-2 text-xs text-gray-500">Generate the payment link first.</p>
+            <p class="mt-2 text-xs text-gray-500">Confirm the order first.</p>
           <% end %>
         </div>
       </li>

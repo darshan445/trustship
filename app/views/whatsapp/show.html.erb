@@ -28,26 +28,21 @@
       <% end %>
     </div>
 
-    <% if @embedded_config_id.present? && @facebook_app_id.present? %>
-      <div
-        class="mt-4"
-        data-controller="whatsapp-embedded-signup"
-        data-whatsapp-embedded-signup-config-id-value="<%= @embedded_config_id %>"
-        data-whatsapp-embedded-signup-app-id-value="<%= @facebook_app_id %>"
-        data-whatsapp-embedded-signup-complete-url-value="<%= whatsapp_embedded_signup_complete_path %>">
-        <button
-          type="button"
-          data-action="click->whatsapp-embedded-signup#start"
-          class="btn-primary">
-          <i class="ti ti-brand-whatsapp text-sm"></i>
-          <%= @seller.whatsapp_connected? ? "Reconnect WhatsApp" : "Connect WhatsApp Business" %>
-        </button>
-        <p class="mt-2 text-xs text-gray-500" data-whatsapp-embedded-signup-target="message"></p>
-      </div>
-    <% else %>
-      <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-        Missing embedded signup configuration. Add `meta.whatsapp_embedded_config_id` and `meta.facebook_app_id` in credentials.
-      </div>
-    <% end %>
+    <div class="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+      <p class="font-medium">Coming soon</p>
+      <p class="mt-1 text-amber-800/90">
+        WhatsApp Business connection from the dashboard is not available yet. We will enable it in a future release.
+      </p>
+    </div>
+    <div class="mt-4">
+      <button
+        type="button"
+        disabled
+        class="inline-flex cursor-not-allowed items-center gap-2 rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-500 opacity-90"
+        aria-disabled="true">
+        <i class="ti ti-brand-whatsapp text-base"></i>
+        Connect WhatsApp Business
+      </button>
+    </div>
   </section>
 </div>

@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     end
     resource :razorpay, only: [], controller: "razorpay" do
       get "/", action: :payment_callback, on: :collection
+      get "advance_callback", action: :advance_callback, on: :collection
+      post "notify", action: :receive, on: :collection
     end
   end
 
@@ -29,7 +31,7 @@ Rails.application.routes.draw do
 
   authenticate :seller do
     get "dashboard", to: "orders#index", as: :dashboard
-    resources :orders, only: [ :index, :new, :create, :show, :update ] do
+    resources :orders, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
       collection do
         post :parse
         get :manual
@@ -49,5 +51,6 @@ Rails.application.routes.draw do
     resource :whatsapp, only: [:show], controller: "whatsapp"
     post "whatsapp/embedded_signup_complete", to: "whatsapp#embedded_signup_complete", as: :whatsapp_embedded_signup_complete
     resource :account, only: [ :show, :edit, :update ], controller: "account"
+    get "help", to: "help#show", as: :help
   end
 end

@@ -90,6 +90,14 @@ class Order < ApplicationRecord
     end
   end
 
+  def editable_by_seller?
+    !aasm_state.in?(%w[shipped delivered rto])
+  end
+
+  def deletable_by_seller?
+    aasm_state.in?(%w[pending_verification high_risk address_mismatch undeliverable cancelled])
+  end
+
   private
 
   def log_order_event

@@ -52,14 +52,14 @@
               <span>WhatsApp</span>
             <% end %>
 
-            <%= link_to "#", class: "sidebar-nav-item" do %>
+            <%= link_to help_path, class: "sidebar-nav-item #{dashboard_sidebar_active(:help)}" do %>
               <i class="ti ti-help-circle text-base"></i>
               <span>Help</span>
             <% end %>
           </nav>
 
           <div class="mt-auto pt-4">
-            <details class="group relative">
+            <details class="group relative" data-controller="details-dropdown">
               <summary class="flex list-none cursor-pointer items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 [&::-webkit-details-marker]:hidden">
                 <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[#EEEDFE] text-xs font-semibold text-[#534AB7]">
                   <%= initials_for_business(current_seller.business_name) %>

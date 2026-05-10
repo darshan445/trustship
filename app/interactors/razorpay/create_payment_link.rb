@@ -147,7 +147,7 @@ module Razorpay
       domain = Rails.application.credentials.app[:domain].to_s.sub(%r{\Ahttps?://}i, "").split("/").first.to_s
       raise_string_error("app domain missing in credentials") if domain.blank?
 
-      path = buyer_advance? ? "/webhooks/razorpay" : "/webhooks/razorpay/shipping_callback"
+      path = buyer_advance? ? "/webhooks/razorpay/advance_callback" : "/webhooks/razorpay/shipping_callback"
       "https://#{domain}#{path}"
     end
 

@@ -11,8 +11,6 @@ class WhatsappController < ApplicationController
 
   def show
     @seller = current_seller
-    @embedded_config_id = embedded_config_id
-    @facebook_app_id = facebook_app_id
   end
 
   def embedded_signup_complete
@@ -44,14 +42,6 @@ class WhatsappController < ApplicationController
   end
 
   private
-
-  def embedded_config_id
-    Rails.application.credentials.dig(:meta, :whatsapp_embedded_config_id).presence
-  end
-
-  def facebook_app_id
-    Rails.application.credentials.dig(:meta, :facebook_app_id).presence
-  end
 
   def graph_token
     Rails.application.credentials.dig(:meta, :whatsapp_token).presence

@@ -7,6 +7,10 @@ module Orders
   module SellerManualFlow
     extend ActiveSupport::Concern
 
+    # Dashboard step that creates Razorpay payment links for buyers (COD advance / full prepaid).
+    # Set to true to show the link generator again.
+    ENABLE_BUYER_RAZORPAY_PAYMENT_LINKS = false
+
     MANUAL_RISK_EVENT = "seller_manual_risk_completed"
     MANUAL_ADDRESS_EVENT = "seller_manual_address_completed"
     MANUAL_ADVANCE_LINK_EVENT = "seller_manual_advance_link_created"
@@ -52,6 +56,15 @@ module Orders
 
     def seller_manual_cod_advance_expected?
       seller_manual? && full_cod? && product&.cod_minimum_advance.to_d.positive?
+    end
+
+    # After confirm: Razorpay link for full order (prepaid) or COD minimum advance.
+    def seller_manual_prepaid_payment_link_expected?
+      seller_manual? && full_prepaid? && amount.to_d.positive?
+    end
+
+    def seller_manual_buyer_payment_link_expected?
+      seller_manual_prepaid_payment_link_expected? || seller_manual_cod_advance_expected?
     end
   end
 end
