@@ -31,7 +31,7 @@
   </div>
 </div>
 
-<div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+<div class="min-h-[30rem] rounded-xl border border-gray-200 bg-white shadow-sm md:min-h-[32rem]">
   <%= form_with url: orders_path, method: :get, local: true, data: { controller: "orders-list" }, class: "border-b border-gray-100 px-4 py-3" do %>
     <div class="flex flex-wrap items-center gap-3">
       <div class="flex min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
@@ -89,7 +89,7 @@
                   <summary class="list-none cursor-pointer rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 [&::-webkit-details-marker]:hidden" aria-label="Order actions">
                     <i class="ti ti-dots-vertical text-lg"></i>
                   </summary>
-                  <div class="absolute right-0 z-20 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg" data-action="click->orders-list#stopRowNavigation">
+                  <div data-details-dropdown-panel class="invisible pointer-events-none absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg" data-action="click->orders-list#stopRowNavigation">
                     <% if order.editable_by_seller? %>
                       <%= link_to edit_order_path(order), class: "block px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50", data: { turbo_frame: "_top", action: "click->orders-list#stopRowNavigation" } do %>
                         <i class="ti ti-pencil mr-2 text-base opacity-70"></i>Edit
