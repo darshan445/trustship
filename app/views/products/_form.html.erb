@@ -1,4 +1,4 @@
-<%= form_with model: product, class: "space-y-6" do |f| %>
+<%= form_with model: product, data: { controller: "form-submit" }, class: "space-y-6" do |f| %>
   <div class="space-y-2">
     <%= f.label :name, "Name", class: "block text-sm font-medium text-gray-700" %>
     <%= f.text_field :name, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" %>
@@ -29,7 +29,7 @@
   </div>
 
   <div class="flex items-center gap-3">
-    <%= f.submit "Save Product", class: "inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700" %>
+    <%= f.submit "Save Product", data: { form_submit_target: "button" }, class: "inline-flex items-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60" %>
     <%= link_to "Cancel", products_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900" %>
   </div>
 <% end %>

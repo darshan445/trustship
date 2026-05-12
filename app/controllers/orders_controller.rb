@@ -190,9 +190,26 @@ class OrdersController < ApplicationController
   def destroy
     result = Orders::DestroyOrder.execute(order_id: @order.id, seller_id: current_seller.id)
     if result.success?
-      redirect_to orders_path, notice: "Order deleted."
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.remove("order_#{@order.id}"),
+            turbo_stream.prepend("flash-messages",
+              partial: "shared/flash",
+              locals: { notice: "Order deleted.", alert: nil })
+          ]
+        end
+        format.html { redirect_to orders_path, notice: "Order deleted.", status: :see_other }
+      end
     else
-      redirect_back fallback_location: orders_path, alert: result.errors.to_s
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.prepend("flash-messages",
+            partial: "shared/flash",
+            locals: { notice: nil, alert: result.errors.to_s })
+        end
+        format.html { redirect_back fallback_location: orders_path, alert: result.errors.to_s }
+      end
     end
   end
 

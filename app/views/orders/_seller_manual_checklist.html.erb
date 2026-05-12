@@ -11,6 +11,14 @@
 <%# Payment step index when Razorpay link UI is disabled (`if false` below); bump if step 4 is re-enabled %>
 <% payment_received_step_number = 4 %>
 
+<%# Flash shown inside the turbo frame so step actions give inline feedback without a full page reload %>
+<% if flash[:notice].present? %>
+  <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800" data-controller="flash" role="status"><%= flash[:notice] %></div>
+<% end %>
+<% if flash[:alert].present? %>
+  <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" data-controller="flash" role="alert"><%= flash[:alert] %></div>
+<% end %>
+
 <section class="rounded-xl border border-indigo-100 bg-gradient-to-b from-indigo-50/80 to-white p-6 shadow-sm" aria-labelledby="manual-checklist-heading" data-controller="confirm-modal">
   <div class="flex flex-wrap items-start justify-between gap-3">
     <div>

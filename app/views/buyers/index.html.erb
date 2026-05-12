@@ -1,8 +1,9 @@
 <% content_for :title, "Buyers — TrustShip" %>
 <% content_for :page_title, "Buyers" %>
 
-<div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
-  <%= form_with url: buyers_path, method: :get, local: true, data: { controller: "orders-list" }, class: "border-b border-gray-100 px-4 py-3" do %>
+<%= turbo_frame_tag "buyers_list", data: { turbo_action: "advance" } do %>
+<div class="overflow-hidden rounded-xl border border-gray-200 bg-white" data-controller="orders-list">
+  <%= form_with url: buyers_path, method: :get, class: "border-b border-gray-100 px-4 py-3" do %>
     <div class="flex flex-wrap items-center gap-3">
       <div class="flex min-w-[220px] flex-1 items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
         <i class="ti ti-search text-sm text-gray-400"></i>
@@ -58,3 +59,4 @@
     </div>
   <% end %>
 </div>
+<% end %>

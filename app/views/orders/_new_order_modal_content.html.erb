@@ -34,7 +34,7 @@
       <% end %>
     </div>
 
-    <%= form_with model: @order, url: orders_path, data: { turbo_frame: "_top" }, class: "px-6 py-5 space-y-4 max-h-[80vh] overflow-y-auto" do |f| %>
+    <%= form_with model: @order, url: orders_path, data: { turbo_frame: "_top", controller: "form-submit" }, class: "px-6 py-5 space-y-4 max-h-[80vh] overflow-y-auto" do |f| %>
 
       <% if flash[:alert].present? %>
         <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
@@ -151,7 +151,8 @@
           <%= link_to "Cancel", orders_path, class: "rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800" %>
         <% end %>
         <%= f.submit "Create Order →",
-              class: "cursor-pointer rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+              data: { form_submit_target: "button" },
+              class: "cursor-pointer rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-60" %>
       </div>
     <% end %>
   </div>

@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["search"]
 
   connect() {
-    this.submitDebounced = this.debounce(() => this.submit(), 300)
+    this.submitDebounced = this.debounce(() => this.submit(), 400)
   }
 
   search() {
@@ -12,12 +12,15 @@ export default class extends Controller {
   }
 
   submit() {
-    this.element.requestSubmit()
+    const form = this.element.tagName === "FORM"
+      ? this.element
+      : this.element.querySelector("form")
+    form?.requestSubmit()
   }
 
   go(event) {
     const url = event.currentTarget.dataset.url
-    if (url) window.location.href = url
+    if (url) Turbo.visit(url)
   }
 
   stopRowNavigation(event) {

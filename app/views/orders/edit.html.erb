@@ -14,7 +14,7 @@
   <h1 class="text-lg font-semibold text-gray-900">Edit order</h1>
   <p class="mt-1 text-sm text-gray-600">Update buyer, address, product, amount, or payment type. Address changes reset map validation until you verify again.</p>
 
-  <%= form_with model: @order_form, scope: :order, url: order_path(@order), method: :patch, class: "mt-6 space-y-4" do |f| %>
+  <%= form_with model: @order_form, scope: :order, url: order_path(@order), method: :patch, data: { controller: "form-submit" }, class: "mt-6 space-y-4" do |f| %>
     <% if flash[:alert].present? %>
       <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
         <%= flash[:alert] %>
@@ -90,7 +90,7 @@
 
     <div class="flex justify-end gap-3 border-t border-gray-100 pt-4">
       <%= link_to "Cancel", order_path(@order), class: "rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100" %>
-      <%= f.submit "Save changes", class: "cursor-pointer rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+      <%= f.submit "Save changes", data: { form_submit_target: "button" }, class: "cursor-pointer rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-60" %>
     </div>
   <% end %>
 </div>

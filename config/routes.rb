@@ -21,6 +21,8 @@ Rails.application.routes.draw do
     }
   }
 
+  get "/admin", to: "admin#index", as: :admin
+
   root "pages#home"
 
   get "/terms", to: "pages#terms", as: :terms

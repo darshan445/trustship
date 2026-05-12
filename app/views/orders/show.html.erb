@@ -155,10 +155,13 @@
     </dl>
   </section>
 
-  <% if @order.seller_manual? %>
-    <%= render "orders/seller_manual_checklist", order: @order %>
-  <% else %>
-    <%= render "orders/verification_gates", order: @order %>
+  <%# Turbo frame so checklist step actions update only this section without a full page reload %>
+  <%= turbo_frame_tag "order_checklist" do %>
+    <% if @order.seller_manual? %>
+      <%= render "orders/seller_manual_checklist", order: @order %>
+    <% else %>
+      <%= render "orders/verification_gates", order: @order %>
+    <% end %>
   <% end %>
 
   <%# Shipment detail cards removed from order fields cleanup %>

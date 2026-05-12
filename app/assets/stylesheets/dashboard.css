@@ -1,3 +1,30 @@
+/* Turbo progress bar */
+.turbo-progress-bar {
+  height: 3px;
+  background: #534ab7;
+}
+
+/* Turbo frame loading state — dim content while fetching */
+turbo-frame[busy] {
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+/* Sidebar nav transition */
+.sidebar-nav-item {
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+/* Smooth appearance for streamed flash messages */
+#flash-messages > div {
+  animation: flash-slide-in 0.25s ease;
+}
+
+@keyframes flash-slide-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .stat-card {
   background: white;
   border: 0.5px solid #e5e7eb;
