@@ -21,7 +21,7 @@ gem "jbuilder"
 gem "aasm", "~> 5.5"
 
 # Pagination [https://github.com/ddnexus/pagy]
-gem "pagy", "~> 9.3"
+gem "pagy", "~> 43.5"
 
 # Authentication [https://github.com/heartcombo/devise]
 gem "devise", "~> 4.9"
